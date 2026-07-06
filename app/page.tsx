@@ -106,7 +106,6 @@ export default function LandingPage() {
     <div className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30">
       
       {/* Background Ambience Blobs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#F5B400]/5 rounded-full blur-[140px] pointer-events-none animate-pulse-gold"></div>
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[160px] pointer-events-none"></div>
 
       {/* Header / Nav */}
@@ -156,55 +155,64 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 pt-20 pb-0 md:pt-24 flex flex-col items-center text-center gap-12">
-        <div className="max-w-3xl space-y-6 flex flex-col items-center">
-          <motion.h1
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] flex flex-wrap justify-center gap-x-[0.25em]"
-          >
-            {headingWords.map((word, idx) => (
-              <motion.span
-                key={idx}
-                variants={wordVariants}
-                className={idx === 2 ? "text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200" : "text-white"}
-              >
-                {word}
-              </motion.span>
-            ))}
-          </motion.h1>
+      {/* Hero Section Background Wrapper */}
+      <div 
+        className="w-full bg-cover bg-center bg-no-repeat relative overflow-hidden"
+        style={{ backgroundImage: 'url(/Back.png)' }}
+      >
+        {/* Subtle grid mesh overlay to enhance depth */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(9,9,9,0)_70%,#090909_100%)] pointer-events-none z-0"></div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-2xl"
-          >
-            Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-4 pt-2"
-          >
-            <Link 
-              href="/dashboard"
-              className="px-6 py-4 rounded-[16px] bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-sm tracking-wide shadow-[0_4px_16px_rgba(245,180,0,0.2)] hover:opacity-90 transition-all flex items-center gap-2"
+        {/* Hero Section */}
+        <section className="relative max-w-7xl mx-auto px-6 pt-24 pb-0 md:pt-28 md:pb-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
+          <div className="lg:col-span-5 space-y-6 flex flex-col items-start text-left">
+            <motion.h1
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1] flex flex-wrap justify-start gap-x-[0.25em]"
             >
-              Launch Savings App <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-        </div>
+              {headingWords.map((word, idx) => (
+                <motion.span
+                  key={idx}
+                  variants={wordVariants}
+                  className={idx === 2 ? "text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200" : "text-white"}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.h1>
 
-        {/* Floating Mockup Phone Centerpiece */}
-        <div className="w-full flex justify-center mt-12 -mb-28 md:-mb-36 relative z-10">
-          <MockupPhone />
-        </div>
-      </section>
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
+            >
+              Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap justify-start gap-4 pt-2"
+            >
+              <Link 
+                href="/dashboard"
+                className="px-6 py-4 rounded-[16px] bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-sm tracking-wide shadow-[0_4px_16px_rgba(245,180,0,0.2)] hover:opacity-90 transition-all flex items-center gap-2"
+              >
+                Launch Savings App <ArrowRight className="w-4 h-4" />
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Floating Mockup Phone Centerpiece */}
+          <div className="lg:col-span-7 flex justify-center lg:justify-end -mt-8 lg:-mt-24 -mb-36 md:-mb-44 relative z-10">
+            <MockupPhone />
+          </div>
+        </section>
+      </div>
 
       {/* Features Grid */}
       <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
