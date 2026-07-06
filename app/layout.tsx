@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
+import { Poppins, Host_Grotesk } from 'next/font/google';
 import '../styles/globals.css';
 
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
+  display: 'swap',
+});
+
+const hostGrotesk = Host_Grotesk({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-heading',
   display: 'swap',
 });
 
@@ -26,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <body className={`${poppins.variable} font-sans bg-[#090909] text-[#FFFFFF] antialiased`}>
+      <body className={`${poppins.variable} ${hostGrotesk.variable} font-sans bg-[#090909] text-[#FFFFFF] antialiased`}>
         {children}
       </body>
     </html>

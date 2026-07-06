@@ -10,7 +10,8 @@
   --color-text-secondary: #A0A0A0;
   --color-border-subtle: rgba(255, 255, 255, 0.08);
 
-  --font-sans: 'Poppins', sans-serif;
+  --font-sans: var(--font-sans), sans-serif;
+  --font-heading: var(--font-heading), sans-serif;
   
   --radius-card: 20px;
   --radius-button: 16px;
@@ -25,6 +26,10 @@
     color: var(--color-text-primary);
     font-family: var(--font-sans);
     overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
   }
 }
 
