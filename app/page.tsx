@@ -18,6 +18,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import MockupPhone from '../components/MockupPhone';
+import Strands from '../components/Strands';
 import WalletModal from '../components/WalletModal';
 import { useContinuumStore } from '../lib/store';
 import { formatAddress } from '../utils/format';
@@ -222,18 +223,49 @@ export default function LandingPage() {
           <p className="text-sm text-[#A0A0A0]">We combine cryptographic commitment with protocol incentives to encourage long-term focus.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((f, i) => (
-            <div key={i} className="p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-4 text-left">
-              <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center">
-                {f.icon}
-              </div>
-              <div>
-                <h3 className="font-bold text-white text-base">{f.title}</h3>
-                <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">{f.desc}</p>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Strands Wavy 3D Animation */}
+          <div className="lg:col-span-5 w-full h-[400px] lg:h-[500px] relative bg-gradient-to-b from-[#121212]/50 to-[#0c0c0c]/80 rounded-[32px] border border-white/5 overflow-hidden shadow-2xl flex items-center justify-center group hover:border-[#F5B400]/20 transition-all duration-500">
+            <div className="absolute inset-0 z-0 scale-100 group-hover:scale-105 transition-all duration-700">
+              <Strands
+                colors={["#000000","#fed245","#fed245"]}
+                count={3}
+                speed={0.5}
+                amplitude={1}
+                waviness={1}
+                thickness={0.7}
+                glow={2.6}
+                taper={3}
+                spread={1}
+                intensity={0.35}
+                saturation={1.6}
+                opacity={0.9}
+                scale={1.5}
+                glass={false}
+                refraction={1}
+                dispersion={1}
+                glassSize={1}
+                hueShift={0}
+              />
             </div>
-          ))}
+            {/* Ambient gold glow in the center */}
+            <div className="absolute w-48 h-48 rounded-full bg-[#F5B400]/5 filter blur-3xl z-10 pointer-events-none"></div>
+          </div>
+
+          {/* Right Column: 2x2 Grid of 4 Boxes */}
+          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {features.map((f, i) => (
+              <div key={i} className="p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-4 text-left hover:border-[#F5B400]/25 transition-all shadow-md">
+                <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400]">
+                  {f.icon}
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-base">{f.title}</h3>
+                  <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
