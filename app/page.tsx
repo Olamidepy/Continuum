@@ -140,8 +140,8 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 pt-16 pb-20 md:py-28 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-7 space-y-6 text-left">
+      <section className="relative max-w-7xl mx-auto px-6 pt-20 pb-24 md:pt-28 md:pb-32 flex flex-col items-center text-center gap-12">
+        <div className="max-w-3xl space-y-6 flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -155,17 +155,19 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.05]"
+            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
           >
-            Time Builds <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200">Wealth.</span>
+            Time Builds{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200">
+              Wealth.
+            </span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
+            className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-2xl"
           >
             Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields.
           </motion.p>
@@ -174,7 +176,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-wrap gap-4 pt-4"
+            className="flex flex-wrap justify-center gap-4 pt-2"
           >
             <Link 
               href="/dashboard"
@@ -194,8 +196,8 @@ export default function LandingPage() {
           </motion.div>
         </div>
 
-        {/* Floating Mockup Phone */}
-        <div className="lg:col-span-5 flex justify-center lg:justify-end">
+        {/* Floating Mockup Phone Centerpiece */}
+        <div className="w-full flex justify-center">
           <MockupPhone />
         </div>
       </section>
