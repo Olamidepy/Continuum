@@ -14,7 +14,7 @@ export default function MockupPhone() {
         opacity: { duration: 1.2 },
         y: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
       }}
-      className="relative mx-auto w-full max-w-[1120px] aspect-[4/3] flex items-center justify-center"
+      className="relative mx-auto w-full max-w-[1280px] aspect-[4/3] flex items-center justify-center"
     >
       {/* Mockup Image Frame */}
       <img

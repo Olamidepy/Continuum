@@ -22,6 +22,29 @@ import WalletModal from '../components/WalletModal';
 import { useContinuumStore } from '../lib/store';
 import { formatAddress } from '../utils/format';
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 15,
+      stiffness: 100,
+    },
+  },
+};
+
 export default function LandingPage() {
   const { wallet, disconnectWallet } = useContinuumStore();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -77,6 +100,8 @@ export default function LandingPage() {
     }
   ];
 
+  const headingWords = ["Time", "Builds", "Wealth."];
+
   return (
     <div className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30">
       
@@ -87,86 +112,74 @@ export default function LandingPage() {
       {/* Header / Nav */}
       <header className="sticky top-0 z-40 bg-[#090909]/60 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-7">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#121212] border border-white/10 flex items-center justify-center shadow-[0_4px_10px_rgba(245,180,0,0.15)]">
-                <span className="text-[#F5B400] font-bold text-sm">C</span>
-              </div>
-              <span className="font-bold tracking-widest text-sm text-white">CONTINUUM</span>
-            </Link>
-            
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#121212] border border-white/10 flex items-center justify-center shadow-[0_4px_10px_rgba(245,180,0,0.15)]">
+              <span className="text-[#F5B400] font-bold text-sm">C</span>
+            </div>
+            <span className="font-bold tracking-widest text-sm text-white">CONTINUUM</span>
+          </Link>
+          
+          <div className="flex items-center gap-8">
             <nav className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">How It Works</a>
               <a href="#security" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">Security</a>
               <a href="#faq" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">FAQ</a>
             </nav>
-          </div>
 
-          <div className="flex items-center gap-3">
-            {wallet.connected ? (
-              <div className="flex items-center gap-3">
-                <Link 
-                  href="/dashboard" 
-                  className="px-4 py-2 rounded-xl bg-[#121212] border border-white/5 hover:border-white/10 text-xs font-semibold hover:text-white transition-all"
-                >
-                  App Dashboard
-                </Link>
-                <button
-                  onClick={disconnectWallet}
-                  className="px-4 py-2 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-xs font-semibold hover:bg-red-900/30 transition-all cursor-pointer"
-                >
-                  {formatAddress(wallet.address)} (Disconnect)
-                </button>
-              </div>
-            ) : (
-              <>
+            <div className="flex items-center gap-3">
+              {wallet.connected ? (
+                <div className="flex items-center gap-3">
+                  <Link 
+                    href="/dashboard" 
+                    className="px-4 py-2 rounded-xl bg-[#121212] border border-white/5 hover:border-white/10 text-xs font-semibold hover:text-white transition-all"
+                  >
+                    App Dashboard
+                  </Link>
+                  <button
+                    onClick={disconnectWallet}
+                    className="px-4 py-2 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-xs font-semibold hover:bg-red-900/30 transition-all cursor-pointer"
+                  >
+                    {formatAddress(wallet.address)} (Disconnect)
+                  </button>
+                </div>
+              ) : (
                 <button
                   onClick={() => setIsWalletOpen(true)}
-                  className="px-4 py-2.5 rounded-xl bg-[#121212] border border-white/5 hover:border-white/10 text-xs font-semibold text-[#A0A0A0] hover:text-white transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all cursor-pointer"
                 >
                   Connect Wallet
                 </button>
-                <Link 
-                  href="/dashboard"
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all"
-                >
-                  Launch App
-                </Link>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto px-6 pt-20 pb-24 md:pt-28 md:pb-32 flex flex-col items-center text-center gap-12">
+      <section className="relative max-w-7xl mx-auto px-6 pt-20 pb-0 md:pt-24 flex flex-col items-center text-center gap-12">
         <div className="max-w-3xl space-y-6 flex flex-col items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#121212] border border-white/5 text-xs text-[#A0A0A0] font-medium"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F5B400]"></span>
-            Now Live on Stacks Testnet
-          </motion.div>
-
           <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.1] flex flex-wrap justify-center gap-x-[0.25em]"
           >
-            Time Builds{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200">
-              Wealth.
-            </span>
+            {headingWords.map((word, idx) => (
+              <motion.span
+                key={idx}
+                variants={wordVariants}
+                className={idx === 2 ? "text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200" : "text-white"}
+              >
+                {word}
+              </motion.span>
+            ))}
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.4 }}
             className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-2xl"
           >
             Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields.
@@ -175,7 +188,7 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.5 }}
             className="flex flex-wrap justify-center gap-4 pt-2"
           >
             <Link 
@@ -184,20 +197,11 @@ export default function LandingPage() {
             >
               Launch Savings App <ArrowRight className="w-4 h-4" />
             </Link>
-            
-            {!wallet.connected && (
-              <button
-                onClick={() => setIsWalletOpen(true)}
-                className="px-6 py-4 rounded-[16px] bg-[#121212] border border-white/5 hover:border-white/10 text-white font-bold text-sm tracking-wide transition-all cursor-pointer flex items-center gap-2"
-              >
-                Connect Wallet
-              </button>
-            )}
           </motion.div>
         </div>
 
         {/* Floating Mockup Phone Centerpiece */}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mt-12 -mb-28 md:-mb-36 relative z-10">
           <MockupPhone />
         </div>
       </section>
