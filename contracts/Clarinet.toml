@@ -1,0 +1,15 @@
+[project]
+name = "continuum-vaults"
+description = "Continuum Decentralized Savings Protocol Contracts"
+authors = []
+telemetry = false
+cache_dir = "./.clarinet"
+
+[contracts.sip-010-trait-mock]
+path = "contracts/sip-010-trait-mock.clar"
+
+[contracts.sbtc-token-mock]
+path = "contracts/sbtc-token-mock.clar"
+
+[contracts.continuum-vaults]
+path = "contracts/continuum-vaults.clar"
