@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShieldAlert, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useStacks } from '../hooks/useStacks';
+import { useContinuumStore } from '../lib/store';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -10,7 +11,8 @@ interface WalletModalProps {
 }
 
 export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
-  const { connectWallet } = useStacks();
+  const storeConnectWallet = useContinuumStore((state) => state.connectWallet);
+  const { connectWallet: stacksConnectWallet } = useStacks();
 
   const wallets = [
     {
@@ -62,14 +64,48 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
           <path d="M23.33 33.33c14.73-14.73 38.6-14.73 53.34 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-8.06-8.06-21.13-8.06-29.2 0l-4.66 4.66c-.78.78-2.05.78-2.83 0l-7.25-7.25c-.78-.78-.78-2.05 0-2.83l4.66-4.66zM7.39 50c23.54-23.54 61.68-23.54 85.22 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-16.88-16.88-44.25-16.88-61.13 0l-4.66 4.66c-.78.78-2.05.78-2.83 0L6.64 57.5c-.78-.78-.78-2.05 0-2.83L11 54.67 7.39 50z" />
         </svg>
       ),
-      description: 'Connect via QR code scan. Supports Xverse Mobile and multi-chain wallets.',
+      description: 'Connect via QR code scan. Supports multi-chain mobile wallets.',
       tag: 'Universal'
     }
   ];
 
-  const selectWallet = (provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect') => {
-    connectWallet(provider);
-    onClose();
+  const selectWallet = async (walletName: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect') => {
+    try {
+      if (walletName === 'Leather') {
+        if (typeof window !== 'undefined' && ((window as any).LeatherProvider || (window as any).StacksProvider)) {
+          await stacksConnectWallet('Leather');
+          onClose();
+        } else {
+          window.open('https://leather.io/install-extension', '_blank');
+        }
+      } else if (walletName === 'Xverse') {
+        if (typeof window !== 'undefined' && ((window as any).XverseProvider || (window as any).StacksProvider)) {
+          await stacksConnectWallet('Xverse');
+          onClose();
+        } else {
+          window.open('https://www.xverse.app/download', '_blank');
+        }
+      } else if (walletName === 'Asigna') {
+        if (typeof window !== 'undefined' && (window as any).StacksProvider) {
+          await stacksConnectWallet('Asigna');
+          onClose();
+        } else {
+          window.open('https://asigna.io/', '_blank');
+        }
+      } else if (walletName === 'Fordefi') {
+        if (typeof window !== 'undefined' && (window as any).StacksProvider) {
+          await stacksConnectWallet('Fordefi');
+          onClose();
+        } else {
+          window.open('https://www.fordefi.com/', '_blank');
+        }
+      } else if (walletName === 'WalletConnect') {
+        await stacksConnectWallet('WalletConnect');
+        onClose();
+      }
+    } catch (err) {
+      console.error(`Failed to connect to ${walletName}:`, err);
+    }
   };
 
   return (

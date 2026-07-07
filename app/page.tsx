@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -18,10 +20,12 @@ import {
   ExternalLink
 } from 'lucide-react';
 import MockupPhone from '../components/MockupPhone';
-import Strands from '../components/Strands';
 import WalletModal from '../components/WalletModal';
 import { useContinuumStore } from '../lib/store';
 import { formatAddress } from '../utils/format';
+
+const LogoLoop = dynamic(() => import('../components/LogoLoop'), { ssr: false });
+const SplitText = dynamic(() => import('../components/SplitText'), { ssr: false });
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -47,9 +51,35 @@ const wordVariants = {
 };
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [isExiting, setIsExiting] = useState(false);
   const { wallet, disconnectWallet } = useContinuumStore();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showTrainingOverlay, setShowTrainingOverlay] = useState(false);
+  const [showWalletGuide, setShowWalletGuide] = useState(false);
+
+  useEffect(() => {
+    if (wallet.connected && showWalletGuide) {
+      setShowWalletGuide(false);
+      setIsExiting(true);
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 400);
+    }
+  }, [wallet.connected, showWalletGuide, router]);
+
+  const handleLaunchApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (wallet.connected) {
+      setIsExiting(true);
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 400);
+    } else {
+      setShowTrainingOverlay(true);
+    }
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -104,7 +134,12 @@ export default function LandingPage() {
   const headingWords = ["Time", "Builds", "Wealth."];
 
   return (
-    <div className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isExiting ? 0 : 1 }}
+      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30"
+    >
       
       {/* Background Ambience Blobs */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-white/[0.02] rounded-full blur-[160px] pointer-events-none"></div>
@@ -112,11 +147,12 @@ export default function LandingPage() {
       {/* Header / Nav */}
       <header className="sticky top-0 z-40 bg-[#090909]/60 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#121212] border border-white/10 flex items-center justify-center shadow-[0_4px_10px_rgba(245,180,0,0.15)]">
-              <span className="text-[#F5B400] font-bold text-sm">C</span>
-            </div>
-            <span className="font-bold tracking-widest text-sm text-white">CONTINUUM</span>
+          <Link href="/" className="flex items-center">
+            <img 
+              src="/fArtboard 2 copy 2.png" 
+              alt="Continuum Logo" 
+              className="h-16 w-auto object-contain" 
+            />
           </Link>
           
           <div className="flex items-center gap-8">
@@ -130,12 +166,6 @@ export default function LandingPage() {
             <div className="flex items-center gap-3">
               {wallet.connected ? (
                 <div className="flex items-center gap-3">
-                  <Link 
-                    href="/dashboard" 
-                    className="px-4 py-2 rounded-xl bg-[#121212] border border-white/5 hover:border-white/10 text-xs font-semibold hover:text-white transition-all"
-                  >
-                    App Dashboard
-                  </Link>
                   <button
                     onClick={disconnectWallet}
                     className="px-4 py-2 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-xs font-semibold hover:bg-red-900/30 transition-all cursor-pointer"
@@ -144,12 +174,29 @@ export default function LandingPage() {
                   </button>
                 </div>
               ) : (
-                <button
-                  onClick={() => setIsWalletOpen(true)}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all cursor-pointer"
-                >
-                  Connect Wallet
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsWalletOpen(true)}
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all cursor-pointer relative z-30"
+                  >
+                    Connect Wallet
+                  </button>
+                  
+                  {/* Beeping Opacity Red Circle & Tooltip */}
+                  {showWalletGuide && (
+                    <>
+                      {/* Red pulsing/beeping aura */}
+                      <div className="absolute inset-0 -m-1.5 rounded-2xl border-2 border-red-500 animate-ping opacity-75 pointer-events-none z-20" />
+                      <div className="absolute inset-0 -m-1.5 rounded-2xl border border-red-500 animate-pulse pointer-events-none z-20" />
+                      
+                      {/* Instruction Tooltip bubble */}
+                      <div className="absolute top-14 right-0 bg-red-950/95 border border-red-500/50 rounded-xl px-4 py-2.5 text-xs text-red-200 shadow-xl min-w-[200px] text-center font-mono z-40 animate-bounce">
+                        <div className="absolute -top-1.5 right-6 w-3 h-3 bg-[#180303] border-t border-l border-red-500/50 transform rotate-45" />
+                        <span className="font-bold text-red-400">ALERT:</span> Kindly connect your wallet
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -165,33 +212,25 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(9,9,9,0)_70%,#090909_100%)] pointer-events-none z-0"></div>
 
         {/* Hero Section */}
-        <section className="relative max-w-7xl mx-auto px-6 pt-24 pb-0 md:pt-28 md:pb-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
-          <div className="lg:col-span-5 space-y-6 flex flex-col items-start text-left">
-            <motion.h1
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1] flex flex-wrap justify-start gap-x-[0.25em]"
-            >
-              {headingWords.map((word, idx) => (
-                <motion.span
-                  key={idx}
-                  variants={wordVariants}
-                  className={idx === 2 ? "text-transparent bg-clip-text bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-amber-200" : "text-white"}
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </motion.h1>
+        <section className="relative max-w-7xl mx-auto px-6 pt-32 pb-8 md:pt-40 md:pb-24 lg:pt-44 lg:pb-28 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
+          <div className="lg:col-span-5 space-y-6 flex flex-col items-start text-left relative z-20">
+            <SplitText
+              text="Time Builds Wealth."
+              tag="h1"
+              className="text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]"
+              textAlign="left"
+              delay={50}
+              duration={1.25}
+            />
 
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+            <SplitText
+              text="Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields."
+              tag="p"
               className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
-            >
-              Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields.
-            </motion.p>
+              textAlign="left"
+              delay={20}
+              duration={1}
+            />
 
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -201,22 +240,37 @@ export default function LandingPage() {
             >
               <Link 
                 href="/dashboard"
-                className="px-6 py-4 rounded-[16px] bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-sm tracking-wide shadow-[0_4px_16px_rgba(245,180,0,0.2)] hover:opacity-90 transition-all flex items-center gap-2"
+                onClick={handleLaunchApp}
+                className="px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-xs tracking-wider shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all flex items-center gap-1.5 w-fit"
               >
-                Launch Savings App <ArrowRight className="w-4 h-4" />
+                Launch App <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </motion.div>
           </div>
 
           {/* Floating Mockup Phone Centerpiece */}
-          <div className="lg:col-span-7 flex justify-center lg:justify-end -mt-8 lg:-mt-24 -mb-36 md:-mb-44 relative z-10">
+          <div className="lg:col-span-7 flex justify-center lg:justify-end -mt-12 lg:-mt-32 -mb-48 md:-mb-56 relative z-10 lg:translate-x-12">
             <MockupPhone />
           </div>
         </section>
       </div>
 
+      {/* Middle Sections with Grid Background */}
+      <div className="relative w-full overflow-hidden">
+        {/* Background Grid Overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.15] z-0"
+          style={{ 
+            backgroundImage: 'url(/Background.webp)',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: 'center',
+          }}
+        />
+        
+        <div className="relative z-10">
+
       {/* Features Grid */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5">
+      <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest">Core Features</span>
           <h2 className="text-3xl font-bold tracking-tight">Built for Uncompromising Savers</h2>
@@ -224,38 +278,10 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Strands Wavy 3D Animation */}
-          <div className="lg:col-span-5 w-full h-[400px] lg:h-[500px] relative bg-gradient-to-b from-[#121212]/50 to-[#0c0c0c]/80 rounded-[32px] border border-white/5 overflow-hidden shadow-2xl flex items-center justify-center group hover:border-[#F5B400]/20 transition-all duration-500">
-            <div className="absolute inset-0 z-0 scale-100 group-hover:scale-105 transition-all duration-700">
-              <Strands
-                colors={["#000000","#fed245","#fed245"]}
-                count={3}
-                speed={0.5}
-                amplitude={1}
-                waviness={1}
-                thickness={0.7}
-                glow={2.6}
-                taper={3}
-                spread={1}
-                intensity={0.35}
-                saturation={1.6}
-                opacity={0.9}
-                scale={1.5}
-                glass={false}
-                refraction={1}
-                dispersion={1}
-                glassSize={1}
-                hueShift={0}
-              />
-            </div>
-            {/* Ambient gold glow in the center */}
-            <div className="absolute w-48 h-48 rounded-full bg-[#F5B400]/5 filter blur-3xl z-10 pointer-events-none"></div>
-          </div>
-
-          {/* Right Column: 2x2 Grid of 4 Boxes */}
-          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column: 2x2 Grid of 4 Boxes */}
+          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 order-2 lg:order-1">
             {features.map((f, i) => (
-              <div key={i} className="p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-4 text-left hover:border-[#F5B400]/25 transition-all shadow-md">
+              <div key={i} className="p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-4 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300 shadow-md">
                 <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400]">
                   {f.icon}
                 </div>
@@ -266,11 +292,24 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          {/* Right Column: Animated GIF Showcase */}
+          <div className="lg:col-span-5 w-full h-[420px] lg:h-[520px] relative bg-[#121212]/50 rounded-[32px] border border-white/5 overflow-hidden shadow-2xl flex items-center justify-center group hover:border-[#F5B400]/20 hover:shadow-[0_0_25px_rgba(245,180,0,0.12)] transition-all duration-500 order-1 lg:order-2">
+            <div className="absolute inset-0 z-0 scale-100 group-hover:scale-105 transition-all duration-700 w-full h-full">
+              <img 
+                src="/iPhone 17 - 6.gif" 
+                alt="Continuum Showcase" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            {/* Ambient gold glow in the center */}
+            <div className="absolute w-48 h-48 rounded-full bg-[#F5B400]/6 filter blur-3xl z-10 pointer-events-none"></div>
+          </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-[#121212]/30">
+      <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-[#121212]/30 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Workflow</span>
           <h2 className="text-3xl font-bold tracking-tight">Three Steps to Disciplined Wealth</h2>
@@ -313,9 +352,9 @@ export default function LandingPage() {
       </section>
 
       {/* Why Continuum */}
-      <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="lg:col-span-5 flex justify-center">
-          <div className="p-8 rounded-[24px] bg-[#121212]/80 border border-white/5 text-left relative overflow-hidden w-full max-w-sm shadow-xl">
+          <div className="p-8 rounded-[24px] bg-[#121212]/80 border border-white/5 text-left relative overflow-hidden w-full max-w-sm shadow-xl hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5B400]/5 rounded-bl-full pointer-events-none"></div>
             <span className="text-[#F5B400] font-bold text-xs uppercase tracking-wider block mb-2 font-mono">Discipline Multipliers</span>
             <h4 className="text-lg font-bold text-white mb-4">Maturity Weightings</h4>
@@ -360,7 +399,7 @@ export default function LandingPage() {
       </section>
 
       {/* Security Layer */}
-      <section id="security" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-[#121212]/30">
+      <section id="security" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-[#121212]/30 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-left max-w-3xl">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Security Architecture</span>
           <h2 className="text-4xl font-bold tracking-tight text-white mt-2 mb-6">Designed for Absolute Custodial Integrity</h2>
@@ -371,19 +410,19 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left">
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <h3 className="font-bold text-white text-base">Decidable Language</h3>
             <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
               Clarity is not compiled to bytecode. The code published on the Stacks blockchain is exactly the source code you read, facilitating validation.
             </p>
           </div>
-          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left">
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <h3 className="font-bold text-white text-base">No Reentrancy</h3>
             <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
               Clarity prevents dynamic calls from calling back into the executing contract, making reentrancy attacks completely impossible by language design.
             </p>
           </div>
-          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left">
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <h3 className="font-bold text-white text-base">Immutable Rules</h3>
             <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
               Once deployed, contract parameters cannot be updated, ensuring the 10% penalty and O(1) redistribution structures can never be modified.
@@ -393,24 +432,78 @@ export default function LandingPage() {
       </section>
 
       {/* Supported Wallets */}
-      <section className="max-w-7xl mx-auto px-6 py-16 border-t border-white/5 text-center">
+      <section className="w-full py-16 border-t border-white/5 text-center overflow-hidden transition-transform duration-500 ease-out hover:-translate-y-2">
         <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Supported Wallets</span>
         <h3 className="text-2xl font-bold tracking-tight text-white mt-2 mb-10">Connect Securely via Bitcoin Layer 2 Integrations</h3>
         
-        <div className="flex flex-wrap justify-center gap-8 items-center opacity-70">
-          {['Leather', 'Xverse', 'Asigna', 'Fordefi'].map((walletName) => (
-            <div 
-              key={walletName} 
-              className="px-6 py-3 rounded-xl bg-[#121212] border border-white/5 text-white font-bold text-sm tracking-wide min-w-[130px]"
-            >
-              {walletName}
-            </div>
-          ))}
+        {/* Full-width Logo Ticker Banner */}
+        <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-5 shadow-[0_8px_30px_rgba(245,180,0,0.25)] border-y border-amber-400/20 overflow-hidden flex items-center">
+          <LogoLoop 
+            logos={[
+              {
+                node: (
+                  <div className="flex items-center gap-2.5 text-black font-extrabold text-[13px] tracking-widest font-mono select-none">
+                    <svg viewBox="0 0 100 100" className="w-5 h-5 fill-current">
+                      <path d="M50 15L15 35v30l35 20 35-20V35L50 15zm0 10.5L74.5 40 50 54.5 25.5 40 50 25.5zM26 48.5l20.5 12v20.5L26 69V48.5zm48 20.5L53.5 81V60.5l20.5-12V69z" />
+                    </svg>
+                    <span>LEATHER</span>
+                  </div>
+                )
+              },
+              {
+                node: (
+                  <div className="flex items-center gap-2.5 text-black font-extrabold text-[13px] tracking-widest font-mono select-none">
+                    <svg viewBox="0 0 100 100" className="w-5 h-5 fill-current">
+                      <path d="M50 10L10 30v40l40 20 40-20V30L50 10zm-6 26.5h12V48H44V36.5zm0 17h12V70H44V53.5z" />
+                    </svg>
+                    <span>XVERSE</span>
+                  </div>
+                )
+              },
+              {
+                node: (
+                  <div className="flex items-center gap-2.5 text-black font-extrabold text-[13px] tracking-widest font-mono select-none">
+                    <svg viewBox="0 0 100 100" className="w-5 h-5 stroke-current fill-none" strokeWidth="6">
+                      <rect x="20" y="20" width="60" height="60" rx="10" />
+                      <path d="M35 50h30M50 35v30" strokeLinecap="round" />
+                    </svg>
+                    <span>ASIGNA</span>
+                  </div>
+                )
+              },
+              {
+                node: (
+                  <div className="flex items-center gap-2.5 text-black font-extrabold text-[13px] tracking-widest font-mono select-none">
+                    <svg viewBox="0 0 100 100" className="w-5 h-5 fill-current">
+                      <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="6" fill="none" />
+                      <polygon points="50,30 65,60 35,60" />
+                    </svg>
+                    <span>FORDEFI</span>
+                  </div>
+                )
+              },
+              {
+                node: (
+                  <div className="flex items-center gap-2.5 text-black font-extrabold text-[13px] tracking-widest font-mono select-none">
+                    <svg viewBox="0 0 100 100" className="w-5 h-5 fill-current">
+                      <path d="M23.33 33.33c14.73-14.73 38.6-14.73 53.34 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-8.06-8.06-21.13-8.06-29.2 0l-4.66 4.66c-.78.78-2.05.78-2.83 0l-7.25-7.25c-.78-.78-.78-2.05 0-2.83l4.66-4.66zM7.39 50c23.54-23.54 61.68-23.54 85.22 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-16.88-16.88-44.25-16.88-61.13 0l-4.66 4.66c-.78.78-2.05.78-2.83 0L6.64 57.5c-.78-.78-.78-2.05 0-2.83L11 54.67 7.39 50z" />
+                    </svg>
+                    <span>WALLETCONNECT</span>
+                  </div>
+                )
+              }
+            ]}
+            speed={60}
+            gap={64}
+            fadeOut={true}
+            fadeOutColor="#F5B400"
+            logoHeight={24}
+          />
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="max-w-3xl mx-auto px-6 py-20 border-t border-white/5">
+      <section id="faq" className="max-w-3xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center mb-12">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">FAQ</span>
           <h2 className="text-3xl font-bold tracking-tight mt-1 text-white">Frequently Asked Questions</h2>
@@ -420,7 +513,7 @@ export default function LandingPage() {
           {faqData.map((faq, index) => (
             <div 
               key={index} 
-              className="rounded-[16px] bg-[#121212] border border-white/5 overflow-hidden transition-all duration-300"
+              className="rounded-[16px] bg-[#121212] border border-white/5 overflow-hidden hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300"
             >
               <button
                 onClick={() => toggleFaq(index)}
@@ -448,15 +541,18 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-white/5 bg-[#090909] py-12">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[#121212] border border-white/10 flex items-center justify-center">
-              <span className="text-[#F5B400] font-bold text-xs">C</span>
-            </div>
-            <span className="font-bold tracking-widest text-xs text-white">CONTINUUM</span>
+          <div className="flex items-center">
+            <img 
+              src="/fArtboard 2 copy 2.png" 
+              alt="Continuum Logo" 
+              className="h-14 w-auto object-contain" 
+            />
           </div>
 
           <div className="text-[11px] text-[#A0A0A0]">
@@ -473,8 +569,63 @@ export default function LandingPage() {
         </div>
       </footer>
 
+      {/* Game-like Training Mode Initialization Overlay */}
+      <AnimatePresence>
+        {showTrainingOverlay && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 selection:bg-[#F5B400]/40"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-lg border border-[#F5B400]/30 bg-[#0c0c0c] p-8 rounded-2xl shadow-[0_0_50px_rgba(245,180,0,0.15)] font-mono relative overflow-hidden"
+            >
+              {/* Scanlines / Retro grid effect */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-300 via-transparent to-transparent bg-repeat" style={{ backgroundImage: 'radial-gradient(circle, #F5B400 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+              
+              <div className="flex items-center justify-between border-b border-[#F5B400]/20 pb-4 mb-6">
+                <span className="text-[#F5B400] font-bold text-xs tracking-widest flex items-center gap-1.5 animate-pulse">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block animate-ping" />
+                  INITIATING SIMULATION MODE
+                </span>
+                <span className="text-[#A0A0A0] text-[10px]">VER. 1.0.8_L2</span>
+              </div>
+
+              <div className="space-y-4 text-sm leading-relaxed text-neutral-300">
+                <p className="text-[#F5B400] font-semibold">
+                  &gt;&gt;&gt; ESTABLISHING PROTOCOL SANDBOX...
+                </p>
+                <p className="text-neutral-400">
+                  Welcome to the Stacks savings simulator workspace. Here you can configure time-locked vaults, lock your STX/sBTC, test early exits, and watch yields scale.
+                </p>
+                <div className="p-4 rounded-lg bg-red-950/20 border border-red-500/20 text-xs text-red-200">
+                  <span className="text-red-400 font-bold block mb-1">CRITICAL REQUIREMENT:</span>
+                  To start the training simulator, you must bind your Stacks cryptographic address.
+                </div>
+              </div>
+
+              <div className="mt-8 flex justify-end">
+                <button
+                  onClick={() => {
+                    setShowTrainingOverlay(false);
+                    setShowWalletGuide(true);
+                  }}
+                  className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-extrabold text-xs tracking-wider shadow-[0_4px_12px_rgba(245,180,0,0.25)] hover:opacity-90 transition-all cursor-pointer uppercase flex items-center gap-2"
+                >
+                  Enter Training Mode <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Wallet Connection Modal */}
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
-    </div>
+    </motion.div>
   );
 }

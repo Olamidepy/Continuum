@@ -5,16 +5,18 @@ import { motion } from 'framer-motion';
 export default function MockupPhone() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 0, scale: 1.05 }}
       animate={{ 
         opacity: 1, 
-        y: [0, -12, 0],
+        y: [0, -18, 0],
+        scale: [1.2, 1.24, 1.2],
       }}
       transition={{
-        opacity: { duration: 1.2 },
-        y: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
+        opacity: { duration: 1.2, ease: 'easeOut' },
+        y: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
+        scale: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
       }}
-      className="relative mx-auto w-full max-w-[1280px] aspect-[4/3] flex items-center justify-center"
+      className="relative mx-auto w-full max-w-[1280px] aspect-[4/3] flex items-center justify-center origin-center lg:origin-right"
     >
       {/* Mockup Image Frame */}
       <img

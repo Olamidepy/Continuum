@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
   Wallet, 
@@ -143,15 +144,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30 pb-12">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="relative min-h-screen bg-[#090909] text-white flex flex-col justify-between overflow-x-hidden selection:bg-[#F5B400]/30"
+    >
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#F5B400]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-6 w-full flex-1">
-        
-        {/* Top Header */}
-        <header className="py-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* Header wrapper (no grid background) */}
+      <div className="w-full border-b border-white/5 bg-[#090909]">
+        <div className="max-w-7xl mx-auto px-6">
+          <header className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link 
               href="/" 
@@ -223,6 +228,22 @@ export default function Dashboard() {
             )}
           </div>
         </header>
+      </div>
+    </div>
+
+      {/* Rest of the dashboard page with grid background */}
+      <div className="relative w-full flex-1 flex flex-col justify-between pb-12">
+        {/* Background Grid Overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.15] z-0"
+          style={{ 
+            backgroundImage: 'url(/Background.webp)',
+            backgroundRepeat: 'repeat',
+            backgroundPosition: 'center',
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto px-6 w-full flex-1 relative z-10">
 
         {/* Global Warnings in live mode without wallet */}
         {!isSimulation && !wallet.connected && (
@@ -553,9 +574,10 @@ export default function Dashboard() {
         </section>
 
       </div>
+    </div>
 
       {/* Wallet Connection Modal */}
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
-    </div>
+    </motion.div>
   );
 }
