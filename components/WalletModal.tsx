@@ -74,34 +74,29 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
       if (walletName === 'Leather') {
         if (typeof window !== 'undefined' && ((window as any).LeatherProvider || (window as any).StacksProvider)) {
           await stacksConnectWallet('Leather');
-          onClose();
         } else {
           window.open('https://leather.io/install-extension', '_blank');
         }
       } else if (walletName === 'Xverse') {
         if (typeof window !== 'undefined' && ((window as any).XverseProvider || (window as any).StacksProvider)) {
           await stacksConnectWallet('Xverse');
-          onClose();
         } else {
           window.open('https://www.xverse.app/download', '_blank');
         }
       } else if (walletName === 'Asigna') {
         if (typeof window !== 'undefined' && (window as any).StacksProvider) {
           await stacksConnectWallet('Asigna');
-          onClose();
         } else {
           window.open('https://asigna.io/', '_blank');
         }
       } else if (walletName === 'Fordefi') {
         if (typeof window !== 'undefined' && (window as any).StacksProvider) {
           await stacksConnectWallet('Fordefi');
-          onClose();
         } else {
           window.open('https://www.fordefi.com/', '_blank');
         }
       } else if (walletName === 'WalletConnect') {
         await stacksConnectWallet('WalletConnect');
-        onClose();
       }
     } catch (err) {
       console.error(`Failed to connect to ${walletName}:`, err);

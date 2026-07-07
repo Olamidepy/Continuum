@@ -610,7 +610,7 @@ export const useContinuumStore = create<ContinuumState>()(
     {
       name: 'continuum-storage',
       partialize: (state) => ({
-        wallet: state.wallet,
+        // Do NOT persist wallet.connected — always start disconnected on page load
         isSimulation: state.isSimulation,
         currentBlockHeight: state.currentBlockHeight,
         globalStats: state.globalStats,

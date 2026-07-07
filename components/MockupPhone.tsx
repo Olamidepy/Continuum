@@ -20,7 +20,7 @@ export default function MockupPhone() {
     >
       {/* Mockup Image Frame */}
       <img
-        src="/Image0001.png"
+        src="/mockup.png"
         alt="Continuum Vaults Mockup"
         className="w-full h-full object-contain pointer-events-none drop-shadow-[0_20px_50px_rgba(245,180,0,0.15)]"
       />

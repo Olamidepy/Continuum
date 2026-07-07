@@ -56,18 +56,36 @@ export default function LandingPage() {
   const { wallet, disconnectWallet } = useContinuumStore();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [showTrainingOverlay, setShowTrainingOverlay] = useState(false);
   const [showWalletGuide, setShowWalletGuide] = useState(false);
 
+  const [initialConnectionChecked, setInitialConnectionChecked] = useState(false);
+  const [isMountConnected, setIsMountConnected] = useState(false);
+
   useEffect(() => {
-    if (wallet.connected && showWalletGuide) {
-      setShowWalletGuide(false);
+    setIsMountConnected(wallet.connected);
+    setInitialConnectionChecked(true);
+  }, []);
+
+  useEffect(() => {
+    if (!wallet.connected) {
+      setIsMountConnected(false);
+    }
+  }, [wallet.connected]);
+
+  useEffect(() => {
+    if (!initialConnectionChecked) return;
+    
+    // Only auto-redirect if they were NOT connected on mount and just connected now
+    if (wallet.connected && !isMountConnected) {
+      if (showWalletGuide) {
+        setShowWalletGuide(false);
+      }
       setIsExiting(true);
       setTimeout(() => {
         router.push('/dashboard');
       }, 400);
     }
-  }, [wallet.connected, showWalletGuide, router]);
+  }, [wallet.connected, isMountConnected, initialConnectionChecked, showWalletGuide, router]);
 
   const handleLaunchApp = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -77,7 +95,7 @@ export default function LandingPage() {
         router.push('/dashboard');
       }, 400);
     } else {
-      setShowTrainingOverlay(true);
+      setShowWalletGuide(true);
     }
   };
 
@@ -146,12 +164,12 @@ export default function LandingPage() {
 
       {/* Header / Nav */}
       <header className="sticky top-0 z-40 bg-[#090909]/60 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <img 
               src="/fArtboard 2 copy 2.png" 
               alt="Continuum Logo" 
-              className="h-16 w-auto object-contain" 
+              className="w-[240px] h-auto object-contain" 
             />
           </Link>
           
@@ -192,7 +210,7 @@ export default function LandingPage() {
                       {/* Instruction Tooltip bubble */}
                       <div className="absolute top-14 right-0 bg-red-950/95 border border-red-500/50 rounded-xl px-4 py-2.5 text-xs text-red-200 shadow-xl min-w-[200px] text-center font-mono z-40 animate-bounce">
                         <div className="absolute -top-1.5 right-6 w-3 h-3 bg-[#180303] border-t border-l border-red-500/50 transform rotate-45" />
-                        <span className="font-bold text-red-400">ALERT:</span> Kindly connect your wallet
+                        <span className="font-bold text-red-400">ALERT:</span> kindly connect your wallet
                       </div>
                     </>
                   )}
@@ -294,16 +312,14 @@ export default function LandingPage() {
           </div>
 
           {/* Right Column: Animated GIF Showcase */}
-          <div className="lg:col-span-5 w-full h-[420px] lg:h-[520px] relative bg-[#121212]/50 rounded-[32px] border border-white/5 overflow-hidden shadow-2xl flex items-center justify-center group hover:border-[#F5B400]/20 hover:shadow-[0_0_25px_rgba(245,180,0,0.12)] transition-all duration-500 order-1 lg:order-2">
-            <div className="absolute inset-0 z-0 scale-100 group-hover:scale-105 transition-all duration-700 w-full h-full">
+          <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2 -mt-8 lg:-mt-16">
+            <div className="relative w-full max-w-[500px] aspect-[3.5/4] flex items-center justify-center overflow-hidden">
               <img 
                 src="/iPhone 17 - 6.gif" 
                 alt="Continuum Showcase" 
-                className="w-full h-full object-cover" 
+                className="w-full h-auto object-contain scale-100 hover:scale-105 transition-transform duration-700 select-none pointer-events-none" 
               />
             </div>
-            {/* Ambient gold glow in the center */}
-            <div className="absolute w-48 h-48 rounded-full bg-[#F5B400]/6 filter blur-3xl z-10 pointer-events-none"></div>
           </div>
         </div>
       </section>
@@ -434,10 +450,10 @@ export default function LandingPage() {
       {/* Supported Wallets */}
       <section className="w-full py-16 border-t border-white/5 text-center overflow-hidden transition-transform duration-500 ease-out hover:-translate-y-2">
         <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Supported Wallets</span>
-        <h3 className="text-2xl font-bold tracking-tight text-white mt-2 mb-10">Connect Securely via Bitcoin Layer 2 Integrations</h3>
+        <h3 className="text-2xl font-bold tracking-tight text-white mt-2 mb-16">Connect Securely via Bitcoin Layer 2 Integrations</h3>
         
         {/* Full-width Logo Ticker Banner */}
-        <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-5 shadow-[0_8px_30px_rgba(245,180,0,0.25)] border-y border-amber-400/20 overflow-hidden flex items-center">
+        <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-3 shadow-[0_8px_30px_rgba(245,180,0,0.25)] border-y border-amber-400/20 overflow-hidden flex items-center">
           <LogoLoop 
             logos={[
               {
@@ -551,7 +567,7 @@ export default function LandingPage() {
             <img 
               src="/fArtboard 2 copy 2.png" 
               alt="Continuum Logo" 
-              className="h-14 w-auto object-contain" 
+              className="w-[240px] h-auto object-contain" 
             />
           </div>
 
@@ -568,61 +584,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      {/* Game-like Training Mode Initialization Overlay */}
-      <AnimatePresence>
-        {showTrainingOverlay && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4 selection:bg-[#F5B400]/40"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="w-full max-w-lg border border-[#F5B400]/30 bg-[#0c0c0c] p-8 rounded-2xl shadow-[0_0_50px_rgba(245,180,0,0.15)] font-mono relative overflow-hidden"
-            >
-              {/* Scanlines / Retro grid effect */}
-              <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-300 via-transparent to-transparent bg-repeat" style={{ backgroundImage: 'radial-gradient(circle, #F5B400 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-              
-              <div className="flex items-center justify-between border-b border-[#F5B400]/20 pb-4 mb-6">
-                <span className="text-[#F5B400] font-bold text-xs tracking-widest flex items-center gap-1.5 animate-pulse">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block animate-ping" />
-                  INITIATING SIMULATION MODE
-                </span>
-                <span className="text-[#A0A0A0] text-[10px]">VER. 1.0.8_L2</span>
-              </div>
-
-              <div className="space-y-4 text-sm leading-relaxed text-neutral-300">
-                <p className="text-[#F5B400] font-semibold">
-                  &gt;&gt;&gt; ESTABLISHING PROTOCOL SANDBOX...
-                </p>
-                <p className="text-neutral-400">
-                  Welcome to the Stacks savings simulator workspace. Here you can configure time-locked vaults, lock your STX/sBTC, test early exits, and watch yields scale.
-                </p>
-                <div className="p-4 rounded-lg bg-red-950/20 border border-red-500/20 text-xs text-red-200">
-                  <span className="text-red-400 font-bold block mb-1">CRITICAL REQUIREMENT:</span>
-                  To start the training simulator, you must bind your Stacks cryptographic address.
-                </div>
-              </div>
-
-              <div className="mt-8 flex justify-end">
-                <button
-                  onClick={() => {
-                    setShowTrainingOverlay(false);
-                    setShowWalletGuide(true);
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-extrabold text-xs tracking-wider shadow-[0_4px_12px_rgba(245,180,0,0.25)] hover:opacity-90 transition-all cursor-pointer uppercase flex items-center gap-2"
-                >
-                  Enter Training Mode <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Wallet Connection Modal */}
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
