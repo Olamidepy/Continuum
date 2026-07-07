@@ -58,34 +58,17 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showWalletGuide, setShowWalletGuide] = useState(false);
 
-  const [initialConnectionChecked, setInitialConnectionChecked] = useState(false);
-  const [isMountConnected, setIsMountConnected] = useState(false);
-
+  // Redirect to dashboard once wallet connects (wallet.connected is never persisted,
+  // so this only fires when the user actively connects during this session)
   useEffect(() => {
-    setIsMountConnected(wallet.connected);
-    setInitialConnectionChecked(true);
-  }, []);
-
-  useEffect(() => {
-    if (!wallet.connected) {
-      setIsMountConnected(false);
-    }
-  }, [wallet.connected]);
-
-  useEffect(() => {
-    if (!initialConnectionChecked) return;
-    
-    // Only auto-redirect if they were NOT connected on mount and just connected now
-    if (wallet.connected && !isMountConnected) {
-      if (showWalletGuide) {
-        setShowWalletGuide(false);
-      }
+    if (wallet.connected) {
+      setShowWalletGuide(false);
       setIsExiting(true);
       setTimeout(() => {
         router.push('/dashboard');
       }, 400);
     }
-  }, [wallet.connected, isMountConnected, initialConnectionChecked, showWalletGuide, router]);
+  }, [wallet.connected, router]);
 
   const handleLaunchApp = (e: React.MouseEvent) => {
     e.preventDefault();
