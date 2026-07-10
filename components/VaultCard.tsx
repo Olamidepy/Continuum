@@ -10,7 +10,8 @@ import {
   TrendingUp, 
   ArrowUpRight, 
   AlertTriangle,
-  Clock
+  Clock,
+  Sparkles
 } from 'lucide-react';
 import { Vault } from '../types';
 import { 
