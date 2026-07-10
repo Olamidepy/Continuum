@@ -34,6 +34,8 @@ interface ContinuumState {
   // Background simulation ticks
   simulateExternalActivity: () => void;
   addTransaction: (tx: Omit<Transaction, 'id' | 'timestamp'>) => void;
+  updateAvatar: (index: number, name: string) => void;
+  updateCustomAvatarName: (customName: string) => void;
 }
 
 const INITIAL_BLOCK_HEIGHT = 100000;
@@ -109,6 +111,7 @@ export const useContinuumStore = create<ContinuumState>()(
       connectWallet: (address, provider, stxBalance, sbtcBalance) => set((state) => ({
         isSimulation: false,
         wallet: {
+          ...state.wallet,
           connected: true,
           address,
           walletProvider: provider,
@@ -120,6 +123,7 @@ export const useContinuumStore = create<ContinuumState>()(
       disconnectWallet: () => set((state) => ({
         isSimulation: true,
         wallet: {
+          ...state.wallet,
           connected: false,
           address: null,
           walletProvider: null,
@@ -127,6 +131,21 @@ export const useContinuumStore = create<ContinuumState>()(
           sbtcBalance: 1.5 * 100_000_000,
         },
         vaults: state.vaults.filter(v => v.owner !== state.wallet.address) // Clear user vaults on disconnect
+      })),
+
+      updateAvatar: (index, name) => set((state) => ({
+        wallet: {
+          ...state.wallet,
+          avatarIndex: index,
+          avatarName: name
+        }
+      })),
+
+      updateCustomAvatarName: (customName) => set((state) => ({
+        wallet: {
+          ...state.wallet,
+          customAvatarName: customName
+        }
       })),
       
       advanceBlocks: (count) => {

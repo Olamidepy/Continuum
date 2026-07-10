@@ -28,6 +28,9 @@ export interface WalletSession {
   walletProvider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | null;
   stxBalance: number;
   sbtcBalance: number;
+  avatarIndex?: number;
+  avatarName?: string;
+  customAvatarName?: string;
 }
 
 export interface GlobalStats {

@@ -449,7 +449,7 @@ export default function LandingPage() {
         </h3>
         
         {/* Full-width Logo Ticker Banner */}
-        <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-3 shadow-[0_8px_30px_rgba(245,180,0,0.25)] border-y border-amber-400/20 overflow-hidden flex items-center">
+        <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-3 border-y border-amber-400/20 overflow-hidden flex items-center">
           <LogoLoop 
             logos={[
               {

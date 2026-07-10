@@ -18,7 +18,9 @@ import {
   History,
   AlertCircle,
   HelpCircle,
-  ShieldCheck
+  ShieldCheck,
+  Edit2,
+  Check
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
 import { useStacks } from '../../hooks/useStacks';
@@ -30,6 +32,8 @@ import {
 } from '../../utils/format';
 import VaultCard from '../../components/VaultCard';
 import WalletModal from '../../components/WalletModal';
+import AvatarImage from '../../components/AvatarImage';
+import AvatarSelectorModal from '../../components/AvatarSelectorModal';
 
 // Recharts dynamically imported to prevent SSR hydration warnings
 import {
@@ -66,7 +70,7 @@ function GenderNeutralAvatar({ seed }: { seed: string }) {
     </svg>,
     // Miniature Phone GIF Avatar
     <div className="w-full h-full bg-[#181818] flex items-center justify-center p-1" key="liphon">
-      <img src="/liphon17-6.gif" alt="Phone Visor" className="w-full h-full object-contain rounded-[8px]" />
+      <img src="/iPhone 17 - 6.gif" alt="Phone Visor" className="w-full h-full object-contain rounded-[8px]" />
     </div>,
     // Pixel Core
     <svg viewBox="0 0 100 100" className="w-full h-full fill-none text-blue-400" key="pixel">
@@ -97,7 +101,9 @@ export default function Dashboard() {
     isSimulation,
     toggleSimulation,
     advanceBlocks,
-    simulateExternalActivity
+    simulateExternalActivity,
+    updateAvatar,
+    updateCustomAvatarName
   } = useContinuumStore();
 
   const { wallet, createVault, disconnectWallet } = useStacks();
@@ -111,6 +117,10 @@ export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevConnected = useRef(false);
+
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState('');
 
   // Fire confetti when wallet transitions from disconnected -> connected
   useEffect(() => {
@@ -269,18 +279,88 @@ export default function Dashboard() {
             
             {/* Deterministic Profile Card */}
             <div className="p-2 pr-5 rounded-[18px] bg-[#121212] border border-white/5 flex items-center gap-3.5 shadow-xl">
-              <div className="w-11 h-11 rounded-[12px] overflow-hidden border border-white/10 bg-[#181818] shrink-0 flex items-center justify-center">
-                <GenderNeutralAvatar seed={wallet.address || 'SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4'} />
+              <div 
+                onClick={() => setIsAvatarModalOpen(true)}
+                className="group relative w-11 h-11 rounded-[12px] overflow-hidden border border-white/10 bg-[#181818] shrink-0 flex items-center justify-center cursor-pointer hover:border-[#F5B400] transition-colors"
+                title="Choose Avatar"
+              >
+                {wallet.avatarIndex !== undefined ? (
+                  <AvatarImage index={wallet.avatarIndex} className="w-full h-full" />
+                ) : (
+                  <GenderNeutralAvatar seed={wallet.address || 'SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4'} />
+                )}
+                {/* Hover Camera/Edit Overlay */}
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
+                  <span className="text-[8px] text-white font-bold tracking-wider font-mono">EDIT</span>
+                </div>
               </div>
               <div className="text-left">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-xs text-white tracking-tight">
-                    {wallet.address ? `Saver-${wallet.address.slice(2, 8)}` : 'Demo Saver'}
-                  </span>
-                  <span className="w-3.5 h-3.5 rounded-full bg-[#F5B400] text-black text-[8px] flex items-center justify-center font-extrabold select-none" title="Verified Saver">✓</span>
-                </div>
-                <p className="text-[9px] font-mono text-[#A0A0A0] mt-0.5">
-                  ID: {getUserId(wallet.address)}
+                {isEditingName ? (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      maxLength={18}
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && tempName.trim()) {
+                          updateCustomAvatarName(tempName.trim());
+                          setIsEditingName(false);
+                        } else if (e.key === 'Escape') {
+                          setIsEditingName(false);
+                        }
+                      }}
+                      className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-white text-xs font-bold outline-none focus:border-[#F5B400] max-w-[120px]"
+                      autoFocus
+                    />
+                    <button
+                      onClick={() => {
+                        if (tempName.trim()) {
+                          updateCustomAvatarName(tempName.trim());
+                          setIsEditingName(false);
+                        }
+                      }}
+                      className="p-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 cursor-pointer"
+                    >
+                      <Check className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 group/name">
+                    <span 
+                      onClick={() => {
+                        const name = wallet.customAvatarName || wallet.avatarName || (wallet.address ? `Saver-${wallet.address.slice(2, 8)}` : 'Demo Saver');
+                        setTempName(name);
+                        setIsEditingName(true);
+                      }}
+                      className="font-bold text-xs text-white tracking-tight cursor-pointer hover:text-[#F5B400] transition-colors"
+                      title="Edit Name"
+                    >
+                      {wallet.customAvatarName || wallet.avatarName || (wallet.address ? `Saver-${wallet.address.slice(2, 8)}` : 'Demo Saver')}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const name = wallet.customAvatarName || wallet.avatarName || (wallet.address ? `Saver-${wallet.address.slice(2, 8)}` : 'Demo Saver');
+                        setTempName(name);
+                        setIsEditingName(true);
+                      }}
+                      className="opacity-0 group-hover/name:opacity-100 p-0.5 text-[#A0A0A0] hover:text-white transition-opacity cursor-pointer"
+                      title="Edit Name"
+                    >
+                      <Edit2 className="w-2.5 h-2.5" />
+                    </button>
+                    <span className="w-3.5 h-3.5 rounded-full bg-[#F5B400] text-black text-[8px] flex items-center justify-center font-extrabold select-none" title="Verified Saver">✓</span>
+                  </div>
+                )}
+                <p className="text-[9px] font-mono text-[#A0A0A0] mt-0.5 flex items-center gap-2">
+                  <span>ID: {getUserId(wallet.address)}</span>
+                  <span className="text-white/20">•</span>
+                  <button 
+                    onClick={() => setIsAvatarModalOpen(true)}
+                    className="text-[#F5B400] hover:underline text-[9px] font-bold cursor-pointer font-sans"
+                  >
+                    Choose Avatar
+                  </button>
                 </p>
                 <div className="flex items-center gap-1 mt-0.5 text-[8px] text-emerald-400 font-bold">
                   <ShieldCheck className="w-2.5 h-2.5" />
@@ -705,6 +785,17 @@ export default function Dashboard() {
 
       {/* Wallet Connection Modal */}
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
+
+      {/* Avatar Selection Modal */}
+      <AvatarSelectorModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        currentIndex={wallet.avatarIndex}
+        currentName={wallet.customAvatarName || wallet.avatarName}
+        onSelect={(idx, name) => {
+          updateAvatar(idx, name);
+        }}
+      />
     </motion.div>
   );
 }
