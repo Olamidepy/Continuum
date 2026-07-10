@@ -1,4 +1,4 @@
-import { showConnect, openContractCall, AppConfig, UserSession } from '@stacks/connect';
+import { authenticate, openContractCall, AppConfig, UserSession } from '@stacks/connect';
 import { StacksTestnet } from '@stacks/network';
 import { 
   uintCV, 
@@ -49,9 +49,22 @@ export function useStacks() {
     }
   };
 
-  const handleConnectWallet = async (provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect') => {
+  const handleConnectWallet = async (walletName: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect') => {
     try {
-      showConnect({
+      const getProvider = () => {
+        if (typeof window === 'undefined') return undefined;
+        if (walletName === 'Leather') {
+          return (window as any).LeatherProvider || (window as any).StacksProvider || (window as any).stacksProvider;
+        }
+        if (walletName === 'Xverse') {
+          return (window as any).XverseProviders?.StacksProvider || (window as any).XverseProvider || (window as any).StacksProvider || (window as any).stacksProvider;
+        }
+        return (window as any).StacksProvider || (window as any).stacksProvider;
+      };
+
+      const provider = getProvider();
+
+      authenticate({
         userSession,
         appDetails: {
           name: 'Continuum Savings',
@@ -69,7 +82,7 @@ export function useStacks() {
               return;
             }
             const balances = await fetchBalances(address);
-            connectWallet(address, provider, balances.stx, balances.sbtc);
+            connectWallet(address, walletName, balances.stx, balances.sbtc);
           } catch (e) {
             console.error('Failed to parse Stacks user session data:', e);
           }
@@ -77,7 +90,7 @@ export function useStacks() {
         onCancel: () => {
           console.log('Wallet connection cancelled by user.');
         },
-      });
+      }, provider);
     } catch (err) {
       console.error('Wallet connection error:', err);
     }

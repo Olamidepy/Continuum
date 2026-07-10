@@ -7,14 +7,13 @@ import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
-  Sparkles, 
   Lock, 
   ArrowRight, 
   Check, 
   Cpu,
   ChevronDown,
   ExternalLink,
-  Coins
+  TrendingUp
 } from 'lucide-react';
 import MockupPhone from '../components/MockupPhone';
 import WalletModal from '../components/WalletModal';
@@ -125,7 +124,7 @@ export default function LandingPage() {
       desc: 'Commit STX or sBTC for 30, 90, 180, or 365 days. The locked assets remain fully protected by Clarity smart contracts.'
     },
     {
-      icon: <Sparkles className="w-5 h-5 text-[#F5B400]" />,
+      icon: <TrendingUp className="w-5 h-5 text-[#F5B400]" />,
       title: 'Penalty Redistribution',
       desc: 'Disciplined savers earn yield from participants who exit early. Early exit penalties are redistributed directly to the pool.'
     },
@@ -550,7 +549,7 @@ export default function LandingPage() {
             <div className="p-6 rounded-[24px] bg-[#121212]/80 border border-white/5 text-left w-full max-w-sm shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-bl-full pointer-events-none"></div>
               <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-2 font-mono flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" /> Simulated Yield Output
+                <TrendingUp className="w-3.5 h-3.5" /> Simulated Yield Output
               </span>
               <h4 className="text-base font-bold text-white mb-4">Savings Pool Simulation</h4>
               
@@ -607,7 +606,7 @@ export default function LandingPage() {
 
           <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400] mb-4">
-              <Sparkles className="w-5 h-5" />
+              <Cpu className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-white text-base">Nakamoto Upgrade</h3>
             <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
@@ -617,7 +616,7 @@ export default function LandingPage() {
 
           <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400] mb-4">
-              <Coins className="w-5 h-5" />
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <h3 className="font-bold text-white text-base">sBTC Native Integration</h3>
             <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">

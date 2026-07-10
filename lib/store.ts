@@ -107,6 +107,7 @@ export const useContinuumStore = create<ContinuumState>()(
       toggleSimulation: (val) => set({ isSimulation: val }),
       
       connectWallet: (address, provider, stxBalance, sbtcBalance) => set((state) => ({
+        isSimulation: false,
         wallet: {
           connected: true,
           address,
@@ -117,6 +118,7 @@ export const useContinuumStore = create<ContinuumState>()(
       })),
       
       disconnectWallet: () => set((state) => ({
+        isSimulation: true,
         wallet: {
           connected: false,
           address: null,

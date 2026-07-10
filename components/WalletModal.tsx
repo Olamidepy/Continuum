@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { X, ArrowRight, ShieldCheck, CheckCircle2, Loader2, ExternalLink } from 'lucide-react';
 import { useContinuumStore } from '../lib/store';
+import { showConnect, AppConfig, UserSession } from '@stacks/connect';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -168,13 +169,10 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
       return;
     }
 
-    // Leather & Xverse → always call showConnect() directly.
-    // If the extension is installed it opens its popup immediately.
-    // If not installed, Stacks Connect v8 redirects to the install page.
+    // Always attempt live connection using Stacks Connect!
     setPhase('connecting');
 
     try {
-      const { showConnect, AppConfig, UserSession } = await import('@stacks/connect');
       const appConfig = new AppConfig(['store_write', 'publish_data']);
       const userSession = new UserSession({ appConfig });
 
@@ -209,7 +207,7 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
         setPhase('select');
         setSelectedWallet('');
       } else {
-        // Extension might not have loaded properly — show install screen
+        // Only go to install page if Stacks Connect fails to trigger
         console.error('Connection error:', err);
         setInstallUrl(INSTALL_URLS[walletName] || '');
         setPhase('install');
@@ -225,28 +223,13 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
     onClose();
   };
 
-  // Check and trigger Leather extension immediately when modal opens
+  // Initialize state when the modal opens
   useEffect(() => {
     if (isOpen) {
       setCountdown(3);
       confettiFired.current = false;
-
-      // Check if Leather extension is installed
-      const isLeatherInstalled = typeof window !== 'undefined' && (
-        !!(window as any).LeatherProvider || 
-        !!(window as any).StacksProvider ||
-        !!(window as any).stacksProvider
-      );
-
-      if (isLeatherInstalled) {
-        // Trigger Leather connection immediately
-        handleSelectWallet('Leather');
-      } else {
-        // Show "Leather Not Detected" screen immediately
-        setSelectedWallet('Leather');
-        setInstallUrl(INSTALL_URLS.Leather);
-        setPhase('install');
-      }
+      setPhase('select');
+      setSelectedWallet('');
     }
     return () => {
       if (countdownRef.current) clearInterval(countdownRef.current);
