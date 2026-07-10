@@ -182,7 +182,7 @@ export default function VaultCard({ vault }: VaultCardProps) {
           {/* Reward Accrual display */}
           <div className="flex justify-between items-center p-3 rounded-xl bg-[#121212] border border-white/5">
             <div className="flex items-center gap-2">
-              <div className="w-6.5 h-6.5 rounded bg-amber-500/10 flex items-center justify-center text-[#F5B400]">
+              <div className="w-[26px] h-[26px] rounded bg-amber-500/10 flex items-center justify-center text-[#F5B400]">
                 <Sparkles className="w-3.5 h-3.5" />
               </div>
               <div>

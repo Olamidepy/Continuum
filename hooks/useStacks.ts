@@ -1,5 +1,5 @@
-import { connect, showConnect, openContractCall, AppConfig, UserSession } from '@stacks/connect';
-import { StacksTestnet, StacksMainnet } from '@stacks/network';
+import { showConnect, openContractCall, AppConfig, UserSession } from '@stacks/connect';
+import { StacksTestnet } from '@stacks/network';
 import { 
   uintCV, 
   stringAsciiCV, 
@@ -51,25 +51,6 @@ export function useStacks() {
 
   const handleConnectWallet = async (provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect') => {
     try {
-      // For WalletConnect protocol connection
-      if (provider === 'WalletConnect') {
-        const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '3fcc6bba6f1b4020a6e0339d6cf12345';
-        const res = await connect({
-          walletConnectProjectId,
-        });
-        
-        if (res && res.addresses && res.addresses.length > 0) {
-          const address = res.addresses[0].address;
-          const balances = await fetchBalances(address);
-          connectWallet(address, provider, balances.stx, balances.sbtc);
-        } else {
-          // Fallback if res contains empty addresses
-          connectWallet('SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4', provider, 25000 * 1_000_000, 1.5 * 100_000_000);
-        }
-        return;
-      }
-
-      // For Leather, Xverse, Asigna, and Fordefi browser extensions:
       showConnect({
         userSession,
         appDetails: {
@@ -79,25 +60,26 @@ export function useStacks() {
         onFinish: async () => {
           try {
             const userData = userSession.loadUserData();
-            const address = userData.profile?.stxAddress?.testnet || 
-                            userData.profile?.stxAddress?.mainnet || 
-                            'SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4';
+            const address =
+              userData.profile?.stxAddress?.testnet ||
+              userData.profile?.stxAddress?.mainnet ||
+              '';
+            if (!address) {
+              console.warn('No Stacks address found in user session.');
+              return;
+            }
             const balances = await fetchBalances(address);
             connectWallet(address, provider, balances.stx, balances.sbtc);
           } catch (e) {
-            console.warn('Failed to parse user data, executing simulated connection:', e);
-            connectWallet('SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4', provider, 25000 * 1_000_000, 1.5 * 100_000_000);
+            console.error('Failed to parse Stacks user session data:', e);
           }
         },
         onCancel: () => {
-          console.warn('User closed Stacks connect window, executing simulated connection for testing:');
-          connectWallet('SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4', provider, 25000 * 1_000_000, 1.5 * 100_000_000);
-        }
+          console.log('Wallet connection cancelled by user.');
+        },
       });
     } catch (err) {
-      console.error('Wallet connection failed:', err);
-      // Fail-safe simulated connect fallback
-      connectWallet('SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4', provider, 25000 * 1_000_000, 1.5 * 100_000_000);
+      console.error('Wallet connection error:', err);
     }
   };
 

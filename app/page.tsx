@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -10,45 +10,65 @@ import {
   Sparkles, 
   Lock, 
   ArrowRight, 
-  Coins, 
-  ArrowDownRight, 
   Check, 
-  HelpCircle,
   Cpu,
-  Layers,
   ChevronDown,
-  ExternalLink
+  ExternalLink,
+  Coins
 } from 'lucide-react';
 import MockupPhone from '../components/MockupPhone';
 import WalletModal from '../components/WalletModal';
 import { useContinuumStore } from '../lib/store';
 import { formatAddress } from '../utils/format';
+import TypingText from '../components/TypingText';
+import ScrollReveal from '../components/ScrollReveal';
 
 const LogoLoop = dynamic(() => import('../components/LogoLoop'), { ssr: false });
 const SplitText = dynamic(() => import('../components/SplitText'), { ssr: false });
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
-};
+// Hook: fires once when the element first enters the viewport
+function useInView(threshold = 0.3) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
 
-const wordVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      damping: 15,
-      stiffness: 100,
-    },
-  },
-};
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, inView };
+}
+
+// Wraps TypingText — starts when section scrolls into view, then loops forever
+function InViewTyping({ text, className, delay = 28 }: { text: string; className?: string; delay?: number }) {
+  const { ref, inView } = useInView(0.2);
+  return (
+    <div ref={ref} className={className}>
+      {inView && (
+        <TypingText
+          text={text}
+          delay={delay}
+          repeat={true}
+          grow
+          hideCursorOnComplete={false}
+          smooth={false}
+          waitTime={1200}
+        />
+      )}
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
@@ -58,18 +78,6 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showWalletGuide, setShowWalletGuide] = useState(false);
 
-  // Redirect to dashboard once wallet connects (wallet.connected is never persisted,
-  // so this only fires when the user actively connects during this session)
-  useEffect(() => {
-    if (wallet.connected) {
-      setShowWalletGuide(false);
-      setIsExiting(true);
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 400);
-    }
-  }, [wallet.connected, router]);
-
   const handleLaunchApp = (e: React.MouseEvent) => {
     e.preventDefault();
     if (wallet.connected) {
@@ -78,7 +86,8 @@ export default function LandingPage() {
         router.push('/dashboard');
       }, 400);
     } else {
-      setShowWalletGuide(true);
+      setShowWalletGuide(false);
+      setIsWalletOpen(true);
     }
   };
 
@@ -132,8 +141,6 @@ export default function LandingPage() {
     }
   ];
 
-  const headingWords = ["Time", "Builds", "Wealth."];
-
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -147,16 +154,16 @@ export default function LandingPage() {
 
       {/* Header / Nav */}
       <header className="sticky top-0 z-40 bg-[#090909]/60 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-24 flex items-center justify-between">
+          <Link href="/" className="flex items-center shrink-0">
             <img 
               src="/fArtboard 2 copy 2.png" 
               alt="Continuum Logo" 
-              className="w-[240px] h-auto object-contain" 
+              className="w-[170px] sm:w-[210px] md:w-[240px] h-auto object-contain" 
             />
           </Link>
           
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3 sm:gap-6">
             <nav className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">Features</a>
               <a href="#how-it-works" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">How It Works</a>
@@ -164,34 +171,28 @@ export default function LandingPage() {
               <a href="#faq" className="text-xs text-[#A0A0A0] hover:text-white transition-colors">FAQ</a>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {wallet.connected ? (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={disconnectWallet}
-                    className="px-4 py-2 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-xs font-semibold hover:bg-red-900/30 transition-all cursor-pointer"
-                  >
-                    {formatAddress(wallet.address)} (Disconnect)
-                  </button>
-                </div>
+                <button
+                  onClick={disconnectWallet}
+                  className="px-3 py-2 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-[10px] sm:text-xs font-semibold hover:bg-red-900/30 transition-all cursor-pointer"
+                >
+                  <span className="hidden sm:inline">{formatAddress(wallet.address)} (Disconnect)</span>
+                  <span className="sm:hidden">Disconnect</span>
+                </button>
               ) : (
                 <div className="relative">
                   <button
                     onClick={() => setIsWalletOpen(true)}
-                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all cursor-pointer relative z-30"
+                    className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black text-[10px] sm:text-xs font-bold shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all cursor-pointer relative z-30 whitespace-nowrap"
                   >
                     Connect Wallet
                   </button>
-                  
-                  {/* Beeping Opacity Red Circle & Tooltip */}
                   {showWalletGuide && (
                     <>
-                      {/* Red pulsing/beeping aura */}
                       <div className="absolute inset-0 -m-1.5 rounded-2xl border-2 border-red-500 animate-ping opacity-75 pointer-events-none z-20" />
                       <div className="absolute inset-0 -m-1.5 rounded-2xl border border-red-500 animate-pulse pointer-events-none z-20" />
-                      
-                      {/* Instruction Tooltip bubble */}
-                      <div className="absolute top-14 right-0 bg-red-950/95 border border-red-500/50 rounded-xl px-4 py-2.5 text-xs text-red-200 shadow-xl min-w-[200px] text-center font-mono z-40 animate-bounce">
+                      <div className="absolute top-12 right-0 bg-red-950/95 border border-red-500/50 rounded-xl px-3 py-2 text-[10px] sm:text-xs text-red-200 shadow-xl min-w-[160px] sm:min-w-[200px] text-center font-mono z-40 animate-bounce">
                         <div className="absolute -top-1.5 right-6 w-3 h-3 bg-[#180303] border-t border-l border-red-500/50 transform rotate-45" />
                         <span className="font-bold text-red-400">ALERT:</span> kindly connect your wallet
                       </div>
@@ -209,16 +210,15 @@ export default function LandingPage() {
         className="w-full bg-cover bg-center bg-no-repeat relative overflow-hidden"
         style={{ backgroundImage: 'url(/Back.png)' }}
       >
-        {/* Subtle grid mesh overlay to enhance depth */}
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(9,9,9,0)_70%,#090909_100%)] pointer-events-none z-0"></div>
 
         {/* Hero Section */}
-        <section className="relative max-w-7xl mx-auto px-6 pt-32 pb-8 md:pt-40 md:pb-24 lg:pt-44 lg:pb-28 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center z-10">
-          <div className="lg:col-span-5 space-y-6 flex flex-col items-start text-left relative z-20">
+        <section className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-6 sm:pt-20 sm:pb-12 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center z-10">
+          <div className="lg:col-span-5 space-y-5 sm:space-y-6 flex flex-col items-start text-left relative z-20">
             <SplitText
               text="Time Builds Wealth."
               tag="h1"
-              className="text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.1]"
               textAlign="left"
               delay={50}
               duration={1.25}
@@ -227,7 +227,7 @@ export default function LandingPage() {
             <SplitText
               text="Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields."
               tag="p"
-              className="text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
+              className="text-sm sm:text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
               textAlign="left"
               delay={20}
               duration={1}
@@ -237,20 +237,20 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-wrap justify-start gap-4 pt-2"
+              className="flex flex-wrap justify-start gap-3 sm:gap-4 pt-2"
             >
               <Link 
                 href="/dashboard"
                 onClick={handleLaunchApp}
-                className="px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-xs tracking-wider shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all flex items-center gap-1.5 w-fit"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#F5B400] to-[#FFD54A] text-black font-bold text-xs tracking-wider shadow-[0_4px_12px_rgba(245,180,0,0.15)] hover:opacity-90 transition-all flex items-center gap-1.5 w-fit"
               >
                 Launch App <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </motion.div>
           </div>
 
-          {/* Floating Mockup Phone Centerpiece */}
-          <div className="lg:col-span-7 flex justify-center lg:justify-end -mt-12 lg:-mt-32 -mb-48 md:-mb-56 relative z-10 lg:translate-x-12">
+          {/* Floating Mockup Phone */}
+          <div className="flex lg:col-span-7 justify-center lg:justify-end relative z-10 w-full mt-8 lg:mt-0">
             <MockupPhone />
           </div>
         </section>
@@ -258,7 +258,6 @@ export default function LandingPage() {
 
       {/* Middle Sections with Grid Background */}
       <div className="relative w-full overflow-hidden">
-        {/* Background Grid Overlay */}
         <div 
           className="absolute inset-0 pointer-events-none opacity-[0.15] z-0"
           style={{ 
@@ -274,35 +273,41 @@ export default function LandingPage() {
       <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest">Core Features</span>
-          <h2 className="text-3xl font-bold tracking-tight">Built for Uncompromising Savers</h2>
-          <p className="text-sm text-[#A0A0A0]">We combine cryptographic commitment with protocol incentives to encourage long-term focus.</p>
+          <h2 className="text-3xl font-bold tracking-tight">
+            <InViewTyping text="Built for Uncompromising Savers" delay={60} />
+          </h2>
+          <p className="text-sm text-[#A0A0A0]">
+            We combine cryptographic commitment with protocol incentives to encourage long-term focus.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           {/* Left Column: 2x2 Grid of 4 Boxes */}
-          <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 order-2 lg:order-1">
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 order-2 lg:order-1">
             {features.map((f, i) => (
-              <div key={i} className="p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-4 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300 shadow-md">
+              <div key={i} className="p-4 sm:p-6 rounded-[20px] bg-[#121212] border border-white/5 flex flex-col gap-3 sm:gap-4 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300 shadow-md">
                 <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400]">
                   {f.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-base">{f.title}</h3>
-                  <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">{f.desc}</p>
+                  <h3 className="font-bold text-white text-sm sm:text-base">{f.title}</h3>
+                  <p className="text-xs text-[#A0A0A0] mt-1.5 leading-relaxed">{f.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Right Column: Animated GIF Showcase */}
-          <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2 -mt-8 lg:-mt-16">
-            <div className="relative w-full max-w-[500px] aspect-[3.5/4] flex items-center justify-center overflow-hidden">
-              <img 
-                src="/iPhone 17 - 6.gif" 
-                alt="Continuum Showcase" 
-                className="w-full h-auto object-contain scale-100 hover:scale-105 transition-transform duration-700 select-none pointer-events-none" 
-              />
-            </div>
+          {/* Right Column: Mockup Image Showcase */}
+          <div className="lg:col-span-6 flex justify-center lg:justify-end items-center h-full order-1 lg:order-2">
+            <ScrollReveal className="w-full flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[340px] sm:max-w-[480px] lg:max-w-[500px] flex items-center justify-center">
+                <img 
+                  src="/mockup.png" 
+                  alt="Continuum Vaults Mockup" 
+                  className="w-full h-auto object-contain select-none pointer-events-auto cursor-pointer transition-transform duration-1000 ease-out hover:scale-[1.03]" 
+                />
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -311,7 +316,9 @@ export default function LandingPage() {
       <section id="how-it-works" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-[#121212]/30 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Workflow</span>
-          <h2 className="text-3xl font-bold tracking-tight">Three Steps to Disciplined Wealth</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            <InViewTyping text="Three Steps to Disciplined Wealth" delay={60} />
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -352,8 +359,8 @@ export default function LandingPage() {
 
       {/* Why Continuum */}
       <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center transition-transform duration-500 ease-out hover:-translate-y-2">
-        <div className="lg:col-span-5 flex justify-center">
-          <div className="p-8 rounded-[24px] bg-[#121212]/80 border border-white/5 text-left relative overflow-hidden w-full max-w-sm shadow-xl hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
+        <div className="lg:col-span-5 flex justify-center order-2 lg:order-1">
+          <div className="p-6 sm:p-8 rounded-[20px] sm:rounded-[24px] bg-[#121212]/80 border border-white/5 text-left relative overflow-hidden w-full max-w-sm shadow-xl hover:border-[#F5B400]/20 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#F5B400]/5 rounded-bl-full pointer-events-none"></div>
             <span className="text-[#F5B400] font-bold text-xs uppercase tracking-wider block mb-2 font-mono">Discipline Multipliers</span>
             <h4 className="text-lg font-bold text-white mb-4">Maturity Weightings</h4>
@@ -373,9 +380,11 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="lg:col-span-7 space-y-6 text-left">
+        <div className="lg:col-span-7 space-y-6 text-left order-1 lg:order-2">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Protocol Philosophy</span>
-          <h2 className="text-4xl font-bold tracking-tight text-white leading-tight">Escape the Market Clutter. Commit to Accumulation.</h2>
+          <h2 className="text-4xl font-bold tracking-tight text-white leading-tight">
+            <InViewTyping text="Escape the Market Clutter. Commit to Accumulation." delay={50} />
+          </h2>
           <p className="text-xs md:text-sm text-[#A0A0A0] leading-relaxed">
             Market volatility encourages short-term, emotional trades that erode portfolio value. Continuum introduces an immutable time-lock commitment. By enforcing discipline with code, savers are isolated from transient market impulses and rewarded for long-term consistency.
           </p>
@@ -401,10 +410,11 @@ export default function LandingPage() {
       <section id="security" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 bg-[#121212]/30 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-left max-w-3xl">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Security Architecture</span>
-          <h2 className="text-4xl font-bold tracking-tight text-white mt-2 mb-6">Designed for Absolute Custodial Integrity</h2>
+          <h2 className="text-4xl font-bold tracking-tight text-white mt-2 mb-6">
+            <InViewTyping text="Designed for Absolute Custodial Integrity" delay={55} />
+          </h2>
           <p className="text-sm text-[#A0A0A0] leading-relaxed">
-            Continuum vaults are governed entirely by Stacks Clarity smart contracts. Clarity is a decidable language which prevents common EVM exploits like reentrancy and integer overflows. 
-            The contract logic is transparent, deterministic, and immutable. No admin keys can withdraw or freeze your funds.
+            Continuum vaults are governed entirely by Stacks Clarity smart contracts. Clarity is a decidable language which prevents common EVM exploits like reentrancy and integer overflows. The contract logic is transparent, deterministic, and immutable. No admin keys can withdraw or freeze your funds.
           </p>
         </div>
 
@@ -433,7 +443,9 @@ export default function LandingPage() {
       {/* Supported Wallets */}
       <section className="w-full py-16 border-t border-white/5 text-center overflow-hidden transition-transform duration-500 ease-out hover:-translate-y-2">
         <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Supported Wallets</span>
-        <h3 className="text-2xl font-bold tracking-tight text-white mt-2 mb-16">Connect Securely via Bitcoin Layer 2 Integrations</h3>
+        <h3 className="text-2xl font-bold tracking-tight text-white mt-2 mb-16">
+          <InViewTyping text="Connect Securely via Bitcoin Layer 2 Integrations" delay={55} />
+        </h3>
         
         {/* Full-width Logo Ticker Banner */}
         <div className="w-screen relative left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F5B400] via-[#FFD54A] to-[#F5B400] py-3 shadow-[0_8px_30px_rgba(245,180,0,0.25)] border-y border-amber-400/20 overflow-hidden flex items-center">
@@ -501,11 +513,127 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Protocol Yield Architecture */}
+      <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Yield Architecture</span>
+            <h2 className="text-4xl font-bold tracking-tight text-white leading-tight">
+              <InViewTyping text="The Mechanics of Risk-Free Commitment Yields" delay={55} />
+            </h2>
+            <p className="text-xs md:text-sm text-[#A0A0A0] leading-relaxed">
+              Unlike traditional DeFi protocols that rely on risky lending markets, liquidation loops, or inflationary token emissions, Continuum's yield is derived entirely from protocol-enforced commitment discipline. When a depositor breaks their lock duration early, they forfeit a portion of their capital, which is directly routed back to the savers who remain committed. This creates a zero-liquidation, non-custodial, and highly sustainable yield environment.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="p-4 rounded-xl bg-[#121212] border border-white/5 text-left">
+                <span className="text-[#F5B400] text-xs font-bold font-mono">10%</span>
+                <h4 className="font-bold text-white text-xs mt-1">Exit Penalty</h4>
+                <p className="text-[10px] text-[#A0A0A0] mt-1 leading-relaxed">Deducted from the principal of any savers withdrawing early before lock expiry.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#121212] border border-white/5 text-left">
+                <span className="text-emerald-400 text-xs font-bold font-mono">80%</span>
+                <h4 className="font-bold text-white text-xs mt-1">Redistributed</h4>
+                <p className="text-[10px] text-[#A0A0A0] mt-1 leading-relaxed">Instantly streamed to remaining savers, scaling dynamically via O(1) gas logic.</p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#121212] border border-white/5 text-left">
+                <span className="text-blue-400 text-xs font-bold font-mono">20%</span>
+                <h4 className="font-bold text-white text-xs mt-1">Reserve Treasury</h4>
+                <p className="text-[10px] text-[#A0A0A0] mt-1 leading-relaxed">Routed to the reserve treasury to support protocol security and development grants.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 flex justify-center">
+            {/* Visual Penalty Yield Calculator Simulation */}
+            <div className="p-6 rounded-[24px] bg-[#121212]/80 border border-white/5 text-left w-full max-w-sm shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-bl-full pointer-events-none"></div>
+              <span className="text-emerald-400 font-bold text-xs uppercase tracking-wider block mb-2 font-mono flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Simulated Yield Output
+              </span>
+              <h4 className="text-base font-bold text-white mb-4">Savings Pool Simulation</h4>
+              
+              <div className="space-y-4 text-xs">
+                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                  <span className="text-[#A0A0A0]">Initial Deposit</span>
+                  <span className="text-white font-semibold font-mono">10,000 STX</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                  <span className="text-[#A0A0A0]">Lock Commitment</span>
+                  <span className="text-white font-semibold">180 Days (1.5x)</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                  <span className="text-[#A0A0A0]">Pool Early Exits</span>
+                  <span className="text-white font-semibold font-mono">140,000 STX</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/5">
+                  <span className="text-emerald-400 font-medium">Earned Penalty Shares</span>
+                  <span className="text-emerald-400 font-bold font-mono">+1,248.50 STX</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 text-sm font-bold">
+                  <span className="text-white">Estimated Net APR</span>
+                  <span className="text-[#F5B400] font-mono">12.48% APR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Bitcoin Security Alignment */}
+      <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2 bg-[#121212]/10">
+        <div className="text-center max-w-xl mx-auto mb-16 space-y-3">
+          <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">Security Alignment</span>
+          <h2 className="text-3xl font-bold tracking-tight">
+            <InViewTyping text="Deep Stacks L2 & Bitcoin Consensus Safeguards" delay={55} />
+          </h2>
+          <p className="text-sm text-[#A0A0A0]">
+            Every smart contract interaction on Continuum is anchored onto the most secure decentralized computing network in the world.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
+            <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400] mb-4">
+              <Lock className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-white text-base">Bitcoin Write Finality</h3>
+            <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
+              Transactions are bundled and settled directly onto the Stacks Layer 2, which writes its state history into Bitcoin blocks, ensuring full mathematical immutability.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
+            <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400] mb-4">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-white text-base">Nakamoto Upgrade</h3>
+            <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
+              Continuum leverages Stacks' Nakamoto upgrade to deliver 100% Bitcoin finality in under 5 seconds, combining high transaction speed with BTC security.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-[20px] bg-[#121212] border border-white/5 text-left hover:border-[#F5B400]/25 hover:shadow-[0_0_20px_rgba(245,180,0,0.12)] transition-all duration-300">
+            <div className="w-10 h-10 rounded-lg bg-[#181818] border border-white/5 flex items-center justify-center text-[#F5B400] mb-4">
+              <Coins className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-white text-base">sBTC Native Integration</h3>
+            <p className="text-xs text-[#A0A0A0] mt-2 leading-relaxed">
+              Deposit native-wrapped sBTC into vaults. Keep your Bitcoin yielding rewards natively without relying on centralized wrap bridges or synthetic wrappers.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section id="faq" className="max-w-3xl mx-auto px-6 py-20 border-t border-white/5 transition-transform duration-500 ease-out hover:-translate-y-2">
         <div className="text-center mb-12">
           <span className="text-[#F5B400] text-xs font-bold uppercase tracking-widest font-mono">FAQ</span>
-          <h2 className="text-3xl font-bold tracking-tight mt-1 text-white">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold tracking-tight mt-1 text-white">
+            <InViewTyping text="Frequently Asked Questions" delay={60} />
+          </h2>
         </div>
 
         <div className="space-y-4">

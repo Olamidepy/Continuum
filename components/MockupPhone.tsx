@@ -5,24 +5,24 @@ import { motion } from 'framer-motion';
 export default function MockupPhone() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 0, scale: 1.05 }}
+      initial={{ opacity: 0, y: 0, scale: 1.0 }}
       animate={{ 
         opacity: 1, 
-        y: [0, -18, 0],
-        scale: [1.2, 1.24, 1.2],
+        y: [0, -10, 0],
+        scale: [1.0, 1.03, 1.0],
       }}
       transition={{
         opacity: { duration: 1.2, ease: 'easeOut' },
         y: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
         scale: { duration: 6, repeat: Infinity, ease: 'easeInOut' }
       }}
-      className="relative mx-auto w-full max-w-[1280px] aspect-[4/3] flex items-center justify-center origin-center lg:origin-right"
+      className="relative mx-auto lg:mr-0 lg:ml-auto w-full max-w-[295px] xs:max-w-[355px] sm:max-w-[460px] lg:max-w-[720px] flex items-center justify-center origin-center lg:origin-right"
     >
-      {/* Mockup Image Frame */}
+      {/* Premium Showcase GIF Frame */}
       <img
-        src="/mockup.png"
-        alt="Continuum Vaults Mockup"
-        className="w-full h-full object-contain pointer-events-none drop-shadow-[0_20px_50px_rgba(245,180,0,0.15)]"
+        src="/iPhone 17 - 6.gif"
+        alt="Continuum Premium Showcase"
+        className="w-full h-auto object-contain pointer-events-none"
       />
     </motion.div>
   );

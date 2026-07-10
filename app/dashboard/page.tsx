@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, 
   Wallet, 
@@ -53,12 +55,42 @@ export default function Dashboard() {
 
   const { wallet, createVault, disconnectWallet } = useStacks();
 
+  const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [assetType, setAssetType] = useState<'STX' | 'sBTC'>('STX');
   const [lockAmount, setLockAmount] = useState('');
   const [lockDuration, setLockDuration] = useState('12960'); // Default 90 days
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const prevConnected = useRef(false);
+
+  // Fire confetti when wallet transitions from disconnected -> connected
+  useEffect(() => {
+    if (wallet.connected && !prevConnected.current) {
+      setShowCelebration(true);
+      // Burst confetti in brand yellow + white
+      const fire = (particleRatio: number, opts: confetti.Options) => {
+        confetti({
+          ...opts,
+          origin: { y: 0.6 },
+          colors: ['#F5B400', '#FFD54A', '#ffffff', '#fffbe6'],
+          particleCount: Math.floor(200 * particleRatio),
+        });
+      };
+      fire(0.25, { spread: 26, startVelocity: 55 });
+      fire(0.2,  { spread: 60 });
+      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+      fire(0.1,  { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+      fire(0.1,  { spread: 120, startVelocity: 45 });
+      setTimeout(() => setShowCelebration(false), 4000);
+    }
+    prevConnected.current = wallet.connected;
+  }, [wallet.connected]);
+
+  const handleBack = () => {
+    router.push('/');
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -153,17 +185,40 @@ export default function Dashboard() {
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#F5B400]/5 rounded-full blur-[100px] pointer-events-none"></div>
 
+      {/* 🎉 Wallet Connected Celebration Toast */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0, y: -40, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none"
+          >
+            <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-[#111] border border-[#F5B400]/40 shadow-[0_8px_40px_rgba(245,180,0,0.3)] backdrop-blur-xl">
+              <div className="text-2xl">🎉</div>
+              <div>
+                <p className="text-white font-bold text-sm tracking-tight">Wallet Connected!</p>
+                <p className="text-[#F5B400] text-xs mt-0.5 font-mono">{wallet.address ? `${wallet.address.slice(0, 8)}...${wallet.address.slice(-6)}` : ''}</p>
+              </div>
+              <div className="text-2xl">🎊</div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header wrapper (no grid background) */}
       <div className="w-full border-b border-white/5 bg-[#090909]">
         <div className="max-w-7xl mx-auto px-6">
           <header className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link 
-              href="/" 
-              className="w-10 h-10 rounded-full bg-[#121212] border border-white/5 flex items-center justify-center text-[#A0A0A0] hover:text-white hover:border-white/10 transition-colors"
+            <button 
+              onClick={handleBack}
+              className="w-10 h-10 rounded-full bg-[#121212] border border-white/5 flex items-center justify-center text-[#A0A0A0] hover:text-white hover:border-white/10 transition-colors cursor-pointer"
+              title="Back to Homepage"
             >
               <ArrowLeft className="w-4 h-4" />
-            </Link>
+            </button>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 Continuum Savings Vaults

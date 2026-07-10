@@ -619,26 +619,37 @@ export const useContinuumStore = create<ContinuumState>()(
         vaults: state.vaults,
         transactions: state.transactions,
       }),
-      // Custom deserialization for bigint
+      // Custom deserialization for bigint — SSR-safe (guards against server-side localStorage access)
       storage: {
         getItem: (name) => {
-          const raw = localStorage.getItem(name);
-          if (!raw) return null;
-          const parsed = JSON.parse(raw);
-          if (parsed.state) {
-            if (parsed.state.accRewardPerShareSTX) {
-              parsed.state.accRewardPerShareSTX = BigInt(parsed.state.accRewardPerShareSTX);
+          if (typeof window === 'undefined') return null;
+          try {
+            const raw = localStorage.getItem(name);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (parsed.state) {
+              if (parsed.state.accRewardPerShareSTX) {
+                parsed.state.accRewardPerShareSTX = BigInt(parsed.state.accRewardPerShareSTX);
+              }
+              if (parsed.state.accRewardPerShareSBTC) {
+                parsed.state.accRewardPerShareSBTC = BigInt(parsed.state.accRewardPerShareSBTC);
+              }
             }
-            if (parsed.state.accRewardPerShareSBTC) {
-              parsed.state.accRewardPerShareSBTC = BigInt(parsed.state.accRewardPerShareSBTC);
-            }
+            return parsed;
+          } catch {
+            return null;
           }
-          return parsed;
         },
         setItem: (name, value) => {
-          localStorage.setItem(name, JSON.stringify(value));
+          if (typeof window === 'undefined') return;
+          try {
+            localStorage.setItem(name, JSON.stringify(value));
+          } catch { /* ignore quota errors */ }
         },
-        removeItem: (name) => localStorage.removeItem(name),
+        removeItem: (name) => {
+          if (typeof window === 'undefined') return;
+          localStorage.removeItem(name);
+        },
       }
     }
   )
