@@ -77,17 +77,19 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showWalletGuide, setShowWalletGuide] = useState(false);
 
+  useEffect(() => {
+    router.prefetch('/dashboard');
+  }, [router]);
+
   const handleLaunchApp = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (wallet.connected) {
-      setIsExiting(true);
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 400);
-    } else {
-      setShowWalletGuide(false);
-      setIsWalletOpen(true);
+    if (!wallet.connected) {
+      useContinuumStore.setState({ isSimulation: true });
     }
+    setIsExiting(true);
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 400);
   };
 
   const toggleFaq = (index: number) => {

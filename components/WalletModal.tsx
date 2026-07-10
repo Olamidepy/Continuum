@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { X, ArrowRight, ShieldCheck, CheckCircle2, Loader2, ExternalLink } from 'lucide-react';
 import { useContinuumStore } from '../lib/store';
-import { showConnect, AppConfig, UserSession } from '@stacks/connect';
+import { authenticate, AppConfig, UserSession } from '@stacks/connect';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -109,13 +109,13 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
 
   const [phase, setPhase] = useState<ModalPhase>('select');
   const [selectedWallet, setSelectedWallet] = useState<string>('');
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(5);
   const [installUrl, setInstallUrl] = useState('');
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const confettiFired = useRef(false);
 
   const startCountdown = () => {
-    let remaining = 3;
+    let remaining = 5;
     setCountdown(remaining);
     countdownRef.current = setInterval(() => {
       remaining -= 1;
@@ -129,6 +129,9 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   };
 
   const handleSuccess = (address: string, provider: string) => {
+    // Prefetch dashboard page for instant redirection transition
+    router.prefetch('/dashboard');
+
     // Fetch real testnet balances
     fetch(`https://api.testnet.hiro.so/v2/accounts/${address}/balances`)
       .then((r) => r.ok ? r.json() : null)
@@ -176,8 +179,22 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
       const appConfig = new AppConfig(['store_write', 'publish_data']);
       const userSession = new UserSession({ appConfig });
 
+      // Resolve the injected provider object for the selected wallet
+      const getProvider = () => {
+        if (typeof window === 'undefined') return undefined;
+        if (walletName === 'Leather') {
+          return (window as any).LeatherProvider || (window as any).StacksProvider || (window as any).stacksProvider;
+        }
+        if (walletName === 'Xverse') {
+          return (window as any).XverseProviders?.StacksProvider || (window as any).XverseProvider || (window as any).StacksProvider || (window as any).stacksProvider;
+        }
+        return (window as any).StacksProvider || (window as any).stacksProvider;
+      };
+
+      const provider = getProvider();
+
       await new Promise<void>((resolve, reject) => {
-        showConnect({
+        authenticate({
           userSession,
           appDetails: {
             name: 'Continuum Savings',
@@ -198,7 +215,7 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
             } catch (e) { reject(e); }
           },
           onCancel: () => reject(new Error('cancelled')),
-        });
+        }, provider);
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
@@ -226,7 +243,7 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   // Initialize state when the modal opens
   useEffect(() => {
     if (isOpen) {
-      setCountdown(3);
+      setCountdown(5);
       confettiFired.current = false;
       setPhase('select');
       setSelectedWallet('');
@@ -494,7 +511,7 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                           strokeDasharray={`${2 * Math.PI * 24}`}
                           initial={{ strokeDashoffset: 0 }}
                           animate={{ strokeDashoffset: 2 * Math.PI * 24 }}
-                          transition={{ duration: 3, ease: 'linear' }}
+                          transition={{ duration: 5, ease: 'linear' }}
                         />
                       </svg>
                       <span className="text-xl font-bold text-white tabular-nums">{countdown}</span>

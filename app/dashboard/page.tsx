@@ -10,7 +10,6 @@ import {
   Wallet, 
   Coins, 
   Lock, 
-  Sparkles, 
   TrendingUp, 
   Clock, 
   Plus, 
@@ -18,7 +17,8 @@ import {
   Calendar, 
   History,
   AlertCircle,
-  HelpCircle
+  HelpCircle,
+  ShieldCheck
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
 import { useStacks } from '../../hooks/useStacks';
@@ -40,6 +40,53 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
+
+// Deterministic User ID Generator
+const getUserId = (address: string | null) => {
+  if (!address) return '12455665'; // default mock ID
+  let hash = 0;
+  for (let i = 0; i < address.length; i++) {
+    hash = address.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return Math.abs(hash % 90000000 + 10000000).toString();
+};
+
+// Gender Neutral SVG Avatar Component
+function GenderNeutralAvatar({ seed }: { seed: string }) {
+  const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const index = hash % 4;
+  
+  const avatars = [
+    // Visor Bot
+    <svg viewBox="0 0 100 100" className="w-full h-full fill-none text-[#F5B400]" key="bot">
+      <rect width="100" height="100" fill="#181818" />
+      <circle cx="50" cy="50" r="28" fill="#222" stroke="currentColor" strokeWidth="2" />
+      <path d="M30 46h40v8H30z" fill="currentColor" />
+      <circle cx="50" cy="50" r="32" stroke="currentColor" strokeWidth="1" strokeDasharray="4,4" />
+    </svg>,
+    // Miniature Phone GIF Avatar
+    <div className="w-full h-full bg-[#181818] flex items-center justify-center p-1" key="liphon">
+      <img src="/liphon17-6.gif" alt="Phone Visor" className="w-full h-full object-contain rounded-[8px]" />
+    </div>,
+    // Pixel Core
+    <svg viewBox="0 0 100 100" className="w-full h-full fill-none text-blue-400" key="pixel">
+      <rect width="100" height="100" fill="#181818" />
+      <rect x="26" y="26" width="48" height="48" rx="8" fill="#222" stroke="currentColor" strokeWidth="2" />
+      <line x1="38" y1="46" x2="62" y2="46" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="38" cy="58" r="3" fill="currentColor" />
+      <circle cx="62" cy="58" r="3" fill="currentColor" />
+    </svg>,
+    // Cyber Crown
+    <svg viewBox="0 0 100 100" className="w-full h-full fill-none text-purple-400" key="crown">
+      <rect width="100" height="100" fill="#181818" />
+      <path d="M50 20 L75 40 L65 75 L35 75 L25 40 Z" fill="#222" stroke="currentColor" strokeWidth="2" />
+      <path d="M38 52 C38 52 45 60 50 60 C55 60 62 52 62 52" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="50" cy="38" r="5" fill="currentColor" />
+    </svg>
+  ];
+  
+  return avatars[index];
+}
 
 export default function Dashboard() {
   const { 
@@ -214,17 +261,42 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             <button 
               onClick={handleBack}
-              className="w-10 h-10 rounded-full bg-[#121212] border border-white/5 flex items-center justify-center text-[#A0A0A0] hover:text-white hover:border-white/10 transition-colors cursor-pointer"
+              className="w-10 h-10 rounded-full bg-[#121212] border border-white/5 flex items-center justify-center text-[#A0A0A0] hover:text-white hover:border-white/10 transition-colors cursor-pointer shrink-0"
               title="Back to Homepage"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            
+            {/* Deterministic Profile Card */}
+            <div className="p-2 pr-5 rounded-[18px] bg-[#121212] border border-white/5 flex items-center gap-3.5 shadow-xl">
+              <div className="w-11 h-11 rounded-[12px] overflow-hidden border border-white/10 bg-[#181818] shrink-0 flex items-center justify-center">
+                <GenderNeutralAvatar seed={wallet.address || 'SP3FBR2AGK5H9QBDWX84EEFVT827VREQAHHHT2K4'} />
+              </div>
+              <div className="text-left">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-xs text-white tracking-tight">
+                    {wallet.address ? `Saver-${wallet.address.slice(2, 8)}` : 'Demo Saver'}
+                  </span>
+                  <span className="w-3.5 h-3.5 rounded-full bg-[#F5B400] text-black text-[8px] flex items-center justify-center font-extrabold select-none" title="Verified Saver">✓</span>
+                </div>
+                <p className="text-[9px] font-mono text-[#A0A0A0] mt-0.5">
+                  ID: {getUserId(wallet.address)}
+                </p>
+                <div className="flex items-center gap-1 mt-0.5 text-[8px] text-emerald-400 font-bold">
+                  <ShieldCheck className="w-2.5 h-2.5" />
+                  <span>Active Saver</span>
+                  <span className="text-[#666] font-normal font-mono">({wallet.connected ? 'Connected' : 'Simulation'})</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Title Text */}
+            <div className="hidden lg:block border-l border-white/5 pl-4 text-left">
+              <h1 className="text-sm font-bold tracking-tight text-white">
                 Continuum Savings Vaults
               </h1>
-              <p className="text-xs text-[#A0A0A0]">
-                Establish commitment locks, view redistribution yields, and manage non-custodial savings.
+              <p className="text-[10px] text-[#A0A0A0] mt-0.5">
+                Establish commitment locks and manage non-custodial savings.
               </p>
             </div>
           </div>
@@ -348,7 +420,7 @@ export default function Dashboard() {
 
           <div className="p-5 rounded-2xl bg-[#121212] border border-white/5 flex flex-col justify-between min-h-[110px] relative overflow-hidden">
             <div className="absolute top-4 right-4 text-[#F5B400]">
-              <Sparkles className="w-5 h-5" />
+              <Coins className="w-5 h-5" />
             </div>
             <div>
               <span className="text-[10px] text-[#A0A0A0] font-bold uppercase tracking-wider block">Claimable Rewards (Earned)</span>
