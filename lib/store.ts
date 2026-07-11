@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Vault, Transaction, WalletSession, GlobalStats } from '../types';
+import { Vault, Transaction, WalletSession, GlobalStats, Toast } from '../types';
 
 interface ContinuumState {
   // Connection state
@@ -36,6 +36,17 @@ interface ContinuumState {
   addTransaction: (tx: Omit<Transaction, 'id' | 'timestamp'>) => void;
   updateAvatar: (index: number, name: string) => void;
   updateCustomAvatarName: (customName: string) => void;
+
+  // Toast notifications
+  toasts: Toast[];
+  addToast: (type: 'success' | 'error' | 'loading' | 'info', message: string, duration?: number) => string;
+  removeToast: (id: string) => void;
+
+  // Withdraw flow state
+  isWithdrawOpen: boolean;
+  setWithdrawOpen: (open: boolean) => void;
+  selectedWithdrawVault: Vault | null;
+  setSelectedWithdrawVault: (vault: Vault | null) => void;
 }
 
 const INITIAL_BLOCK_HEIGHT = 100000;
@@ -105,6 +116,9 @@ export const useContinuumStore = create<ContinuumState>()(
       ],
       
       transactions: [],
+      toasts: [],
+      isWithdrawOpen: false,
+      selectedWithdrawVault: null,
       
       toggleSimulation: (val) => set({ isSimulation: val }),
       
@@ -147,6 +161,26 @@ export const useContinuumStore = create<ContinuumState>()(
           customAvatarName: customName
         }
       })),
+
+      addToast: (type, message, duration = 4000) => {
+        const id = Math.random().toString(36).substring(2, 9);
+        set((state) => ({
+          toasts: [...state.toasts, { id, type, message }]
+        }));
+        if (type !== 'loading' && duration > 0) {
+          setTimeout(() => {
+            get().removeToast(id);
+          }, duration);
+        }
+        return id;
+      },
+
+      removeToast: (id) => set((state) => ({
+        toasts: state.toasts.filter((t) => t.id !== id)
+      })),
+
+      setWithdrawOpen: (open) => set({ isWithdrawOpen: open }),
+      setSelectedWithdrawVault: (vault) => set({ selectedWithdrawVault: vault }),
       
       advanceBlocks: (count) => {
         set((state) => {

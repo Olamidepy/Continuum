@@ -20,7 +20,9 @@ import {
   HelpCircle,
   ShieldCheck,
   Edit2,
-  Check
+  Check,
+  ArrowUpRight,
+  Sparkles
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
 import { useStacks } from '../../hooks/useStacks';
@@ -34,6 +36,8 @@ import VaultCard from '../../components/VaultCard';
 import WalletModal from '../../components/WalletModal';
 import AvatarImage from '../../components/AvatarImage';
 import AvatarSelectorModal from '../../components/AvatarSelectorModal';
+import WithdrawModal from '../../components/WithdrawModal';
+import ToastContainer from '../../components/ToastContainer';
 
 // Recharts dynamically imported to prevent SSR hydration warnings
 import {
@@ -103,13 +107,16 @@ export default function Dashboard() {
     advanceBlocks,
     simulateExternalActivity,
     updateAvatar,
-    updateCustomAvatarName
+    updateCustomAvatarName,
+    addToast,
+    removeToast
   } = useContinuumStore();
 
-  const { wallet, createVault, disconnectWallet } = useStacks();
+  const { wallet, createVault, disconnectWallet, claimRewards } = useStacks();
 
   const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [assetType, setAssetType] = useState<'STX' | 'sBTC'>('STX');
   const [lockAmount, setLockAmount] = useState('');
   const [lockDuration, setLockDuration] = useState('12960'); // Default 90 days
@@ -530,6 +537,103 @@ export default function Dashboard() {
 
         </section>
 
+        {/* Quick Actions Panel */}
+        <section className="mt-8 text-left">
+          <h2 className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-mono">
+            <Sparkles className="w-3.5 h-3.5 text-[#F5B400]" /> Quick Operations
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            
+            {/* Action 1: Lock Capital */}
+            <button
+              onClick={() => {
+                const inputEl = document.querySelector('input[type="number"]');
+                if (inputEl) {
+                  (inputEl as HTMLInputElement).focus();
+                  inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              className="p-4 rounded-2xl bg-[#121212] border border-white/5 hover:border-white/10 hover:bg-[#181818] transition-all cursor-pointer flex items-center gap-3.5 group text-left w-full"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[#F5B400] flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <Plus className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-white block">Lock Capital</span>
+                <span className="text-[10px] text-[#A0A0A0] truncate block">Deposit new STX or sBTC</span>
+              </div>
+            </button>
+
+            {/* Action 2: Withdraw */}
+            <button
+              onClick={() => setIsWithdrawOpen(true)}
+              disabled={!wallet.connected && !isSimulation}
+              className="p-4 rounded-2xl bg-[#121212] border border-white/5 hover:border-[#F5B400]/30 hover:bg-[#181818] transition-all cursor-pointer flex items-center gap-3.5 group text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <ArrowUpRight className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-white block">Withdraw</span>
+                <span className="text-[10px] text-[#A0A0A0] truncate block">Withdraw matured or locked funds</span>
+              </div>
+            </button>
+
+            {/* Action 3: Claim Rewards */}
+            <button
+              onClick={async () => {
+                const claimableVaults = vaults.filter(
+                  (v) => v.active && v.claimableRewards > 0 && (v.owner === wallet.address || isSimulation)
+                );
+                if (claimableVaults.length === 0) {
+                  addToast('info', 'No claimable rewards accrued in active vaults.');
+                  return;
+                }
+                const toastId = addToast('loading', `Claiming rewards for ${claimableVaults.length} vaults...`);
+                try {
+                  for (const vault of claimableVaults) {
+                    await claimRewards(vault.id, vault.assetType);
+                  }
+                  removeToast(toastId);
+                  addToast('success', 'Successfully claimed all accrued rewards!');
+                } catch (err) {
+                  removeToast(toastId);
+                  addToast('error', 'Failed to claim rewards.');
+                }
+              }}
+              disabled={(!wallet.connected && !isSimulation) || totalClaimableUSD === 0}
+              className="p-4 rounded-2xl bg-[#121212] border border-white/5 hover:border-white/10 hover:bg-[#181818] transition-all cursor-pointer flex items-center gap-3.5 group text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <Coins className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-white block">Claim Rewards</span>
+                <span className="text-[10px] text-[#A0A0A0] truncate block">Redeem accumulated yield</span>
+              </div>
+            </button>
+
+            {/* Action 4: Advance Time */}
+            <button
+              onClick={() => {
+                advanceBlocks(1000);
+                addToast('success', 'Advanced block height by 1,000 blocks.');
+              }}
+              disabled={!isSimulation}
+              className="p-4 rounded-2xl bg-[#121212] border border-white/5 hover:border-white/10 hover:bg-[#181818] transition-all cursor-pointer flex items-center gap-3.5 group text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-white block">Advance Time</span>
+                <span className="text-[10px] text-[#A0A0A0] truncate block">Simulate +1,000 blocks</span>
+              </div>
+            </button>
+            
+          </div>
+        </section>
+
         {/* Dashboard Analytics & Create Vault Form */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8">
           
@@ -785,6 +889,12 @@ export default function Dashboard() {
 
       {/* Wallet Connection Modal */}
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
+
+      {/* Withdrawal Flow Modal */}
+      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(false)} />
+
+      {/* Toast Notifications Overlay */}
+      <ToastContainer />
 
       {/* Avatar Selection Modal */}
       <AvatarSelectorModal

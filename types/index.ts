@@ -40,3 +40,10 @@ export interface GlobalStats {
   totalSharesSBTC: number;
   vaultCounter: number;
 }
+
+export interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'loading' | 'info';
+  message: string;
+}
+

@@ -28,12 +28,11 @@ interface VaultCardProps {
 }
 
 export default function VaultCard({ vault }: VaultCardProps) {
-  const { currentBlockHeight } = useContinuumStore();
-  const { increaseDeposit, extendLock, claimRewards, withdraw, emergencyWithdraw } = useStacks();
+  const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault } = useContinuumStore();
+  const { increaseDeposit, extendLock, claimRewards } = useStacks();
   
   const [isDepositOpen, setIsDepositOpen] = useState(false);
   const [isExtendOpen, setIsExtendOpen] = useState(false);
-  const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('12960'); // default 90 days
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,21 +87,6 @@ export default function VaultCard({ vault }: VaultCardProps) {
     setIsSubmitting(true);
     await claimRewards(vault.id, assetSymbol);
     setIsSubmitting(false);
-  };
-
-  const handleWithdraw = async () => {
-    if (!isMatured || isSubmitting) return;
-    setIsSubmitting(true);
-    await withdraw(vault.id, assetSymbol);
-    setIsSubmitting(false);
-  };
-
-  const handleEmergencyWithdraw = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    await emergencyWithdraw(vault.id, assetSymbol);
-    setIsSubmitting(false);
-    setIsEmergencyOpen(false);
   };
 
   return (
@@ -209,7 +193,10 @@ export default function VaultCard({ vault }: VaultCardProps) {
         <div className="flex items-center gap-2.5 z-10 border-t border-white/5 pt-4">
           {isMatured ? (
             <button
-              onClick={handleWithdraw}
+              onClick={() => {
+                setSelectedWithdrawVault(vault);
+                setWithdrawOpen(true);
+              }}
               disabled={isSubmitting}
               className="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black text-center text-xs font-bold tracking-wide hover:opacity-90 transition-all cursor-pointer shadow-[0_4px_12px_rgba(16,185,129,0.15)] flex items-center justify-center gap-1.5"
             >
@@ -233,7 +220,10 @@ export default function VaultCard({ vault }: VaultCardProps) {
               </button>
 
               <button
-                onClick={() => setIsEmergencyOpen(true)}
+                onClick={() => {
+                  setSelectedWithdrawVault(vault);
+                  setWithdrawOpen(true);
+                }}
                 className="py-2.5 px-3.5 rounded-xl bg-red-950/20 border border-red-900/30 hover:border-red-500/30 text-red-400 hover:bg-red-900/30 text-center text-xs font-semibold transition-all cursor-pointer"
                 title="Emergency Early Exit"
               >
@@ -369,85 +359,6 @@ export default function VaultCard({ vault }: VaultCardProps) {
         )}
       </AnimatePresence>
 
-      {/* EMERGENCY EXIT MODAL */}
-      <AnimatePresence>
-        {isEmergencyOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsEmergencyOpen(false)}
-              className="absolute inset-0 bg-black/90 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-lg overflow-hidden border border-red-500/30 bg-[#121212] p-8 rounded-3xl shadow-[0_20px_50px_rgba(239,68,68,0.15)] z-10"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-7 h-7 animate-pulse" />
-              </div>
-
-              <h3 className="text-xl font-bold text-white text-center tracking-tight">
-                Emergency Exit Warning!
-              </h3>
-              <p className="text-xs text-[#A0A0A0] text-center mt-2 leading-relaxed max-w-[380px] mx-auto">
-                Continuum enforces protocol discipline. Exiting before block height <span className="text-white font-semibold font-mono">{vault.unlockAt}</span> triggers an immutable penalty.
-              </p>
-
-              {/* Penalty Breakdown */}
-              <div className="mt-6 p-4 rounded-2xl bg-black/40 border border-white/5 space-y-3.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-[#A0A0A0]">Locked Amount:</span>
-                  <span className="font-mono text-white font-semibold">{formattedAmount} {assetSymbol}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs border-t border-white/5 pt-3">
-                  <span className="text-red-400 font-medium flex items-center gap-1">
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    Early Exit Penalty (10%):
-                  </span>
-                  <span className="font-mono text-red-400 font-bold">-{formattedPenalty} {assetSymbol}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs border-t border-white/5 pt-3">
-                  <span className="text-[#A0A0A0]">Accrued Penalty Rewards:</span>
-                  <span className="font-mono text-emerald-400 font-semibold">+{formattedRewards} {assetSymbol}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm font-bold border-t border-[#F5B400]/20 pt-3 text-white">
-                  <span>Net Refund Estimate:</span>
-                  <span className="font-mono text-[#F5B400]">{formattedRefund} {assetSymbol}</span>
-                </div>
-              </div>
-
-              {/* Penalty explanation details */}
-              <div className="mt-4 p-3.5 rounded-xl bg-[#181818] border border-white/5 flex gap-3 items-start">
-                <Sparkles className="w-4 h-4 text-[#F5B400] shrink-0 mt-0.5" />
-                <p className="text-[10px] text-[#A0A0A0] leading-relaxed">
-                  Of this penalty, 80% (<span className="text-white font-medium">{assetSymbol === 'STX' ? formatSTX(Math.floor(penaltyAmount * 0.8)) : formatSBTC(Math.floor(penaltyAmount * 0.8))}</span>) is instantly added to the pool and distributed to remaining savers. The remaining 20% is routed to the treasury reserve.
-                </p>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setIsEmergencyOpen(false)}
-                  className="flex-1 py-3.5 rounded-2xl bg-[#181818] border border-white/5 text-white hover:bg-[#222222] text-xs font-bold transition-all cursor-pointer"
-                >
-                  Stay Committed
-                </button>
-                <button
-                  type="button"
-                  onClick={handleEmergencyWithdraw}
-                  disabled={isSubmitting}
-                  className="flex-1 py-3.5 rounded-2xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all cursor-pointer shadow-[0_4px_12px_rgba(220,38,38,0.2)]"
-                >
-                  {isSubmitting ? 'Confirming Exit...' : 'Break Lock & Pay Penalty'}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
       </AnimatePresence>
     </>
   );
