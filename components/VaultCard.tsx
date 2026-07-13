@@ -358,8 +358,6 @@ export default function VaultCard({ vault }: VaultCardProps) {
           </div>
         )}
       </AnimatePresence>
-
-      </AnimatePresence>
     </>
   );
 }
