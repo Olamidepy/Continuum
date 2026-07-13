@@ -199,7 +199,7 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
           appDetails: {
             name: 'Continuum Savings',
             icon: typeof window !== 'undefined'
-              ? `${window.location.origin}/fArtboard 2 copy 2.png`
+              ? `${window.location.origin}/Logo.png`
               : '',
           },
           onFinish: async () => {

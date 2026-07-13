@@ -158,7 +158,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-24 flex items-center justify-between">
           <Link href="/" className="flex items-center shrink-0">
             <img 
-              src="/fArtboard 2 copy 2.png" 
+              src="/Logo.png" 
               alt="Continuum Logo" 
               className="w-[170px] sm:w-[210px] md:w-[240px] h-auto object-contain" 
             />
@@ -677,9 +677,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center">
             <img 
-              src="/fArtboard 2 copy 2.png" 
+              src="/Logo.png" 
               alt="Continuum Logo" 
-              className="w-[240px] h-auto object-contain" 
+              className="w-[170px] sm:w-[210px] md:w-[240px] h-auto object-contain" 
             />
           </div>
 

@@ -68,7 +68,7 @@ export function useStacks() {
         userSession,
         appDetails: {
           name: 'Continuum Savings',
-          icon: typeof window !== 'undefined' ? window.location.origin + '/fArtboard 2 copy 2.png' : '',
+          icon: typeof window !== 'undefined' ? window.location.origin + '/Logo.png' : '',
         },
         onFinish: async () => {
           try {
