@@ -5,7 +5,7 @@ import {
   stringAsciiCV, 
   contractPrincipalCV,
   PostConditionMode,
-  fetchCallReadOnlyFunction,
+  callReadOnlyFunction,
   cvToValue,
   principalCV,
   ClarityType
@@ -314,7 +314,7 @@ export function useStacks() {
 
   const loadRealVaults = async (address: string) => {
     try {
-      const response = await fetchCallReadOnlyFunction({
+      const response = await callReadOnlyFunction({
         contractAddress: CONTRACT_ADDRESS,
         contractName: CONTRACT_NAME,
         functionName: 'get-user-vaults',
@@ -328,7 +328,7 @@ export function useStacks() {
       const loadedVaults = [];
       for (const idBig of vaultIdsDecoded) {
         const id = Number(idBig);
-        const vaultRes = await fetchCallReadOnlyFunction({
+        const vaultRes = await callReadOnlyFunction({
           contractAddress: CONTRACT_ADDRESS,
           contractName: CONTRACT_NAME,
           functionName: 'get-vault',
@@ -360,7 +360,7 @@ export function useStacks() {
 
   const loadGlobalStats = async () => {
     try {
-      const response = await fetchCallReadOnlyFunction({
+      const response = await callReadOnlyFunction({
         contractAddress: CONTRACT_ADDRESS,
         contractName: CONTRACT_NAME,
         functionName: 'get-contract-stats',
