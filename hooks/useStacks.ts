@@ -1,5 +1,5 @@
 import { authenticate, openContractCall, AppConfig, UserSession } from '@stacks/connect';
-import { StacksTestnet } from '@stacks/network';
+import { StacksMainnet } from '@stacks/network';
 import { 
   uintCV, 
   stringAsciiCV, 
@@ -8,10 +8,11 @@ import {
 } from '@stacks/transactions';
 import { useContinuumStore } from '../lib/store';
 
-// Stacks Contract Config
-const CONTRACT_ADDRESS = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'; // Mock/Testnet Address
+// Stacks Contract Config (Mainnet)
+const CONTRACT_ADDRESS = 'SP20H0X9X4KXDAFQWZGV57BQCWZJWXMVF85KWBEMJ';
 const CONTRACT_NAME = 'continuum-vaults';
-const SBTC_CONTRACT_NAME = 'sbtc-token-mock';
+const SBTC_CONTRACT_ADDRESS = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4';
+const SBTC_CONTRACT_NAME = 'sbtc-token';
 
 // App authentication configuration
 const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -32,16 +33,16 @@ export function useStacks() {
     addTransaction
   } = useContinuumStore();
 
-  const network = new StacksTestnet();
+  const network = new StacksMainnet();
 
   const fetchBalances = async (address: string) => {
     try {
-      const res = await fetch(`https://api.testnet.hiro.so/v2/accounts/${address}/balances`);
+      const res = await fetch(`https://api.mainnet.hiro.so/v2/accounts/${address}/balances`);
       if (!res.ok) return { stx: 25000 * 1_000_000, sbtc: 1.5 * 100_000_000 };
       const data = await res.json();
       return {
         stx: Number(data.stx.balance) || 0,
-        sbtc: Number(data.stx.fungible_tokens?.[`${CONTRACT_ADDRESS}.${SBTC_CONTRACT_NAME}::sbtc`]?.balance) || 0,
+        sbtc: Number(data.stx.fungible_tokens?.[`${SBTC_CONTRACT_ADDRESS}.${SBTC_CONTRACT_NAME}::sbtc`]?.balance) || 0,
       };
     } catch (err) {
       console.error('Failed to fetch balances from network, using default fallback:', err);
@@ -74,8 +75,8 @@ export function useStacks() {
           try {
             const userData = userSession.loadUserData();
             const address =
-              userData.profile?.stxAddress?.testnet ||
               userData.profile?.stxAddress?.mainnet ||
+              userData.profile?.stxAddress?.testnet ||
               '';
             if (!address) {
               console.warn('No Stacks address found in user session.');
@@ -114,7 +115,7 @@ export function useStacks() {
           uintCV(amount),
           uintCV(durationBlocks),
           stringAsciiCV(assetType),
-          contractPrincipalCV(CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
+          contractPrincipalCV(SBTC_CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
         ],
         network,
         postConditionMode: PostConditionMode.Allow,
@@ -151,7 +152,7 @@ export function useStacks() {
         functionArgs: [
           uintCV(vaultId),
           uintCV(additionalAmount),
-          contractPrincipalCV(CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
+          contractPrincipalCV(SBTC_CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
         ],
         network,
         postConditionMode: PostConditionMode.Allow,
@@ -218,7 +219,7 @@ export function useStacks() {
         functionName: 'claim-rewards',
         functionArgs: [
           uintCV(vaultId),
-          contractPrincipalCV(CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
+          contractPrincipalCV(SBTC_CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
         ],
         network,
         postConditionMode: PostConditionMode.Allow,
@@ -251,7 +252,7 @@ export function useStacks() {
         functionName: 'withdraw',
         functionArgs: [
           uintCV(vaultId),
-          contractPrincipalCV(CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
+          contractPrincipalCV(SBTC_CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
         ],
         network,
         postConditionMode: PostConditionMode.Allow,
@@ -284,7 +285,7 @@ export function useStacks() {
         functionName: 'emergency-withdraw',
         functionArgs: [
           uintCV(vaultId),
-          contractPrincipalCV(CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
+          contractPrincipalCV(SBTC_CONTRACT_ADDRESS, SBTC_CONTRACT_NAME)
         ],
         network,
         postConditionMode: PostConditionMode.Allow,
