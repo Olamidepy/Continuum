@@ -37,16 +37,16 @@ export function useStacks() {
 
   const fetchBalances = async (address: string) => {
     try {
-      const res = await fetch(`https://api.mainnet.hiro.so/v2/accounts/${address}/balances`);
-      if (!res.ok) return { stx: 25000 * 1_000_000, sbtc: 1.5 * 100_000_000 };
+      const res = await fetch(`https://api.mainnet.hiro.so/extended/v1/address/${address}/balances`);
+      if (!res.ok) return { stx: 0, sbtc: 0 };
       const data = await res.json();
       return {
         stx: Number(data.stx.balance) || 0,
-        sbtc: Number(data.stx.fungible_tokens?.[`${SBTC_CONTRACT_ADDRESS}.${SBTC_CONTRACT_NAME}::sbtc`]?.balance) || 0,
+        sbtc: Number(data.fungible_tokens?.[`${SBTC_CONTRACT_ADDRESS}.${SBTC_CONTRACT_NAME}::sbtc`]?.balance) || 0,
       };
     } catch (err) {
-      console.error('Failed to fetch balances from network, using default fallback:', err);
-      return { stx: 25000 * 1_000_000, sbtc: 1.5 * 100_000_000 };
+      console.error('Failed to fetch balances from network:', err);
+      return { stx: 0, sbtc: 0 };
     }
   };
 

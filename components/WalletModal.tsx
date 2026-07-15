@@ -132,12 +132,12 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
     // Prefetch dashboard page for instant redirection transition
     router.prefetch('/dashboard');
 
-    // Fetch real testnet balances
-    fetch(`https://api.testnet.hiro.so/v2/accounts/${address}/balances`)
+    // Fetch real mainnet balances
+    fetch(`https://api.mainnet.hiro.so/extended/v1/address/${address}/balances`)
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
         const stx  = data ? (Number(data.stx?.balance) || 0) : 0;
-        const sbtc = 0; // sBTC balance resolution omitted — can be expanded
+        const sbtc = data ? (Number(data.fungible_tokens?.['SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token::sbtc']?.balance) || 0) : 0;
         connectWallet(
           address,
           provider as 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect',
@@ -206,8 +206,8 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
             try {
               const userData = userSession.loadUserData();
               const address =
-                userData.profile?.stxAddress?.testnet ||
                 userData.profile?.stxAddress?.mainnet ||
+                userData.profile?.stxAddress?.testnet ||
                 '';
               if (!address) { reject(new Error('No address found')); return; }
               handleSuccess(address, walletName);
