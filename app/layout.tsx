@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     description: 'Non-custodial savings vaults for STX and sBTC, secured by Bitcoin through Stacks. Earn rewards by staying committed.',
     type: 'website',
   },
+  other: {
+    'talentapp:project_verification': '2995476e9dadf74df1deb76c4c114c5611bd6b228ebc68df69871c7054cd23c2bbf2ee080f9609b310be62157f1a93009a2c26e36bbe4257d95bf980ab00e5ee',
+  },
 };
 
 export default function RootLayout({
