@@ -247,7 +247,6 @@ export default function Dashboard() {
     .reduce((sum, v) => sum + v.claimableRewards, 0);
 
   // Dynamic exchange rate calculators (mock rates: STX = $2, sBTC = $60k; CELO = $0.80, cUSD = $1.00)
-  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
   const stxToUsd = (microStx: number) => {
     if (isCelo) return (microStx / 1_000_000) * 0.80;
     return (microStx / 1_000_000) * 2;
@@ -288,7 +287,6 @@ export default function Dashboard() {
     const duration = Number(lockDuration);
 
     try {
-      const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
       let newId;
       if (isCelo) {
         newId = await createCeloVault(amountRaw, duration, assetType);
