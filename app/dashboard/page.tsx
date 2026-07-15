@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
 import { useStacks } from '../../hooks/useStacks';
+import { useCelo } from '../../hooks/useCelo';
 import { 
   formatAddress, 
   formatSTX, 
@@ -114,6 +115,7 @@ export default function Dashboard() {
   } = useContinuumStore();
 
   const { wallet, createVault, disconnectWallet, claimRewards, loadRealVaults, loadGlobalStats } = useStacks();
+  const { createCeloVault, updateBalances } = useCelo();
 
   const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -124,6 +126,19 @@ export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevConnected = useRef(false);
+  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+  const displayAssetLabel = (asset: 'STX' | 'sBTC') => {
+    if (isCelo) return asset === 'STX' ? 'CELO' : 'cUSD';
+    return asset;
+  };
+  const getBalanceDisplay = () => {
+    if (isCelo) {
+      if (assetType === 'STX') return `${(wallet.celoBalance || 0).toFixed(4)} CELO`;
+      return `${(wallet.cusdBalance || 0).toFixed(4)} cUSD`;
+    }
+    if (assetType === 'STX') return `${formatSTX(wallet.stxBalance)} STX`;
+    return `${formatSBTC(wallet.sbtcBalance)} sBTC`;
+  };
 
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -172,16 +187,26 @@ export default function Dashboard() {
   // Load real blockchain data (vaults and stats) if not in simulation mode
   useEffect(() => {
     if (!isSimulation && wallet.connected && wallet.address) {
-      const userAddress = wallet.address;
-      loadRealVaults(userAddress);
-      loadGlobalStats();
+      const isCeloWallet = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
       
-      // Periodically refresh every 10 seconds to check transaction status and updates
-      const interval = setInterval(() => {
+      if (isCeloWallet) {
+        updateBalances();
+        const interval = setInterval(() => {
+          updateBalances();
+        }, 10000);
+        return () => clearInterval(interval);
+      } else {
+        const userAddress = wallet.address;
         loadRealVaults(userAddress);
         loadGlobalStats();
-      }, 10000);
-      return () => clearInterval(interval);
+        
+        // Periodically refresh every 10 seconds to check transaction status and updates
+        const interval = setInterval(() => {
+          loadRealVaults(userAddress);
+          loadGlobalStats();
+        }, 10000);
+        return () => clearInterval(interval);
+      }
     } else if (!isSimulation) {
       // Load global stats anyway even if wallet not connected
       loadGlobalStats();
@@ -190,7 +215,7 @@ export default function Dashboard() {
       }, 20000);
       return () => clearInterval(interval);
     }
-  }, [isSimulation, wallet.connected, wallet.address]);
+  }, [isSimulation, wallet.connected, wallet.address, wallet.walletProvider, updateBalances]);
 
   if (!isMounted) return null;
 
@@ -221,9 +246,16 @@ export default function Dashboard() {
     .filter(v => v.assetType === 'sBTC')
     .reduce((sum, v) => sum + v.claimableRewards, 0);
 
-  // Approximate dollar values (mock exchange rates: STX = $2, sBTC = $60,000)
-  const stxToUsd = (microStx: number) => (microStx / 1_000_000) * 2;
-  const sbtcToUsd = (sats: number) => (sats / 100_000_000) * 60_000;
+  // Dynamic exchange rate calculators (mock rates: STX = $2, sBTC = $60k; CELO = $0.80, cUSD = $1.00)
+  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+  const stxToUsd = (microStx: number) => {
+    if (isCelo) return (microStx / 1_000_000) * 0.80;
+    return (microStx / 1_000_000) * 2;
+  };
+  const sbtcToUsd = (sats: number) => {
+    if (isCelo) return (sats / 100_000_000) * 1.00;
+    return (sats / 100_000_000) * 60_000;
+  };
   
   const totalLockedUSD = stxToUsd(totalLockedSTX) + sbtcToUsd(totalLockedSBTC);
   const totalClaimableUSD = stxToUsd(totalClaimableSTX) + sbtcToUsd(totalClaimableSBTC);
@@ -255,10 +287,23 @@ export default function Dashboard() {
     const amountRaw = Number(lockAmount) * (assetType === 'STX' ? 1_000_000 : 100_000_000);
     const duration = Number(lockDuration);
 
-    const newId = await createVault(amountRaw, duration, assetType);
-    setIsSubmitting(false);
-    if (newId !== null) {
-      setLockAmount('');
+    try {
+      const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+      let newId;
+      if (isCelo) {
+        newId = await createCeloVault(amountRaw, duration, assetType);
+      } else {
+        newId = await createVault(amountRaw, duration, assetType);
+      }
+      setIsSubmitting(false);
+      if (newId !== null) {
+        setLockAmount('');
+        addToast('success', `Successfully created vault of ${lockAmount} ${isCelo ? (assetType === 'STX' ? 'CELO' : 'cUSD') : assetType}!`);
+      }
+    } catch (err) {
+      console.error(err);
+      setIsSubmitting(false);
+      addToast('error', 'Transaction failed or cancelled.');
     }
   };
 
@@ -489,7 +534,7 @@ export default function Dashboard() {
             <div className="text-left">
               <span className="text-xs font-bold text-white block">Connection Required</span>
               <p className="text-[11px] text-[#A0A0A0] mt-0.5 leading-relaxed">
-                Connect your Stacks wallet (Leather or Xverse) to view your on-chain vaults and sign transactions. You can also switch to <span className="text-white font-medium">Simulation Mode</span> in the header to experiment instantly with mock balances.
+                Connect your Stacks wallet (Leather or Xverse) or Celo / MiniPay wallet to view your on-chain vaults and sign transactions. You can also switch to <span className="text-white font-medium">Simulation Mode</span> in the header to experiment instantly with mock balances.
               </p>
             </div>
           </div>
@@ -507,8 +552,8 @@ export default function Dashboard() {
               <h2 className="text-2xl font-bold text-white mt-1.5">${formatNumber(totalLockedUSD, 2)}</h2>
             </div>
             <div className="flex gap-3 text-[10px] text-[#A0A0A0] mt-2 pt-2 border-t border-white/5">
-              <span>{formatSTX(totalLockedSTX)} STX</span>
-              <span>{formatSBTC(totalLockedSBTC)} sBTC</span>
+              <span>{formatSTX(totalLockedSTX)} {displayAssetLabel('STX')}</span>
+              <span>{formatSBTC(totalLockedSBTC)} {displayAssetLabel('sBTC')}</span>
             </div>
           </div>
 
@@ -519,12 +564,12 @@ export default function Dashboard() {
             <div>
               <span className="text-[10px] text-[#A0A0A0] font-bold uppercase tracking-wider block">Commitment Weight (Shares)</span>
               <h2 className="text-2xl font-bold text-[#F5B400] mt-1.5">
-                {formatNumber((totalSharesSTX + totalSharesSBTC * 60_000) / 1_000_000, 0)} <span className="text-xs text-[#A0A0A0] font-normal">Shares</span>
+                {formatNumber((totalSharesSTX + totalSharesSBTC * (isCelo ? 1 : 60_000)) / 1_000_000, 0)} <span className="text-xs text-[#A0A0A0] font-normal">Shares</span>
               </h2>
             </div>
             <div className="flex gap-3 text-[10px] text-[#A0A0A0] mt-2 pt-2 border-t border-white/5">
-              <span>{formatNumber(totalSharesSTX / 1_000_000, 0)} STX shares</span>
-              <span>{formatNumber(totalSharesSBTC / 100_000_000, 4)} sBTC shares</span>
+              <span>{formatNumber(totalSharesSTX / 1_000_000, 0)} {displayAssetLabel('STX')} shares</span>
+              <span>{formatNumber(totalSharesSBTC / 100_000_000, 4)} {displayAssetLabel('sBTC')} shares</span>
             </div>
           </div>
 
@@ -537,8 +582,8 @@ export default function Dashboard() {
               <h2 className="text-2xl font-bold text-white mt-1.5">${formatNumber(totalClaimableUSD, 2)}</h2>
             </div>
             <div className="flex gap-3 text-[10px] text-[#A0A0A0] mt-2 pt-2 border-t border-white/5">
-              <span className="text-emerald-400 font-mono">+{formatSTX(totalClaimableSTX)} STX</span>
-              <span className="text-emerald-400 font-mono">+{formatSBTC(totalClaimableSBTC)} sBTC</span>
+              <span className="text-emerald-400 font-mono">+{formatSTX(totalClaimableSTX)} {displayAssetLabel('STX')}</span>
+              <span className="text-emerald-400 font-mono">+{formatSBTC(totalClaimableSBTC)} {displayAssetLabel('sBTC')}</span>
             </div>
           </div>
 
@@ -703,7 +748,7 @@ export default function Dashboard() {
               <Plus className="w-5 h-5 text-[#F5B400]" /> Lock Savings Capital
             </h3>
             <p className="text-xs text-[#A0A0A0] mt-0.5">
-              Secure STX or sBTC under non-custodial time commitment rules.
+              Secure {isCelo ? 'CELO or cUSD' : 'STX or sBTC'} under non-custodial time commitment rules.
             </p>
 
             <form onSubmit={handleCreateVault} className="mt-5 space-y-4">
@@ -723,7 +768,7 @@ export default function Dashboard() {
                         : 'text-[#A0A0A0] hover:text-white'
                     }`}
                   >
-                    Stacks (STX)
+                    {isCelo ? 'Celo (CELO)' : 'Stacks (STX)'}
                   </button>
                   <button
                     type="button"
@@ -734,7 +779,7 @@ export default function Dashboard() {
                         : 'text-[#A0A0A0] hover:text-white'
                     }`}
                   >
-                    Super BTC (sBTC)
+                    {isCelo ? 'Celo Dollar (cUSD)' : 'Super BTC (sBTC)'}
                   </button>
                 </div>
               </div>
@@ -755,12 +800,18 @@ export default function Dashboard() {
                     className="w-full bg-black/30 border border-white/8 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#F5B400]/40 transition-colors"
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#A0A0A0]">
-                    {assetType}
+                    {displayAssetLabel(assetType)}
                   </div>
                 </div>
                 <div className="flex justify-between text-[9px] text-[#A0A0A0] mt-1.5 px-1 font-mono">
-                  <span>Balance: {assetType === 'STX' ? formatSTX(wallet.stxBalance) : formatSBTC(wallet.sbtcBalance)}</span>
-                  <span className="text-[#F5B400] cursor-pointer hover:underline" onClick={() => setLockAmount(String(assetType === 'STX' ? wallet.stxBalance / 1_000_000 : wallet.sbtcBalance / 100_000_000))}>Max</span>
+                  <span>Balance: {getBalanceDisplay()}</span>
+                  <span className="text-[#F5B400] cursor-pointer hover:underline" onClick={() => {
+                    if (isCelo) {
+                      setLockAmount(String(assetType === 'STX' ? wallet.celoBalance || 0 : wallet.cusdBalance || 0));
+                    } else {
+                      setLockAmount(String(assetType === 'STX' ? wallet.stxBalance / 1_000_000 : wallet.sbtcBalance / 100_000_000));
+                    }
+                  }}>Max</span>
                 </div>
               </div>
 

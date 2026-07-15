@@ -79,6 +79,75 @@ export default function LandingPage() {
 
   useEffect(() => {
     router.prefetch('/dashboard');
+
+    const autoConnectMiniPay = async () => {
+      if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+        const ethereum = (window as any).ethereum;
+        try {
+          const accounts = await ethereum.request({ method: 'eth_accounts' });
+          const address = accounts?.[0];
+          if (address) {
+            // Fetch balances from public Celo RPC
+            let celoBal = 0;
+            let cusdBal = 0;
+            try {
+              const balanceRes = await fetch('https://forno.celo.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'eth_getBalance',
+                  params: [address, 'latest']
+                })
+              });
+              const balanceData = await balanceRes.json();
+              if (balanceData && balanceData.result) {
+                celoBal = parseInt(balanceData.result, 16) / 1e18;
+              }
+
+              const cusdRes = await fetch('https://forno.celo.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 2,
+                  method: 'eth_call',
+                  params: [
+                    {
+                      to: '0x765de816845861e75a25fca122bb6898b8b1282a',
+                      data: '0x70a08231000000000000000000000000' + address.replace('0x', '')
+                    },
+                    'latest'
+                  ]
+                })
+              });
+              const cusdData = await cusdRes.json();
+              if (cusdData && cusdData.result) {
+                cusdBal = parseInt(cusdData.result, 16) / 1e18;
+              }
+            } catch (err) {
+              console.error('Error fetching Celo balances:', err);
+            }
+
+            // Connect wallet in state store
+            useContinuumStore.getState().connectWallet(
+              address,
+              'MiniPay',
+              0, // stx
+              0, // sbtc
+              celoBal,
+              cusdBal
+            );
+            router.push('/dashboard');
+          }
+        } catch (e) {
+          console.error('Failed to auto-connect MiniPay:', e);
+        }
+      }
+    };
+
+    autoConnectMiniPay();
   }, [router]);
 
   const handleLaunchApp = (e: React.MouseEvent) => {

@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import { X, ArrowRight, ShieldCheck, CheckCircle2, Loader2, ExternalLink } from 'lucide-react';
 import { useContinuumStore } from '../lib/store';
 import { authenticate, AppConfig, UserSession } from '@stacks/connect';
+import { useCelo } from '../hooks/useCelo';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const INSTALL_URLS: Record<string, string> = {
   Asigna:  'https://asigna.io',
   Fordefi: 'https://www.fordefi.com',
   WalletConnect: 'https://walletconnect.com',
+  'Celo (MiniPay)': 'https://opera.com/minipay',
 };
 
 const WALLET_PROVIDERS = [
@@ -33,6 +35,19 @@ const WALLET_PROVIDERS = [
     logo: (
       <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-white">
         <path d="M50 15L15 35v30l35 20 35-20V35L50 15zm0 10.5L74.5 40 50 54.5 25.5 40 50 25.5zM26 48.5l20.5 12v20.5L26 69V48.5zm48 20.5L53.5 81V60.5l20.5-12V69z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Celo (MiniPay)' as const,
+    description: 'Connect using MiniPay (Opera) or Celo wallet. Zero gas fees, instant stablecoin payments.',
+    tag: 'MiniPay',
+    tagColor: 'text-[#35D07F] bg-[#35D07F]/10 border-[#35D07F]/20',
+    logo: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-[#35D07F]">
+        <circle cx="35" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
+        <circle cx="65" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
+        <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="3 3" />
       </svg>
     ),
   },
@@ -106,6 +121,7 @@ const NON_STACKS_WALLETS = ['Asigna', 'Fordefi', 'WalletConnect'];
 export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const router = useRouter();
   const connectWallet = useContinuumStore((state) => state.connectWallet);
+  const { connectCelo } = useCelo();
 
   const [phase, setPhase] = useState<ModalPhase>('select');
   const [selectedWallet, setSelectedWallet] = useState<string>('');
@@ -164,6 +180,30 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
 
   const handleSelectWallet = async (walletName: string) => {
     setSelectedWallet(walletName);
+
+    if (walletName === 'Celo (MiniPay)') {
+      try {
+        setPhase('connecting');
+        await connectCelo();
+        setPhase('success');
+        if (!confettiFired.current) {
+          confettiFired.current = true;
+          setTimeout(shootConfetti, 120);
+        }
+        startCountdown();
+      } catch (err) {
+        console.error('Celo connection error:', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes('No injected wallet found') || msg.includes('install')) {
+          setInstallUrl('https://opera.com/minipay');
+          setPhase('install');
+        } else {
+          setPhase('select');
+          setSelectedWallet('');
+        }
+      }
+      return;
+    }
 
     // Non-Stacks wallets → just open their website
     if (NON_STACKS_WALLETS.includes(walletName)) {

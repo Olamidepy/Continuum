@@ -19,7 +19,7 @@ interface ContinuumState {
   
   // Actions
   toggleSimulation: (val: boolean) => void;
-  connectWallet: (address: string, provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect', stxBalance?: number, sbtcBalance?: number) => void;
+  connectWallet: (address: string, provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | 'Celo' | 'MiniPay' | 'Celo (MiniPay)', stxBalance?: number, sbtcBalance?: number, celoBalance?: number, cusdBalance?: number) => void;
   disconnectWallet: () => void;
   advanceBlocks: (count: number) => void;
   setVaults: (vaults: Vault[]) => void;
@@ -127,7 +127,7 @@ export const useContinuumStore = create<ContinuumState>()(
       setVaults: (vaults) => set({ vaults }),
       setGlobalStats: (globalStats) => set({ globalStats }),
       
-      connectWallet: (address, provider, stxBalance, sbtcBalance) => set((state) => ({
+      connectWallet: (address, provider, stxBalance, sbtcBalance, celoBalance, cusdBalance) => set((state) => ({
         isSimulation: false,
         wallet: {
           ...state.wallet,
@@ -136,6 +136,8 @@ export const useContinuumStore = create<ContinuumState>()(
           walletProvider: provider,
           stxBalance: stxBalance !== undefined ? stxBalance : state.wallet.stxBalance,
           sbtcBalance: sbtcBalance !== undefined ? sbtcBalance : state.wallet.sbtcBalance,
+          celoBalance: celoBalance !== undefined ? celoBalance : state.wallet.celoBalance || 0,
+          cusdBalance: cusdBalance !== undefined ? cusdBalance : state.wallet.cusdBalance || 0,
         }
       })),
       
@@ -148,6 +150,8 @@ export const useContinuumStore = create<ContinuumState>()(
           walletProvider: null,
           stxBalance: 25000 * 1_000_000,
           sbtcBalance: 1.5 * 100_000_000,
+          celoBalance: 0,
+          cusdBalance: 0,
         },
         vaults: state.vaults.filter(v => v.owner !== state.wallet.address) // Clear user vaults on disconnect
       })),

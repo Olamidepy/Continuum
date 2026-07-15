@@ -25,9 +25,11 @@ export interface Transaction {
 export interface WalletSession {
   connected: boolean;
   address: string | null;
-  walletProvider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | null;
+  walletProvider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | 'Celo' | 'MiniPay' | 'Celo (MiniPay)' | null;
   stxBalance: number;
   sbtcBalance: number;
+  celoBalance?: number;
+  cusdBalance?: number;
   avatarIndex?: number;
   avatarName?: string;
   customAvatarName?: string;

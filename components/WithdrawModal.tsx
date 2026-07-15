@@ -153,10 +153,12 @@ export default function WithdrawModal() {
     }
   };
 
-  // UI helpers
   const isMatured = selectedVault ? currentBlockHeight >= selectedVault.unlockAt : false;
-  const asset = selectedVault?.assetType || 'STX';
-  const decimals = asset === 'STX' ? 1_000_000 : 100_000_000;
+  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+  const rawAsset = selectedVault?.assetType || 'STX';
+  const asset = isCelo ? (rawAsset === 'STX' ? 'CELO' : 'cUSD') : rawAsset;
+  const decimals = rawAsset === 'STX' ? 1_000_000 : 100_000_000;
+  const getVaultAssetSymbol = (v: Vault) => isCelo ? (v.assetType === 'STX' ? 'CELO' : 'cUSD') : v.assetType;
   
   // Math for locked vaults
   const penaltyPct = 10;
@@ -267,7 +269,7 @@ export default function WithdrawModal() {
                                 </div>
                                 <div className="text-left">
                                   <span className="text-[10px] text-[#A0A0A0] block font-mono">Vault #{String(vault.id).padStart(2, '0')}</span>
-                                  <span className="text-sm font-bold text-white tracking-tight">{vaultAmount} {vault.assetType}</span>
+                                  <span className="text-sm font-bold text-white tracking-tight">{vaultAmount} {getVaultAssetSymbol(vault)}</span>
                                 </div>
                               </div>
                               <div className="text-right">
@@ -319,7 +321,7 @@ export default function WithdrawModal() {
                             Withdrawal Amount
                           </label>
                           <span className="text-[10px] text-[#A0A0A0] font-mono">
-                            Available Balance: {selectedVault.assetType === 'STX' ? formatSTX(selectedVault.amount) : formatSBTC(selectedVault.amount)} {selectedVault.assetType}
+                            Available Balance: {selectedVault.assetType === 'STX' ? formatSTX(selectedVault.amount) : formatSBTC(selectedVault.amount)} {asset}
                           </span>
                         </div>
                         <div className="relative">
