@@ -4,7 +4,11 @@ import {
   uintCV, 
   stringAsciiCV, 
   contractPrincipalCV,
-  PostConditionMode
+  PostConditionMode,
+  fetchCallReadOnlyFunction,
+  cvToValue,
+  principalCV,
+  ClarityType
 } from '@stacks/transactions';
 import { useContinuumStore } from '../lib/store';
 
@@ -30,7 +34,9 @@ export function useStacks() {
     claimRewardsSim,
     withdrawSim,
     emergencyWithdrawSim,
-    addTransaction
+    addTransaction,
+    setVaults,
+    setGlobalStats
   } = useContinuumStore();
 
   const network = new StacksMainnet();
@@ -306,6 +312,77 @@ export function useStacks() {
     });
   };
 
+  const loadRealVaults = async (address: string) => {
+    try {
+      const response = await fetchCallReadOnlyFunction({
+        contractAddress: CONTRACT_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: 'get-user-vaults',
+        functionArgs: [principalCV(address)],
+        senderAddress: address,
+        network,
+      });
+      const vaultIdsDecoded = cvToValue(response);
+      if (!Array.isArray(vaultIdsDecoded)) return;
+
+      const loadedVaults = [];
+      for (const idBig of vaultIdsDecoded) {
+        const id = Number(idBig);
+        const vaultRes = await fetchCallReadOnlyFunction({
+          contractAddress: CONTRACT_ADDRESS,
+          contractName: CONTRACT_NAME,
+          functionName: 'get-vault',
+          functionArgs: [uintCV(id)],
+          senderAddress: address,
+          network,
+        });
+        const decoded = cvToValue(vaultRes);
+        if (decoded && decoded.active) {
+          loadedVaults.push({
+            id,
+            owner: decoded.owner,
+            amount: Number(decoded.amount),
+            shares: Number(decoded.shares),
+            assetType: decoded['asset-type'] as 'STX' | 'sBTC',
+            createdAt: Number(decoded['created-at']),
+            unlockAt: Number(decoded['unlock-at']),
+            lastRewardPerShare: decoded['last-reward-per-share'].toString(),
+            claimableRewards: Number(decoded['claimable-rewards']),
+            active: decoded.active,
+          });
+        }
+      }
+      setVaults(loadedVaults);
+    } catch (err) {
+      console.error('Failed to load real vaults from blockchain:', err);
+    }
+  };
+
+  const loadGlobalStats = async () => {
+    try {
+      const response = await fetchCallReadOnlyFunction({
+        contractAddress: CONTRACT_ADDRESS,
+        contractName: CONTRACT_NAME,
+        functionName: 'get-contract-stats',
+        functionArgs: [],
+        senderAddress: CONTRACT_ADDRESS,
+        network,
+      });
+      const resultVal = response.type === ClarityType.ResponseOk ? response.value : response;
+      const decoded = cvToValue(resultVal);
+      if (!decoded) return;
+      setGlobalStats({
+        totalLockedSTX: Number(decoded['total-locked-stx']),
+        totalLockedSBTC: Number(decoded['total-locked-sbtc']),
+        totalSharesSTX: Number(decoded['total-shares-stx']),
+        totalSharesSBTC: Number(decoded['total-shares-sbtc']),
+        vaultCounter: Number(decoded['vault-counter']),
+      });
+    } catch (err) {
+      console.error('Failed to load global stats from blockchain:', err);
+    }
+  };
+
   return {
     wallet,
     isSimulation,
@@ -317,5 +394,7 @@ export function useStacks() {
     claimRewards,
     withdraw,
     emergencyWithdraw,
+    loadRealVaults,
+    loadGlobalStats,
   };
 }

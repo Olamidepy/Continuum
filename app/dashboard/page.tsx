@@ -113,7 +113,7 @@ export default function Dashboard() {
     setWithdrawOpen
   } = useContinuumStore();
 
-  const { wallet, createVault, disconnectWallet, claimRewards } = useStacks();
+  const { wallet, createVault, disconnectWallet, claimRewards, loadRealVaults, loadGlobalStats } = useStacks();
 
   const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -168,6 +168,28 @@ export default function Dashboard() {
     
     return () => clearInterval(interval);
   }, [isSimulation, simulateExternalActivity]);
+
+  // Load real blockchain data (vaults and stats) if not in simulation mode
+  useEffect(() => {
+    if (!isSimulation && wallet.connected && wallet.address) {
+      loadRealVaults(wallet.address);
+      loadGlobalStats();
+      
+      // Periodically refresh every 10 seconds to check transaction status and updates
+      const interval = setInterval(() => {
+        loadRealVaults(wallet.address);
+        loadGlobalStats();
+      }, 10000);
+      return () => clearInterval(interval);
+    } else if (!isSimulation) {
+      // Load global stats anyway even if wallet not connected
+      loadGlobalStats();
+      const interval = setInterval(() => {
+        loadGlobalStats();
+      }, 20000);
+      return () => clearInterval(interval);
+    }
+  }, [isSimulation, wallet.connected, wallet.address]);
 
   if (!isMounted) return null;
 

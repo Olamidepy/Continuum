@@ -22,6 +22,8 @@ interface ContinuumState {
   connectWallet: (address: string, provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect', stxBalance?: number, sbtcBalance?: number) => void;
   disconnectWallet: () => void;
   advanceBlocks: (count: number) => void;
+  setVaults: (vaults: Vault[]) => void;
+  setGlobalStats: (stats: GlobalStats) => void;
   
   // Smart Contract actions (Simulated or triggers for Stacks interaction)
   createVaultSim: (amount: number, durationBlocks: number, assetType: 'STX' | 'sBTC') => number;
@@ -121,6 +123,9 @@ export const useContinuumStore = create<ContinuumState>()(
       selectedWithdrawVault: null,
       
       toggleSimulation: (val) => set({ isSimulation: val }),
+      
+      setVaults: (vaults) => set({ vaults }),
+      setGlobalStats: (globalStats) => set({ globalStats }),
       
       connectWallet: (address, provider, stxBalance, sbtcBalance) => set((state) => ({
         isSimulation: false,
