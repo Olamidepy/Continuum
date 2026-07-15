@@ -172,12 +172,13 @@ export default function Dashboard() {
   // Load real blockchain data (vaults and stats) if not in simulation mode
   useEffect(() => {
     if (!isSimulation && wallet.connected && wallet.address) {
-      loadRealVaults(wallet.address);
+      const userAddress = wallet.address;
+      loadRealVaults(userAddress);
       loadGlobalStats();
       
       // Periodically refresh every 10 seconds to check transaction status and updates
       const interval = setInterval(() => {
-        loadRealVaults(wallet.address);
+        loadRealVaults(userAddress);
         loadGlobalStats();
       }, 10000);
       return () => clearInterval(interval);
