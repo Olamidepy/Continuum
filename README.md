@@ -1,4 +1,4 @@
-# Continuum: Bitcoin-Native & Multi-Chain (Celo/MiniPay) Decentralized Savings Protocol
+# Continuum: Bitcoin-Native and Multi-Chain Decentralized Savings Protocol
 
 Continuum is a production-grade, non-custodial time-locked savings protocol built on the Stacks blockchain and optimized for Celo/MiniPay mobile stablecoin integration. Designed to encourage long-term wealth accumulation, the protocol enables users to securely lock Stacks (STX) / Super Bitcoin (sBTC) or Celo (CELO) / Celo Dollars (cUSD) into smart-contract-governed vaults. Discipline is incentivized by transparently redistributing early withdrawal penalties directly to remaining active pool participants.
 
