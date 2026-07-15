@@ -109,14 +109,14 @@ export default function Dashboard() {
     updateAvatar,
     updateCustomAvatarName,
     addToast,
-    removeToast
+    removeToast,
+    setWithdrawOpen
   } = useContinuumStore();
 
   const { wallet, createVault, disconnectWallet, claimRewards } = useStacks();
 
   const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
-  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [assetType, setAssetType] = useState<'STX' | 'sBTC'>('STX');
   const [lockAmount, setLockAmount] = useState('');
   const [lockDuration, setLockDuration] = useState('12960'); // Default 90 days
@@ -566,7 +566,7 @@ export default function Dashboard() {
 
             {/* Action 2: Withdraw */}
             <button
-              onClick={() => setIsWithdrawOpen(true)}
+              onClick={() => setWithdrawOpen(true)}
               disabled={!wallet.connected && !isSimulation}
               className="p-4 rounded-2xl bg-[#121212] border border-white/5 hover:border-[#F5B400]/30 hover:bg-[#181818] transition-all cursor-pointer flex items-center gap-3.5 group text-left w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -891,7 +891,7 @@ export default function Dashboard() {
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
 
       {/* Withdrawal Flow Modal */}
-      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(false)} />
+      <WithdrawModal />
 
       {/* Toast Notifications Overlay */}
       <ToastContainer />
