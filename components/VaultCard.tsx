@@ -48,14 +48,14 @@ export default function VaultCard({ vault }: VaultCardProps) {
 
   const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
   const assetSymbol = isCelo ? (vault.assetType === 'STX' ? 'CELO' : 'cUSD') : vault.assetType;
-  const formattedAmount = assetSymbol === 'STX' ? formatSTX(vault.amount) : formatSBTC(vault.amount);
-  const formattedRewards = assetSymbol === 'STX' ? formatSTX(vault.claimableRewards) : formatSBTC(vault.claimableRewards);
+  const formattedAmount = vault.assetType === 'STX' ? formatSTX(vault.amount) : formatSBTC(vault.amount);
+  const formattedRewards = vault.assetType === 'STX' ? formatSTX(vault.claimableRewards) : formatSBTC(vault.claimableRewards);
   
   // 10% penalty calculations
   const penaltyAmount = Math.floor(vault.amount * 0.1);
-  const formattedPenalty = assetSymbol === 'STX' ? formatSTX(penaltyAmount) : formatSBTC(penaltyAmount);
+  const formattedPenalty = vault.assetType === 'STX' ? formatSTX(penaltyAmount) : formatSBTC(penaltyAmount);
   const refundAmount = vault.amount - penaltyAmount;
-  const formattedRefund = assetSymbol === 'STX' ? formatSTX(refundAmount) : formatSBTC(refundAmount);
+  const formattedRefund = vault.assetType === 'STX' ? formatSTX(refundAmount) : formatSBTC(refundAmount);
   
   const multiplier = vault.shares / vault.amount;
 
@@ -63,7 +63,7 @@ export default function VaultCard({ vault }: VaultCardProps) {
     e.preventDefault();
     if (!depositAmount || isSubmitting) return;
     setIsSubmitting(true);
-    const amountRaw = Number(depositAmount) * (assetSymbol === 'STX' ? 1_000_000 : 100_000_000);
+    const amountRaw = Number(depositAmount) * (vault.assetType === 'STX' ? 1_000_000 : 100_000_000);
     const success = await increaseDeposit(vault.id, amountRaw);
     setIsSubmitting(false);
     if (success) {
@@ -86,7 +86,7 @@ export default function VaultCard({ vault }: VaultCardProps) {
   const handleClaim = async () => {
     if (vault.claimableRewards <= 0 || isSubmitting) return;
     setIsSubmitting(true);
-    await claimRewards(vault.id, assetSymbol);
+    await claimRewards(vault.id, vault.assetType);
     setIsSubmitting(false);
   };
 
