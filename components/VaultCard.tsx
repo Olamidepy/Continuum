@@ -28,7 +28,7 @@ interface VaultCardProps {
 }
 
 export default function VaultCard({ vault }: VaultCardProps) {
-  const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault, wallet } = useContinuumStore();
+  const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault, wallet, isSimulation, simulatedNetwork } = useContinuumStore();
   const { increaseDeposit, extendLock, claimRewards } = useStacks();
   
   const [isDepositOpen, setIsDepositOpen] = useState(false);
@@ -46,7 +46,9 @@ export default function VaultCard({ vault }: VaultCardProps) {
     )
   );
 
-  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+  const isCelo = wallet.connected 
+    ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
+    : (isSimulation && simulatedNetwork === 'Celo');
   const assetSymbol = isCelo ? (vault.assetType === 'STX' ? 'CELO' : 'cUSD') : vault.assetType;
   const formattedAmount = vault.assetType === 'STX' ? formatSTX(vault.amount) : formatSBTC(vault.amount);
   const formattedRewards = vault.assetType === 'STX' ? formatSTX(vault.claimableRewards) : formatSBTC(vault.claimableRewards);

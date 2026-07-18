@@ -105,6 +105,8 @@ export default function Dashboard() {
     globalStats, 
     isSimulation,
     toggleSimulation,
+    simulatedNetwork,
+    setSimulatedNetwork,
     advanceBlocks,
     simulateExternalActivity,
     updateAvatar,
@@ -126,7 +128,9 @@ export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevConnected = useRef(false);
-  const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+  const isCelo = wallet.connected 
+    ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
+    : (isSimulation && simulatedNetwork === 'Celo');
   const displayAssetLabel = (asset: 'STX' | 'sBTC') => {
     if (isCelo) return asset === 'STX' ? 'CELO' : 'cUSD';
     return asset;
@@ -469,6 +473,35 @@ export default function Dashboard() {
                 {isSimulation ? 'Simulation Mode' : 'Live Stacks'}
               </button>
             </div>
+
+            {/* Sim Chain selector */}
+            {isSimulation && (
+              <div className="px-3.5 py-2 rounded-xl bg-[#121212] border border-white/5 flex items-center gap-3">
+                <span className="text-[10px] text-[#A0A0A0] font-bold uppercase tracking-wider">Sim Chain</span>
+                <div className="flex gap-1.5">
+                  <button 
+                    onClick={() => setSimulatedNetwork('Stacks')}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all cursor-pointer ${
+                      simulatedNetwork === 'Stacks' 
+                        ? 'bg-amber-500/10 border border-amber-500/20 text-[#F5B400]' 
+                        : 'bg-white/5 border border-white/5 text-[#A0A0A0] hover:text-white'
+                    }`}
+                  >
+                    Stacks (STX)
+                  </button>
+                  <button 
+                    onClick={() => setSimulatedNetwork('Celo')}
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all cursor-pointer ${
+                      simulatedNetwork === 'Celo' 
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-[#35D07F]' 
+                        : 'bg-white/5 border border-white/5 text-[#A0A0A0] hover:text-white'
+                    }`}
+                  >
+                    Celo (CELO)
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Block height controls */}
             <div className="px-3.5 py-2 rounded-xl bg-[#121212] border border-white/5 flex items-center gap-3">

@@ -68,6 +68,13 @@ export function useCelo() {
     }
 
     try {
+      // Request accounts first to trigger wallet authentication popup immediately
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found');
+      }
+      const address = accounts[0];
+
       // Try to switch to Celo Mainnet (chain ID 42220 / 0xa4ec)
       try {
         await ethereum.request({
@@ -97,11 +104,6 @@ export function useCelo() {
         }
       }
 
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-      if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts found');
-      }
-      const address = accounts[0];
       const { celoBal, cusdBal } = await fetchBalances(address);
 
       const providerName = ethereum.isMiniPay ? 'MiniPay' : 'Celo';

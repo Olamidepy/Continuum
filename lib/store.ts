@@ -6,6 +6,7 @@ interface ContinuumState {
   // Connection state
   wallet: WalletSession;
   isSimulation: boolean;
+  simulatedNetwork: 'Stacks' | 'Celo';
   currentBlockHeight: number;
   
   // Protocol state
@@ -19,6 +20,7 @@ interface ContinuumState {
   
   // Actions
   toggleSimulation: (val: boolean) => void;
+  setSimulatedNetwork: (val: 'Stacks' | 'Celo') => void;
   connectWallet: (address: string, provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | 'Celo' | 'MiniPay' | 'Celo (MiniPay)', stxBalance?: number, sbtcBalance?: number, celoBalance?: number, cusdBalance?: number) => void;
   disconnectWallet: () => void;
   advanceBlocks: (count: number) => void;
@@ -63,8 +65,11 @@ export const useContinuumStore = create<ContinuumState>()(
         walletProvider: null,
         stxBalance: 25000 * 1_000_000, // 25,000 STX
         sbtcBalance: 1.5 * 100_000_000, // 1.50 sBTC
+        celoBalance: 1500, // 1500 CELO
+        cusdBalance: 3000, // 3000 cUSD
       },
       isSimulation: true,
+      simulatedNetwork: 'Stacks',
       currentBlockHeight: INITIAL_BLOCK_HEIGHT,
       
       globalStats: {
@@ -123,6 +128,7 @@ export const useContinuumStore = create<ContinuumState>()(
       selectedWithdrawVault: null,
       
       toggleSimulation: (val) => set({ isSimulation: val }),
+      setSimulatedNetwork: (val) => set({ simulatedNetwork: val }),
       
       setVaults: (vaults) => set({ vaults }),
       setGlobalStats: (globalStats) => set({ globalStats }),
@@ -150,8 +156,8 @@ export const useContinuumStore = create<ContinuumState>()(
           walletProvider: null,
           stxBalance: 25000 * 1_000_000,
           sbtcBalance: 1.5 * 100_000_000,
-          celoBalance: 0,
-          cusdBalance: 0,
+          celoBalance: 1500,
+          cusdBalance: 3000,
         },
         vaults: state.vaults.filter(v => v.owner !== state.wallet.address) // Clear user vaults on disconnect
       })),
