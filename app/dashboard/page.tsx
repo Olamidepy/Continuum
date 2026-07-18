@@ -22,7 +22,8 @@ import {
   Edit2,
   Check,
   ArrowUpRight,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
 import { useStacks } from '../../hooks/useStacks';
@@ -128,6 +129,81 @@ export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const prevConnected = useRef(false);
+  const [isMiniPayApp, setIsMiniPayApp] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+      setIsMiniPayApp(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const autoConnect = async () => {
+      if (!wallet.connected && typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+        const ethereum = (window as any).ethereum;
+        try {
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          const address = accounts?.[0];
+          if (address) {
+            let celoBal = 0;
+            let cusdBal = 0;
+            try {
+              const balanceRes = await fetch('https://forno.celo.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'eth_getBalance',
+                  params: [address, 'latest']
+                })
+              });
+              const balanceData = await balanceRes.json();
+              if (balanceData && balanceData.result) {
+                celoBal = parseInt(balanceData.result, 16) / 1e18;
+              }
+
+              const cusdRes = await fetch('https://forno.celo.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 2,
+                  method: 'eth_call',
+                  params: [
+                    {
+                      to: '0x765de816845861e75a25fca122bb6898b8b1282a',
+                      data: '0x70a08231000000000000000000000000' + address.replace('0x', '')
+                    },
+                    'latest'
+                  ]
+                })
+              });
+              const cusdData = await cusdRes.json();
+              if (cusdData && cusdData.result) {
+                cusdBal = parseInt(cusdData.result, 16) / 1e18;
+              }
+            } catch (err) {
+              console.error('Error fetching Celo balances in dashboard:', err);
+            }
+
+            useContinuumStore.getState().connectWallet(
+              address,
+              'MiniPay',
+              0,
+              0,
+              celoBal,
+              cusdBal
+            );
+          }
+        } catch (e) {
+          console.error('MiniPay dashboard auto-connect failed:', e);
+        }
+      }
+    };
+    autoConnect();
+  }, [wallet.connected]);
+
   const isCelo = wallet.connected 
     ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
     : (isSimulation && simulatedNetwork === 'Celo');
@@ -530,6 +606,11 @@ export default function Dashboard() {
                 <Wallet className="w-4 h-4" />
                 {formatAddress(wallet.address)}
               </button>
+            ) : isMiniPayApp ? (
+              <div className="flex items-center gap-2 text-[#35D07F] text-xs font-semibold px-4 py-2.5 bg-[#35D07F]/10 border border-[#35D07F]/20 rounded-xl">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Connecting MiniPay...
+              </div>
             ) : (
               <button
                 onClick={() => setIsWalletOpen(true)}

@@ -13,7 +13,8 @@ import {
   Cpu,
   ChevronDown,
   ExternalLink,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from 'lucide-react';
 import MockupPhone from '../components/MockupPhone';
 import WalletModal from '../components/WalletModal';
@@ -76,6 +77,13 @@ export default function LandingPage() {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showWalletGuide, setShowWalletGuide] = useState(false);
+  const [isMiniPayApp, setIsMiniPayApp] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+      setIsMiniPayApp(true);
+    }
+  }, []);
 
   useEffect(() => {
     router.prefetch('/dashboard');
@@ -84,7 +92,8 @@ export default function LandingPage() {
       if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
         const ethereum = (window as any).ethereum;
         try {
-          const accounts = await ethereum.request({ method: 'eth_accounts' });
+          // Inside MiniPay, call eth_requestAccounts directly since it's implicit
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
           const address = accounts?.[0];
           if (address) {
             // Fetch balances from public Celo RPC
@@ -250,6 +259,11 @@ export default function LandingPage() {
                   <span className="hidden sm:inline">{formatAddress(wallet.address)} (Disconnect)</span>
                   <span className="sm:hidden">Disconnect</span>
                 </button>
+              ) : isMiniPayApp ? (
+                <div className="flex items-center gap-2 text-[#35D07F] text-xs font-semibold px-3 py-2 bg-[#35D07F]/10 border border-[#35D07F]/20 rounded-xl">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Connecting MiniPay...
+                </div>
               ) : (
                 <div className="relative">
                   <button
