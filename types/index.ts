@@ -11,6 +11,7 @@ export interface Vault {
   active: boolean;
   isPending?: boolean;
   txId?: string;
+  network?: 'Stacks' | 'Celo';
 }
 
 export interface Transaction {
@@ -23,6 +24,7 @@ export interface Transaction {
   timestamp: number;
   status: 'pending' | 'success' | 'failed';
   durationBlocks?: number;
+  network?: 'Stacks' | 'Celo';
 }
 
 export interface WalletSession {

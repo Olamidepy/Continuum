@@ -96,6 +96,7 @@ export const useContinuumStore = create<ContinuumState>()(
           lastRewardPerShare: '100000000',
           claimableRewards: 125 * 1_000_000, // 125 STX accrued
           active: true,
+          network: 'Stacks',
         },
         {
           id: 2,
@@ -108,6 +109,7 @@ export const useContinuumStore = create<ContinuumState>()(
           lastRewardPerShare: '5000000',
           claimableRewards: 0.015 * 100_000_000, // 0.015 sBTC accrued
           active: true,
+          network: 'Stacks',
         },
         {
           id: 3,
@@ -120,6 +122,7 @@ export const useContinuumStore = create<ContinuumState>()(
           lastRewardPerShare: '200000000',
           claimableRewards: 45 * 1_000_000,
           active: true,
+          network: 'Stacks',
         }
       ],
       
@@ -265,6 +268,7 @@ export const useContinuumStore = create<ContinuumState>()(
           lastRewardPerShare: lastAcc.toString(),
           claimableRewards: 0,
           active: true,
+          network: state.simulatedNetwork,
         };
         
         set((state) => {
@@ -299,6 +303,7 @@ export const useContinuumStore = create<ContinuumState>()(
           assetType,
           amount,
           status: 'success',
+          network: state.simulatedNetwork,
         });
         
         return vaultId;
@@ -667,7 +672,11 @@ export const useContinuumStore = create<ContinuumState>()(
       },
       
       addTransaction: (tx) => set((state) => {
+        const activeNetwork = state.wallet.connected
+          ? (state.wallet.walletProvider === 'Celo' || state.wallet.walletProvider === 'MiniPay' || state.wallet.walletProvider === 'Celo (MiniPay)' ? 'Celo' : 'Stacks')
+          : state.simulatedNetwork;
         const newTx: Transaction = {
+          network: tx.network || activeNetwork,
           ...tx,
           id: Math.random().toString(36).substring(2, 11),
           txId: tx.txId || '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),

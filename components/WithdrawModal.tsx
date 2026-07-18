@@ -155,9 +155,11 @@ export default function WithdrawModal() {
   };
 
   const isMatured = selectedVault ? currentBlockHeight >= selectedVault.unlockAt : false;
-  const isCelo = wallet.connected 
-    ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
-    : (isSimulation && simulatedNetwork === 'Celo');
+  const isCelo = selectedVault 
+    ? selectedVault.network === 'Celo' 
+    : (wallet.connected 
+        ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
+        : (isSimulation && simulatedNetwork === 'Celo'));
   const rawAsset = selectedVault?.assetType || 'STX';
   const asset = isCelo ? (rawAsset === 'STX' ? 'CELO' : 'cUSD') : rawAsset;
   const decimals = rawAsset === 'STX' ? 1_000_000 : 100_000_000;

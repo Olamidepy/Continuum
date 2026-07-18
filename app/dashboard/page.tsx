@@ -22,7 +22,7 @@ import {
   Edit2,
   Check,
   ArrowUpRight,
-  Sparkles,
+  Zap,
   Loader2
 } from 'lucide-react';
 import { useContinuumStore } from '../../lib/store';
@@ -361,12 +361,21 @@ export default function Dashboard() {
   if (!isMounted) return null;
 
   // Calculate user specific sums
+  const activeNetwork = isCelo ? 'Celo' : 'Stacks';
   const userVaults = [
-    ...vaults.filter(v => v.active && (v.owner === wallet.address || isSimulation)),
+    ...vaults.filter(v => 
+      v.active && 
+      (v.owner === wallet.address || isSimulation) && 
+      (v.network === activeNetwork || (!v.network && activeNetwork === 'Stacks'))
+    ),
     ...(isSimulation 
       ? [] 
       : transactions
-          .filter(tx => tx.type === 'create' && tx.status === 'pending')
+          .filter(tx => 
+            tx.type === 'create' && 
+            tx.status === 'pending' && 
+            (tx.network === activeNetwork || (!tx.network && activeNetwork === 'Stacks'))
+          )
           .map(tx => ({
             id: -tx.timestamp,
             owner: wallet.address || '',
@@ -379,7 +388,8 @@ export default function Dashboard() {
             claimableRewards: 0,
             active: true,
             isPending: true,
-            txId: tx.txId
+            txId: tx.txId,
+            network: activeNetwork
           })))
   ];
   
@@ -801,7 +811,7 @@ export default function Dashboard() {
         {/* Quick Actions Panel */}
         <section className="mt-8 text-left">
           <h2 className="text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-3.5 flex items-center gap-2 font-mono">
-            <Sparkles className="w-3.5 h-3.5 text-[#F5B400]" /> Quick Operations
+            <Zap className="w-3.5 h-3.5 text-[#F5B400]" /> Quick Operations
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             

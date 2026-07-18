@@ -211,6 +211,7 @@ export function useCelo() {
         assetType,
         amount: amountRaw,
         status: 'success',
+        network: 'Celo',
       });
 
       // Add vault card to UI locally
@@ -224,7 +225,8 @@ export function useCelo() {
         unlockAt: 100000 + durationBlocks,
         lastRewardPerShare: '0',
         claimableRewards: 0,
-        active: true
+        active: true,
+        network: 'Celo' as const
       };
       setVaults([...vaults, newVault]);
 
@@ -295,6 +297,7 @@ export function useCelo() {
         assetType,
         amount: amountRaw,
         status: 'success',
+        network: 'Celo',
       });
 
       // Add vault card to UI locally
@@ -308,7 +311,8 @@ export function useCelo() {
         unlockAt: 100000 + durationBlocks,
         lastRewardPerShare: '0',
         claimableRewards: 0,
-        active: true
+        active: true,
+        network: 'Celo' as const
       };
       setVaults([...vaults, newVault]);
 
