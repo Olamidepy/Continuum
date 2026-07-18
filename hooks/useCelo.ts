@@ -2,6 +2,19 @@
 
 import { useContinuumStore } from '../lib/store';
 
+// EIP-6963: Collect wallet providers announced via events
+const eip6963Store: Array<{ info: { name: string; icon?: string; uuid: string }; provider: any }> = [];
+if (typeof window !== 'undefined') {
+  window.addEventListener('eip6963:announceProvider', ((event: any) => {
+    const detail = event.detail;
+    if (detail?.provider && !eip6963Store.some(p => p.info.uuid === detail.info?.uuid)) {
+      eip6963Store.push(detail);
+    }
+  }) as EventListener);
+  // Request providers from all installed wallets
+  window.dispatchEvent(new Event('eip6963:requestProvider'));
+}
+
 export function useCelo() {
   const {
     wallet,
@@ -59,17 +72,69 @@ export function useCelo() {
     return { celoBal, cusdBal };
   };
 
-  const handleConnectCelo = async () => {
-    if (typeof window === 'undefined') return;
-    const ethereum = (window as any).ethereum;
-    
-    if (!ethereum) {
-      throw new Error('No injected wallet found. Please install MiniPay or a compatible wallet extension.');
+  /**
+   * Discover all available EVM wallet providers using EIP-6963 and legacy fallbacks.
+   * Returns an array of { name, provider } objects.
+   */
+  const discoverProviders = (): Array<{ name: string; provider: any }> => {
+    if (typeof window === 'undefined') return [];
+    const found: Array<{ name: string; provider: any }> = [];
+    const seen = new Set<any>();
+
+    // Check for EIP-6963 providers (modern standard)
+    for (const detail of eip6963Store) {
+      if (detail?.provider && !seen.has(detail.provider)) {
+        seen.add(detail.provider);
+        found.push({ name: detail.info?.name || 'Unknown Wallet', provider: detail.provider });
+      }
     }
 
+    // Check legacy providers array (MetaMask multi-provider)
+    const ethereum = (window as any).ethereum;
+    if (ethereum?.providers && Array.isArray(ethereum.providers)) {
+      for (const p of ethereum.providers) {
+        if (p && !seen.has(p)) {
+          seen.add(p);
+          const name = p.isMetaMask ? 'MetaMask' 
+            : p.isRabby ? 'Rabby' 
+            : p.isZerion ? 'Zerion'
+            : p.isCoinbaseWallet ? 'Coinbase'
+            : 'EVM Wallet';
+          found.push({ name, provider: p });
+        }
+      }
+    }
+
+    // Fallback: use window.ethereum directly if nothing else found
+    if (found.length === 0 && ethereum) {
+      const name = ethereum.isMiniPay ? 'MiniPay'
+        : ethereum.isMetaMask ? 'MetaMask' 
+        : ethereum.isRabby ? 'Rabby' 
+        : ethereum.isZerion ? 'Zerion'
+        : 'Browser Wallet';
+      found.push({ name, provider: ethereum });
+    }
+
+    return found;
+  };
+
+  /**
+   * Connect to Celo using a specific EVM provider.
+   * If no provider is given, uses the first discovered provider.
+   */
+  const handleConnectCelo = async (selectedProvider?: any) => {
+    if (typeof window === 'undefined') return;
+
+    const providers = discoverProviders();
+    if (providers.length === 0) {
+      throw new Error('No injected wallet found. Please install MetaMask, Rabby, or a compatible wallet extension.');
+    }
+
+    const provider = selectedProvider || providers[0].provider;
+
     try {
-      // Request accounts first to trigger wallet authentication popup immediately
-      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      // Request accounts first to trigger the wallet authentication popup immediately
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
       if (!accounts || accounts.length === 0) {
         throw new Error('No accounts found');
       }
@@ -77,13 +142,13 @@ export function useCelo() {
 
       // Try to switch to Celo Mainnet (chain ID 42220 / 0xa4ec)
       try {
-        await ethereum.request({
+        await provider.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0xa4ec' }],
         });
       } catch (switchError: any) {
         if (switchError.code === 4902) {
-          await ethereum.request({
+          await provider.request({
             method: 'wallet_addEthereumChain',
             params: [
               {
@@ -106,7 +171,7 @@ export function useCelo() {
 
       const { celoBal, cusdBal } = await fetchBalances(address);
 
-      const providerName = ethereum.isMiniPay ? 'MiniPay' : 'Celo';
+      const providerName = provider.isMiniPay ? 'MiniPay' : 'Celo';
       connectWallet(address, providerName, 0, 0, celoBal, cusdBal);
     } catch (err: any) {
       console.error('Ethereum request failed:', err);
@@ -260,6 +325,7 @@ export function useCelo() {
   return {
     wallet,
     connectCelo: handleConnectCelo,
+    discoverProviders,
     createCeloVault,
     updateBalances,
   };

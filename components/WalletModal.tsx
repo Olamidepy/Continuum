@@ -14,7 +14,7 @@ interface WalletModalProps {
   onClose: () => void;
 }
 
-type ModalPhase = 'select' | 'connecting' | 'install' | 'success';
+type ModalPhase = 'select' | 'celo-pick' | 'connecting' | 'install' | 'success';
 
 // Chrome Extension install URLs
 const INSTALL_URLS: Record<string, string> = {
@@ -121,12 +121,13 @@ const NON_STACKS_WALLETS = ['Asigna', 'Fordefi', 'WalletConnect'];
 export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const router = useRouter();
   const connectWallet = useContinuumStore((state) => state.connectWallet);
-  const { connectCelo } = useCelo();
+  const { connectCelo, discoverProviders } = useCelo();
 
   const [phase, setPhase] = useState<ModalPhase>('select');
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [countdown, setCountdown] = useState(5);
   const [installUrl, setInstallUrl] = useState('');
+  const [evmProviders, setEvmProviders] = useState<Array<{ name: string; provider: any }>>([]);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const confettiFired = useRef(false);
 
@@ -178,32 +179,50 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
     startCountdown();
   };
 
+  const handleCeloProviderSelect = async (provider: any) => {
+    try {
+      setPhase('connecting');
+      await connectCelo(provider);
+      setPhase('success');
+      if (!confettiFired.current) {
+        confettiFired.current = true;
+        setTimeout(shootConfetti, 120);
+      }
+      startCountdown();
+    } catch (err) {
+      console.error('Celo connection error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg === 'cancelled') {
+        setPhase('select');
+        setSelectedWallet('');
+      } else if (msg.includes('No injected wallet found') || msg.includes('install') || msg.includes('compatible')) {
+        setInstallUrl('https://metamask.io/download/');
+        setPhase('install');
+      } else {
+        setPhase('select');
+        setSelectedWallet('');
+      }
+    }
+  };
+
   const handleSelectWallet = async (walletName: string) => {
     setSelectedWallet(walletName);
 
     if (walletName === 'Celo (MiniPay)') {
-      try {
-        setPhase('connecting');
-        await connectCelo();
-        setPhase('success');
-        if (!confettiFired.current) {
-          confettiFired.current = true;
-          setTimeout(shootConfetti, 120);
-        }
-        startCountdown();
-      } catch (err) {
-        console.error('Celo connection error:', err);
-        const msg = err instanceof Error ? err.message : String(err);
-        if (msg === 'cancelled') {
-          setPhase('select');
-          setSelectedWallet('');
-        } else if (msg.includes('No injected wallet found') || msg.includes('install') || msg.includes('compatible')) {
-          setInstallUrl('https://opera.com/minipay');
-          setPhase('install');
-        } else {
-          setPhase('select');
-          setSelectedWallet('');
-        }
+      // Discover available EVM providers and show picker
+      const providers = discoverProviders();
+      if (providers.length === 0) {
+        setInstallUrl('https://metamask.io/download/');
+        setPhase('install');
+        return;
+      }
+      if (providers.length === 1) {
+        // Only one provider, connect directly
+        await handleCeloProviderSelect(providers[0].provider);
+      } else {
+        // Multiple providers, show picker
+        setEvmProviders(providers);
+        setPhase('celo-pick');
       }
       return;
     }
@@ -381,6 +400,72 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                       <span className="text-white font-medium">Non-Custodial.</span>{' '}
                       Continuum never holds your private keys or accesses your wallet without explicit smart contract approval.
                     </p>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ── CELO EVM WALLET PICKER PHASE ── */}
+              {phase === 'celo-pick' && (
+                <motion.div
+                  key="celo-pick"
+                  initial={{ opacity: 0, x: 16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -16 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-white tracking-tight">Select EVM Wallet</h3>
+                      <p className="text-xs text-[#A0A0A0] mt-1">Choose which wallet to connect for Celo network.</p>
+                    </div>
+                    <button
+                      onClick={() => { setPhase('select'); setSelectedWallet(''); }}
+                      className="w-10 h-10 rounded-full bg-[#1a1a1a] border border-white/[0.08] flex items-center justify-center text-[#A0A0A0] hover:text-white hover:border-white/15 transition-all cursor-pointer"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="p-5 flex flex-col gap-2.5">
+                    {evmProviders.map((p, i) => (
+                      <motion.button
+                        key={`${p.name}-${i}`}
+                        onClick={() => handleCeloProviderSelect(p.provider)}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        className="group flex items-center justify-between p-4 rounded-[16px] bg-[#181818] hover:bg-[#1f1f1f] border border-white/5 hover:border-[#35D07F]/30 transition-all duration-200 text-left cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-[12px] bg-[#121212] border border-white/10 flex items-center justify-center group-hover:border-[#35D07F]/40 transition-colors shrink-0">
+                            {p.name === 'MetaMask' ? (
+                              <svg viewBox="0 0 100 100" className="w-7 h-7"><path d="M89.1 10L55.4 34.8l6.2-14.7L89.1 10z" fill="#E2761B"/><path d="M10.9 10l33.4 25.1-5.9-15L10.9 10z" fill="#E4761B"/><path d="M77 67.4l-9 13.8 19.2 5.3 5.5-18.7-15.7-.4z" fill="#E4761B"/><path d="M7.4 67.8L12.8 86.5l19.2-5.3-9-13.8-15.6.4z" fill="#E4761B"/><path d="M30.7 43.6l-5.3 8 19 .8-.7-20.4-13 11.6z" fill="#E4761B"/><path d="M69.3 43.6L56 31.8l-.5 20.6 19-.8-5.2-8z" fill="#E4761B"/><path d="M32 81.2l11.5-5.6-9.9-7.7-1.6 13.3z" fill="#E4761B"/><path d="M56.5 75.6L68 81.2l-1.6-13.3-9.9 7.7z" fill="#E4761B"/></svg>
+                            ) : p.name === 'Rabby' ? (
+                              <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#8697FF]"><circle cx="50" cy="50" r="35" fill="currentColor" opacity="0.15"/><circle cx="50" cy="50" r="20" fill="currentColor"/></svg>
+                            ) : p.name === 'Zerion' ? (
+                              <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#2962EF]"><rect x="20" y="20" width="60" height="60" rx="14" fill="currentColor" opacity="0.15"/><path d="M30 65L50 35l20 30H30z" fill="currentColor"/></svg>
+                            ) : (
+                              <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#A0A0A0]"><circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none"/><circle cx="50" cy="50" r="10" fill="currentColor"/></svg>
+                            )}
+                          </div>
+                          <div>
+                            <span className="font-semibold text-white group-hover:text-[#35D07F] transition-colors text-sm">
+                              {p.name}
+                            </span>
+                            <p className="text-xs text-[#A0A0A0] mt-0.5">Connect to Celo via {p.name}</p>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-[#A0A0A0] group-hover:text-[#35D07F] group-hover:translate-x-1 transition-all shrink-0" />
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  <div className="px-6 py-4 bg-[#0d0d0d] border-t border-white/5">
+                    <button
+                      onClick={() => { setPhase('select'); setSelectedWallet(''); }}
+                      className="text-xs text-[#A0A0A0] hover:text-white transition-colors cursor-pointer"
+                    >
+                      ← Back to wallet list
+                    </button>
                   </div>
                 </motion.div>
               )}
