@@ -463,7 +463,7 @@ export function useStacks() {
             lastRewardPerShare: decoded['last-reward-per-share'].toString(),
             claimableRewards: Number(decoded['claimable-rewards']),
             active: decoded.active,
-            network: 'Stacks',
+            network: 'Stacks' as const,
           });
         }
       }
