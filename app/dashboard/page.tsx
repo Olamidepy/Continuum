@@ -361,7 +361,7 @@ export default function Dashboard() {
   if (!isMounted) return null;
 
   // Calculate user specific sums
-  const activeNetwork = isCelo ? 'Celo' : 'Stacks';
+  const activeNetwork: 'Stacks' | 'Celo' = isCelo ? 'Celo' : 'Stacks';
   const userVaults = [
     ...vaults.filter(v => 
       v.active && 
