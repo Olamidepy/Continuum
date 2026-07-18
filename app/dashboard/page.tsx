@@ -114,7 +114,8 @@ export default function Dashboard() {
     updateCustomAvatarName,
     addToast,
     removeToast,
-    setWithdrawOpen
+    setWithdrawOpen,
+    updateTransactionStatus
   } = useContinuumStore();
 
   const { wallet, createVault, disconnectWallet, claimRewards, loadRealVaults, loadGlobalStats } = useStacks();
@@ -297,10 +298,90 @@ export default function Dashboard() {
     }
   }, [isSimulation, wallet.connected, wallet.address, wallet.walletProvider, updateBalances]);
 
+  // Poll status of pending Stacks/Celo transactions
+  useEffect(() => {
+    if (isSimulation) return;
+
+    const checkPendingTransactions = async () => {
+      const pendingTxs = transactions.filter(tx => tx.status === 'pending');
+      
+      for (const tx of pendingTxs) {
+        if (!tx.txId) continue;
+        
+        try {
+          if (tx.txId.startsWith('0x') && tx.txId.length === 66) {
+            const isCeloTx = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+            
+            if (isCeloTx) {
+              // Celo JSON-RPC check transaction receipt
+              const res = await fetch('https://forno.celo.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'eth_getTransactionReceipt',
+                  params: [tx.txId]
+                })
+              });
+              const data = await res.json();
+              if (data && data.result) {
+                const status = data.result.status === '0x1' ? 'success' : 'failed';
+                updateTransactionStatus(tx.txId, status);
+                addToast(status === 'success' ? 'success' : 'error', status === 'success' ? `Celo transaction was successfully processed!` : `Celo transaction failed.`);
+                updateBalances();
+              }
+            } else {
+              // Stacks transaction check via Hiro API
+              const res = await fetch(`https://api.mainnet.hiro.so/extended/v1/tx/${tx.txId}`);
+              if (res.ok) {
+                const data = await res.json();
+                if (data.tx_status === 'success') {
+                  updateTransactionStatus(tx.txId, 'success');
+                  addToast('success', 'Stacks transaction confirmed on-chain!');
+                  if (wallet.address) loadRealVaults(wallet.address);
+                } else if (data.tx_status === 'abort_by_response' || data.tx_status === 'abort_by_post_condition' || data.tx_status === 'failed') {
+                  updateTransactionStatus(tx.txId, 'failed');
+                  addToast('error', 'Stacks transaction failed or aborted.');
+                }
+              }
+            }
+          }
+        } catch (err) {
+          console.error('Error checking pending transaction:', err);
+        }
+      }
+    };
+
+    // Poll every 8 seconds
+    const interval = setInterval(checkPendingTransactions, 8000);
+    return () => clearInterval(interval);
+  }, [isSimulation, transactions, wallet.walletProvider, wallet.address, updateTransactionStatus, loadRealVaults, updateBalances, addToast]);
+
   if (!isMounted) return null;
 
   // Calculate user specific sums
-  const userVaults = vaults.filter(v => v.active && (v.owner === wallet.address || isSimulation));
+  const userVaults = [
+    ...vaults.filter(v => v.active && (v.owner === wallet.address || isSimulation)),
+    ...(isSimulation 
+      ? [] 
+      : transactions
+          .filter(tx => tx.type === 'create' && tx.status === 'pending')
+          .map(tx => ({
+            id: -tx.timestamp,
+            owner: wallet.address || '',
+            amount: tx.amount,
+            shares: tx.amount * (tx.durationBlocks === 52560 ? 2 : tx.durationBlocks === 25920 ? 1.5 : tx.durationBlocks === 12960 ? 1.2 : 1),
+            assetType: tx.assetType,
+            createdAt: currentBlockHeight,
+            unlockAt: currentBlockHeight + (tx.durationBlocks || 12960),
+            lastRewardPerShare: '0',
+            claimableRewards: 0,
+            active: true,
+            isPending: true,
+            txId: tx.txId
+          })))
+  ];
   
   const totalLockedSTX = userVaults
     .filter(v => v.assetType === 'STX')

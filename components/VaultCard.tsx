@@ -11,7 +11,8 @@ import {
   ArrowUpRight, 
   AlertTriangle,
   Clock,
-  Sparkles
+  Sparkles,
+  Loader2
 } from 'lucide-react';
 import { Vault } from '../types';
 import { 
@@ -28,7 +29,7 @@ interface VaultCardProps {
 }
 
 export default function VaultCard({ vault }: VaultCardProps) {
-  const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault, wallet, isSimulation, simulatedNetwork } = useContinuumStore();
+  const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault, wallet, isSimulation, simulatedNetwork, transactions } = useContinuumStore();
   const { increaseDeposit, extendLock, claimRewards } = useStacks();
   
   const [isDepositOpen, setIsDepositOpen] = useState(false);
@@ -37,8 +38,11 @@ export default function VaultCard({ vault }: VaultCardProps) {
   const [selectedDuration, setSelectedDuration] = useState('12960'); // default 90 days
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isMatured = currentBlockHeight >= vault.unlockAt;
-  const progressPercent = Math.min(
+  const isPending = vault.isPending || transactions.some(tx => tx.vaultId === vault.id && tx.status === 'pending');
+  const pendingTx = transactions.find(tx => (tx.vaultId === vault.id || (vault.isPending && tx.type === 'create')) && tx.status === 'pending');
+
+  const isMatured = vault.isPending ? false : currentBlockHeight >= vault.unlockAt;
+  const progressPercent = vault.isPending ? 0 : Math.min(
     100, 
     Math.max(
       0, 
@@ -115,7 +119,9 @@ export default function VaultCard({ vault }: VaultCardProps) {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs text-[#A0A0A0] font-medium font-mono">Vault #{String(vault.id).padStart(2, '0')}</span>
+                <span className="text-xs text-[#A0A0A0] font-medium font-mono">
+                  {vault.isPending ? 'Vault #Pending' : `Vault #${String(vault.id).padStart(2, '0')}`}
+                </span>
                 <span className="w-1 h-1 rounded-full bg-white/20"></span>
                 <span className="text-xs font-bold text-white uppercase tracking-wider">{assetSymbol} Lock</span>
               </div>
@@ -124,14 +130,21 @@ export default function VaultCard({ vault }: VaultCardProps) {
           </div>
 
           <div className="text-right">
-            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border ${
-              isMatured 
-                ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                : 'bg-amber-500/5 border-amber-500/20 text-[#FFD54A]'
-            } flex items-center gap-1`}>
-              {isMatured ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-              {isMatured ? 'Matured' : 'Locked'}
-            </span>
+            {isPending ? (
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border bg-amber-500/10 border-amber-500/30 text-[#FFD54A] flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Pending
+              </span>
+            ) : (
+              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border ${
+                isMatured 
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                  : 'bg-amber-500/5 border-amber-500/20 text-[#FFD54A]'
+              } flex items-center gap-1`}>
+                {isMatured ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                {isMatured ? 'Matured' : 'Locked'}
+              </span>
+            )}
             <div className="text-[10px] font-semibold font-mono text-[#A0A0A0] mt-1.5">
               Multiplier: {multiplier.toFixed(1)}x
             </div>
@@ -158,11 +171,11 @@ export default function VaultCard({ vault }: VaultCardProps) {
             </div>
 
             <div className="flex justify-between items-center text-[10px] font-medium text-[#A0A0A0] mt-1.5 font-mono">
-              <span>Block: {vault.createdAt}</span>
+              <span>Block: {vault.isPending ? 'Pending' : vault.createdAt}</span>
               <span className="text-white font-semibold">
-                {formatBlockCountdown(vault.unlockAt, currentBlockHeight)}
+                {vault.isPending ? 'Calculating countdown...' : formatBlockCountdown(vault.unlockAt, currentBlockHeight)}
               </span>
-              <span>Unlock: {vault.unlockAt}</span>
+              <span>Unlock: {vault.isPending ? 'Pending' : vault.unlockAt}</span>
             </div>
           </div>
 
@@ -180,9 +193,9 @@ export default function VaultCard({ vault }: VaultCardProps) {
             
             <button
               onClick={handleClaim}
-              disabled={vault.claimableRewards <= 0 || isSubmitting}
+              disabled={vault.claimableRewards <= 0 || isSubmitting || isPending}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                vault.claimableRewards > 0
+                vault.claimableRewards > 0 && !isPending
                   ? 'bg-[#F5B400] border-[#F5B400] text-black hover:bg-[#FFD54A] cursor-pointer shadow-[0_4px_12px_rgba(245,180,0,0.15)]'
                   : 'bg-[#181818] border-white/5 text-[#A0A0A0] cursor-not-allowed'
               }`}
@@ -194,7 +207,18 @@ export default function VaultCard({ vault }: VaultCardProps) {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5 z-10 border-t border-white/5 pt-4">
-          {isMatured ? (
+          {isPending ? (
+            <div className="flex-1 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-amber-500 text-center text-xs font-semibold flex items-center justify-center gap-1.5 animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              {pendingTx?.type === 'create' ? 'Creating Vault...' : 
+               pendingTx?.type === 'deposit' ? 'Processing Deposit...' :
+               pendingTx?.type === 'extend' ? 'Extending Lock...' :
+               pendingTx?.type === 'withdraw' ? 'Withdrawing Capital...' :
+               pendingTx?.type === 'emergency' ? 'Processing Early Exit...' :
+               pendingTx?.type === 'claim' ? 'Claiming Rewards...' :
+               'Transaction pending...'}
+            </div>
+          ) : isMatured ? (
             <button
               onClick={() => {
                 setSelectedWithdrawVault(vault);

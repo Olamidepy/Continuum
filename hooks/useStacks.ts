@@ -159,6 +159,8 @@ export function useStacks() {
             assetType,
             amount,
             status: 'pending',
+            durationBlocks,
+            txId: data.txId,
           });
           resolve(null);
         },

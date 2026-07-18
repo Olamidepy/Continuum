@@ -38,6 +38,7 @@ interface ContinuumState {
   // Background simulation ticks
   simulateExternalActivity: () => void;
   addTransaction: (tx: Omit<Transaction, 'id' | 'timestamp'>) => void;
+  updateTransactionStatus: (txId: string, status: 'success' | 'failed') => void;
   updateAvatar: (index: number, name: string) => void;
   updateCustomAvatarName: (customName: string) => void;
 
@@ -669,13 +670,19 @@ export const useContinuumStore = create<ContinuumState>()(
         const newTx: Transaction = {
           ...tx,
           id: Math.random().toString(36).substring(2, 11),
-          txId: '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+          txId: tx.txId || '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
           timestamp: Date.now(),
         };
         return {
           transactions: [newTx, ...state.transactions].slice(0, 50), // keep last 50
         };
       }),
+
+      updateTransactionStatus: (txId, status) => set((state) => ({
+        transactions: state.transactions.map((tx) => 
+          tx.txId === txId || tx.id === txId ? { ...tx, status } : tx
+        ),
+      })),
     }),
     {
       name: 'continuum-storage',

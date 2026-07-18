@@ -9,6 +9,8 @@ export interface Vault {
   lastRewardPerShare: string; // Serialized BigInt representation
   claimableRewards: number; // Pending rewards available for claim
   active: boolean;
+  isPending?: boolean;
+  txId?: string;
 }
 
 export interface Transaction {
@@ -20,6 +22,7 @@ export interface Transaction {
   amount: number;
   timestamp: number;
   status: 'pending' | 'success' | 'failed';
+  durationBlocks?: number;
 }
 
 export interface WalletSession {
