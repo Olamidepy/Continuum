@@ -8,7 +8,8 @@ export function useCelo() {
     vaults,
     connectWallet,
     setVaults,
-    addTransaction
+    addTransaction,
+    isSimulation
   } = useContinuumStore();
 
   const fetchBalances = async (address: string) => {
@@ -63,11 +64,7 @@ export function useCelo() {
     const ethereum = (window as any).ethereum;
     
     if (!ethereum) {
-      // Fallback to beautiful desktop simulation for Celo/MiniPay
-      console.warn('No injected wallet found, falling back to Celo simulation mode.');
-      const mockAddress = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
-      connectWallet(mockAddress, 'Celo', 0, 0, 12.5, 250.0);
-      return;
+      throw new Error('No injected wallet found. Please install MiniPay or a compatible wallet extension.');
     }
 
     try {
@@ -109,11 +106,13 @@ export function useCelo() {
 
       const providerName = ethereum.isMiniPay ? 'MiniPay' : 'Celo';
       connectWallet(address, providerName, 0, 0, celoBal, cusdBal);
-    } catch (err) {
-      console.error('Ethereum request failed, falling back to Celo simulation:', err);
-      // Fallback on request cancellation/failure
-      const mockAddress = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
-      connectWallet(mockAddress, 'Celo', 0, 0, 12.5, 250.0);
+    } catch (err: any) {
+      console.error('Ethereum request failed:', err);
+      // Propagate the error so the UI modal can handle it correctly
+      if (err.code === 4001 || err.message?.includes('rejected') || err.message?.includes('cancelled')) {
+        throw new Error('cancelled');
+      }
+      throw err;
     }
   };
 
@@ -136,9 +135,8 @@ export function useCelo() {
   const createCeloVault = async (amountRaw: number, durationBlocks: number, assetType: 'STX' | 'sBTC') => {
     if (typeof window === 'undefined' || !wallet.address) return null;
     const ethereum = (window as any).ethereum;
-    const isSimulated = !ethereum || wallet.address === '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
 
-    if (isSimulated) {
+    if (isSimulation) {
       // Add simulated tx log
       addTransaction({
         type: 'create',
@@ -178,6 +176,10 @@ export function useCelo() {
       );
 
       return vaults.length + 1;
+    }
+
+    if (!ethereum) {
+      throw new Error('No compatible wallet found for Celo transactions.');
     }
 
     const providerName = wallet.walletProvider || 'Celo';

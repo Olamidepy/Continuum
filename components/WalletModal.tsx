@@ -194,7 +194,10 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
       } catch (err) {
         console.error('Celo connection error:', err);
         const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes('No injected wallet found') || msg.includes('install')) {
+        if (msg === 'cancelled') {
+          setPhase('select');
+          setSelectedWallet('');
+        } else if (msg.includes('No injected wallet found') || msg.includes('install') || msg.includes('compatible')) {
           setInstallUrl('https://opera.com/minipay');
           setPhase('install');
         } else {

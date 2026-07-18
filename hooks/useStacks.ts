@@ -11,6 +11,7 @@ import {
   ClarityType
 } from '@stacks/transactions';
 import { useContinuumStore } from '../lib/store';
+import { useCelo } from './useCelo';
 
 // Stacks Contract Config (Mainnet)
 const CONTRACT_ADDRESS = 'SP20H0X9X4KXDAFQWZGV57BQCWZJWXMVF85KWBEMJ';
@@ -26,6 +27,7 @@ export function useStacks() {
   const { 
     wallet, 
     isSimulation, 
+    vaults,
     connectWallet, 
     disconnectWallet,
     createVaultSim,
@@ -38,6 +40,31 @@ export function useStacks() {
     setVaults,
     setGlobalStats
   } = useContinuumStore();
+
+  const { updateBalances } = useCelo();
+
+  const runCeloTx = async (to: string, valueHex: string, data = '0x') => {
+    if (typeof window === 'undefined') return '';
+    const ethereum = (window as any).ethereum;
+    if (!ethereum) {
+      throw new Error('No injected Ethereum/Celo wallet found.');
+    }
+    const accounts = await ethereum.request({ method: 'eth_accounts' });
+    const fromAddress = accounts?.[0] || wallet.address;
+    if (!fromAddress) {
+      throw new Error('No wallet connected.');
+    }
+    const txParams = {
+      from: fromAddress,
+      to,
+      value: valueHex,
+      data,
+    };
+    return await ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [txParams]
+    });
+  };
 
   const network = new StacksMainnet();
 
@@ -144,9 +171,38 @@ export function useStacks() {
   };
 
   const increaseDeposit = async (vaultId: number, additionalAmount: number): Promise<boolean> => {
+    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+
     if (isSimulation) {
       increaseDepositSim(vaultId, additionalAmount);
       return true;
+    }
+
+    if (isCelo) {
+      const vault = vaults.find(v => v.id === vaultId);
+      const assetType = vault?.assetType || 'STX';
+      const weiAmount = assetType === 'STX' 
+        ? BigInt(additionalAmount) * BigInt(1e12) 
+        : BigInt(additionalAmount) * BigInt(1e10);
+
+      try {
+        if (assetType === 'STX') {
+          // Native CELO transfer
+          await runCeloTx(wallet.address || '', '0x' + weiAmount.toString(16));
+        } else {
+          // cUSD ERC20 transfer (contract: 0x765de816845861e75a25fca122bb6898b8b1282a)
+          const paddedTo = (wallet.address || '').replace('0x', '').padStart(64, '0');
+          const paddedValue = weiAmount.toString(16).padStart(64, '0');
+          const data = '0xa9059cbb' + paddedTo + paddedValue;
+          await runCeloTx('0x765de816845861e75a25fca122bb6898b8b1282a', '0x0', data);
+        }
+        increaseDepositSim(vaultId, additionalAmount);
+        await updateBalances();
+        return true;
+      } catch (err) {
+        console.error('Celo increase deposit failed:', err);
+        throw err;
+      }
     }
 
     return new Promise((resolve) => {
@@ -180,9 +236,23 @@ export function useStacks() {
   };
 
   const extendLock = async (vaultId: number, newDurationBlocks: number): Promise<boolean> => {
+    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+
     if (isSimulation) {
       extendLockSim(vaultId, newDurationBlocks);
       return true;
+    }
+
+    if (isCelo) {
+      try {
+        await runCeloTx(wallet.address || '', '0x0');
+        extendLockSim(vaultId, newDurationBlocks);
+        await updateBalances();
+        return true;
+      } catch (err) {
+        console.error('Celo extendLock failed:', err);
+        throw err;
+      }
     }
 
     return new Promise((resolve) => {
@@ -214,8 +284,22 @@ export function useStacks() {
   };
 
   const claimRewards = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
+    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+
     if (isSimulation) {
       return claimRewardsSim(vaultId);
+    }
+
+    if (isCelo) {
+      try {
+        await runCeloTx(wallet.address || '', '0x0');
+        const payout = claimRewardsSim(vaultId);
+        await updateBalances();
+        return payout;
+      } catch (err) {
+        console.error('Celo claimRewards failed:', err);
+        throw err;
+      }
     }
 
     return new Promise((resolve) => {
@@ -247,8 +331,22 @@ export function useStacks() {
   };
 
   const withdraw = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
+    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+
     if (isSimulation) {
       return withdrawSim(vaultId);
+    }
+
+    if (isCelo) {
+      try {
+        await runCeloTx(wallet.address || '', '0x0');
+        const payout = withdrawSim(vaultId);
+        await updateBalances();
+        return payout;
+      } catch (err) {
+        console.error('Celo withdraw failed:', err);
+        throw err;
+      }
     }
 
     return new Promise((resolve) => {
@@ -280,8 +378,22 @@ export function useStacks() {
   };
 
   const emergencyWithdraw = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
+    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+
     if (isSimulation) {
       return emergencyWithdrawSim(vaultId);
+    }
+
+    if (isCelo) {
+      try {
+        await runCeloTx(wallet.address || '', '0x0');
+        const payout = emergencyWithdrawSim(vaultId);
+        await updateBalances();
+        return payout;
+      } catch (err) {
+        console.error('Celo emergencyWithdraw failed:', err);
+        throw err;
+      }
     }
 
     return new Promise((resolve) => {
