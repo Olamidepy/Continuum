@@ -309,7 +309,7 @@ export default function LandingPage() {
             />
 
             <SplitText
-              text="Bitcoin-native savings secured by Stacks through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields."
+              text="Bitcoin-native savings through non-custodial time-locked vaults. Establish financial discipline and earn penalty-redistributed yields."
               tag="p"
               className="text-sm sm:text-base md:text-lg text-[#A0A0A0] leading-relaxed max-w-xl"
               textAlign="left"
