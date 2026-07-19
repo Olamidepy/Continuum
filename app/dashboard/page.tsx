@@ -206,7 +206,7 @@ export default function Dashboard() {
   }, [wallet.connected]);
 
   const isCelo = wallet.connected 
-    ? (wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)')
+    ? (wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect')
     : (isSimulation && simulatedNetwork === 'Celo');
   const displayAssetLabel = (asset: 'STX' | 'sBTC') => {
     if (isCelo) return asset === 'STX' ? 'CELO' : 'cUSD';
@@ -268,7 +268,7 @@ export default function Dashboard() {
   // Load real blockchain data (vaults and stats) if not in simulation mode
   useEffect(() => {
     if (!isSimulation && wallet.connected && wallet.address) {
-      const isCeloWallet = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+      const isCeloWallet = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
       
       if (isCeloWallet) {
         const userAddress = wallet.address;
@@ -322,9 +322,9 @@ export default function Dashboard() {
         
         try {
           if (tx.txId.startsWith('0x') && tx.txId.length === 66) {
-            const isCeloTx = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+            const isEVMProvider = !!(window as any).ethereum;
             
-            if (isCeloTx) {
+            if (isEVMProvider) {
               // Celo JSON-RPC check transaction receipt
               const res = await fetch('https://forno.celo.org', {
                 method: 'POST',

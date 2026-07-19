@@ -180,7 +180,7 @@ export function useStacks() {
   };
 
   const increaseDeposit = async (vaultId: number, additionalAmount: number): Promise<boolean> => {
-    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+    const isCelo = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
 
     if (isSimulation) {
       increaseDepositSim(vaultId, additionalAmount);
@@ -229,7 +229,7 @@ export function useStacks() {
   };
 
   const extendLock = async (vaultId: number, newDurationBlocks: number): Promise<boolean> => {
-    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+    const isCelo = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
 
     if (isSimulation) {
       extendLockSim(vaultId, newDurationBlocks);
@@ -274,7 +274,7 @@ export function useStacks() {
   };
 
   const claimRewards = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
-    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+    const isCelo = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
 
     if (isSimulation) {
       return claimRewardsSim(vaultId);
@@ -318,7 +318,7 @@ export function useStacks() {
   };
 
   const withdraw = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
-    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+    const isCelo = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
 
     if (isSimulation) {
       return withdrawSim(vaultId);
@@ -362,7 +362,7 @@ export function useStacks() {
   };
 
   const emergencyWithdraw = async (vaultId: number, assetType: 'STX' | 'sBTC'): Promise<number> => {
-    const isCelo = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
+    const isCelo = wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect';
 
     if (isSimulation) {
       return emergencyWithdrawSim(vaultId);

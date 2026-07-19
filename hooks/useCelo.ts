@@ -11,6 +11,9 @@ export const CELO_VAULTS_CONTRACT_ADDRESS: string = '0xD668AAc51298239Fb7c3D5077
 
 const isDeployed = CELO_VAULTS_CONTRACT_ADDRESS && CELO_VAULTS_CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000';
 
+// Active EVM provider reference
+let activeEvmProvider: any = null;
+
 // EIP-6963: Collect wallet providers announced via events
 const eip6963Store: Array<{ info: { name: string; icon?: string; uuid: string }; provider: any }> = [];
 if (typeof window !== 'undefined') {
@@ -185,6 +188,7 @@ export function useCelo() {
     }
 
     const provider = selectedProvider || providers[0].provider;
+    activeEvmProvider = provider;
 
     try {
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
@@ -222,7 +226,11 @@ export function useCelo() {
       }
 
       const { celoBal, cusdBal } = await fetchBalances(address);
-      const providerName = provider.isMiniPay ? 'MiniPay' : 'Celo';
+      const providerName = provider.isMiniPay ? 'MiniPay'
+        : provider.isZerion ? 'Zerion'
+        : provider.isRabby ? 'Rabby'
+        : provider.isMetaMask ? 'MetaMask'
+        : 'Celo';
       connectWallet(address, providerName, 0, 0, celoBal, cusdBal);
     } catch (err: any) {
       console.error('Ethereum request failed:', err);
@@ -247,13 +255,28 @@ export function useCelo() {
     );
   };
 
+  const getActiveProvider = () => {
+    if (typeof window === 'undefined') return null;
+    if (activeEvmProvider) return activeEvmProvider;
+
+    const providers = discoverProviders();
+    const targetName = wallet.walletProvider;
+    const foundProvider = providers.find(p => p.name === targetName);
+    if (foundProvider) return foundProvider.provider;
+
+    if (providers.length > 0) {
+      return providers[0].provider;
+    }
+    return (window as any).ethereum;
+  };
+
   const runCeloContractTx = async (to: string, valueHex: string, data: string): Promise<string> => {
     if (typeof window === 'undefined') return '';
-    const ethereum = (window as any).ethereum;
-    if (!ethereum) {
+    const provider = getActiveProvider();
+    if (!provider) {
       throw new Error('No injected Ethereum/Celo wallet found.');
     }
-    const accounts = await ethereum.request({ method: 'eth_accounts' });
+    const accounts = await provider.request({ method: 'eth_accounts' });
     const fromAddress = accounts?.[0] || wallet.address;
     if (!fromAddress) {
       throw new Error('No wallet connected.');
@@ -264,7 +287,7 @@ export function useCelo() {
       value: valueHex,
       data,
     };
-    return await ethereum.request({
+    return await provider.request({
       method: 'eth_sendTransaction',
       params: [txParams]
     });
@@ -272,13 +295,13 @@ export function useCelo() {
 
   const createCeloVault = async (amountRaw: number, durationBlocks: number, assetType: 'STX' | 'sBTC') => {
     if (typeof window === 'undefined' || !wallet.address) return null;
-    const ethereum = (window as any).ethereum;
+    const provider = getActiveProvider();
 
     if (isSimulation || !isDeployed) {
       return createVaultSim(amountRaw, durationBlocks, assetType);
     }
 
-    if (!ethereum) {
+    if (!provider) {
       throw new Error('No compatible wallet found for Celo transactions.');
     }
 

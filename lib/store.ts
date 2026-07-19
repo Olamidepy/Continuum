@@ -21,7 +21,7 @@ interface ContinuumState {
   // Actions
   toggleSimulation: (val: boolean) => void;
   setSimulatedNetwork: (val: 'Stacks' | 'Celo') => void;
-  connectWallet: (address: string, provider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | 'Celo' | 'MiniPay' | 'Celo (MiniPay)', stxBalance?: number, sbtcBalance?: number, celoBalance?: number, cusdBalance?: number) => void;
+  connectWallet: (address: string, provider: string, stxBalance?: number, sbtcBalance?: number, celoBalance?: number, cusdBalance?: number) => void;
   disconnectWallet: () => void;
   advanceBlocks: (count: number) => void;
   setVaults: (vaults: Vault[]) => void;

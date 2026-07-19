@@ -30,7 +30,7 @@ export interface Transaction {
 export interface WalletSession {
   connected: boolean;
   address: string | null;
-  walletProvider: 'Leather' | 'Xverse' | 'Asigna' | 'Fordefi' | 'WalletConnect' | 'Celo' | 'MiniPay' | 'Celo (MiniPay)' | null;
+  walletProvider: string | null;
   stxBalance: number;
   sbtcBalance: number;
   celoBalance?: number;
