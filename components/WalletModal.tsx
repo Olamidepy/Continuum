@@ -28,17 +28,6 @@ const INSTALL_URLS: Record<string, string> = {
 
 const WALLET_PROVIDERS = [
   {
-    name: 'Leather' as const,
-    description: 'Connect using Leather browser extension. Optimized for Stacks.',
-    tag: 'Recommended',
-    tagColor: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
-    logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-white">
-        <path d="M50 15L15 35v30l35 20 35-20V35L50 15zm0 10.5L74.5 40 50 54.5 25.5 40 50 25.5zM26 48.5l20.5 12v20.5L26 69V48.5zm48 20.5L53.5 81V60.5l20.5-12V69z" />
-      </svg>
-    ),
-  },
-  {
     name: 'Celo (MiniPay)' as const,
     description: 'Connect using MiniPay (Opera) or Celo wallet. Zero gas fees, instant stablecoin payments.',
     tag: 'MiniPay',
@@ -48,6 +37,15 @@ const WALLET_PROVIDERS = [
         <circle cx="35" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
         <circle cx="65" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
         <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="3 3" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Leather' as const,
+    description: 'Connect using Leather browser extension. Optimized for Stacks.',
+    logo: (
+      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-white">
+        <path d="M50 15L15 35v30l35 20 35-20V35L50 15zm0 10.5L74.5 40 50 54.5 25.5 40 50 25.5zM26 48.5l20.5 12v20.5L26 69V48.5zm48 20.5L53.5 81V60.5l20.5-12V69z" />
       </svg>
     ),
   },
@@ -382,9 +380,11 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                               <span className="font-semibold text-white group-hover:text-[#F5B400] transition-colors text-sm">
                                 {w.name}
                               </span>
-                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${w.tagColor}`}>
-                                {w.tag}
-                              </span>
+                              {w.tag && (
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${w.tagColor}`}>
+                                  {w.tag}
+                                </span>
+                              )}
                             </div>
                             <p className="text-xs text-[#A0A0A0] mt-0.5 leading-relaxed">{w.description}</p>
                           </div>
