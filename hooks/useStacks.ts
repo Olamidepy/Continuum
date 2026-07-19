@@ -41,7 +41,14 @@ export function useStacks() {
     setGlobalStats
   } = useContinuumStore();
 
-  const { updateBalances } = useCelo();
+  const { 
+    updateBalances,
+    increaseCeloDeposit,
+    extendCeloLock,
+    claimCeloRewards,
+    withdrawCelo,
+    emergencyWithdrawCelo
+  } = useCelo();
 
   const runCeloTx = async (to: string, valueHex: string, data = '0x') => {
     if (typeof window === 'undefined') return '';
@@ -183,24 +190,8 @@ export function useStacks() {
     if (isCelo) {
       const vault = vaults.find(v => v.id === vaultId);
       const assetType = vault?.assetType || 'STX';
-      const weiAmount = assetType === 'STX' 
-        ? BigInt(additionalAmount) * BigInt(1e12) 
-        : BigInt(additionalAmount) * BigInt(1e10);
-
       try {
-        if (assetType === 'STX') {
-          // Native CELO transfer
-          await runCeloTx(wallet.address || '', '0x' + weiAmount.toString(16));
-        } else {
-          // cUSD ERC20 transfer (contract: 0x765de816845861e75a25fca122bb6898b8b1282a)
-          const paddedTo = (wallet.address || '').replace('0x', '').padStart(64, '0');
-          const paddedValue = weiAmount.toString(16).padStart(64, '0');
-          const data = '0xa9059cbb' + paddedTo + paddedValue;
-          await runCeloTx('0x765de816845861e75a25fca122bb6898b8b1282a', '0x0', data);
-        }
-        increaseDepositSim(vaultId, additionalAmount);
-        await updateBalances();
-        return true;
+        return await increaseCeloDeposit(vaultId, additionalAmount, assetType);
       } catch (err) {
         console.error('Celo increase deposit failed:', err);
         throw err;
@@ -247,10 +238,7 @@ export function useStacks() {
 
     if (isCelo) {
       try {
-        await runCeloTx(wallet.address || '', '0x0');
-        extendLockSim(vaultId, newDurationBlocks);
-        await updateBalances();
-        return true;
+        return await extendCeloLock(vaultId, newDurationBlocks);
       } catch (err) {
         console.error('Celo extendLock failed:', err);
         throw err;
@@ -294,10 +282,7 @@ export function useStacks() {
 
     if (isCelo) {
       try {
-        await runCeloTx(wallet.address || '', '0x0');
-        const payout = claimRewardsSim(vaultId);
-        await updateBalances();
-        return payout;
+        return await claimCeloRewards(vaultId, assetType);
       } catch (err) {
         console.error('Celo claimRewards failed:', err);
         throw err;
@@ -341,10 +326,7 @@ export function useStacks() {
 
     if (isCelo) {
       try {
-        await runCeloTx(wallet.address || '', '0x0');
-        const payout = withdrawSim(vaultId);
-        await updateBalances();
-        return payout;
+        return await withdrawCelo(vaultId, assetType);
       } catch (err) {
         console.error('Celo withdraw failed:', err);
         throw err;
@@ -388,10 +370,7 @@ export function useStacks() {
 
     if (isCelo) {
       try {
-        await runCeloTx(wallet.address || '', '0x0');
-        const payout = emergencyWithdrawSim(vaultId);
-        await updateBalances();
-        return payout;
+        return await emergencyWithdrawCelo(vaultId, assetType);
       } catch (err) {
         console.error('Celo emergencyWithdraw failed:', err);
         throw err;

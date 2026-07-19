@@ -119,7 +119,7 @@ export default function Dashboard() {
   } = useContinuumStore();
 
   const { wallet, createVault, disconnectWallet, claimRewards, loadRealVaults, loadGlobalStats } = useStacks();
-  const { createCeloVault, updateBalances } = useCelo();
+  const { createCeloVault, updateBalances, loadRealCeloVaults, loadCeloGlobalStats } = useCelo();
 
   const router = useRouter();
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -272,8 +272,12 @@ export default function Dashboard() {
       
       if (isCeloWallet) {
         updateBalances();
+        loadRealCeloVaults(wallet.address);
+        loadCeloGlobalStats();
         const interval = setInterval(() => {
           updateBalances();
+          loadRealCeloVaults(wallet.address);
+          loadCeloGlobalStats();
         }, 10000);
         return () => clearInterval(interval);
       } else {
@@ -289,14 +293,21 @@ export default function Dashboard() {
         return () => clearInterval(interval);
       }
     } else if (!isSimulation) {
-      // Load global stats anyway even if wallet not connected
-      loadGlobalStats();
-      const interval = setInterval(() => {
+      if (simulatedNetwork === 'Celo') {
+        loadCeloGlobalStats();
+        const interval = setInterval(() => {
+          loadCeloGlobalStats();
+        }, 20000);
+        return () => clearInterval(interval);
+      } else {
         loadGlobalStats();
-      }, 20000);
-      return () => clearInterval(interval);
+        const interval = setInterval(() => {
+          loadGlobalStats();
+        }, 20000);
+        return () => clearInterval(interval);
+      }
     }
-  }, [isSimulation, wallet.connected, wallet.address, wallet.walletProvider, updateBalances]);
+  }, [isSimulation, wallet.connected, wallet.address, wallet.walletProvider, updateBalances, loadRealCeloVaults, loadCeloGlobalStats, simulatedNetwork, loadRealVaults, loadGlobalStats]);
 
   // Poll status of pending Stacks/Celo transactions
   useEffect(() => {
