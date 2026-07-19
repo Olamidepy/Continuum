@@ -271,12 +271,13 @@ export default function Dashboard() {
       const isCeloWallet = wallet.walletProvider === 'Celo' || wallet.walletProvider === 'MiniPay' || wallet.walletProvider === 'Celo (MiniPay)';
       
       if (isCeloWallet) {
+        const userAddress = wallet.address;
         updateBalances();
-        loadRealCeloVaults(wallet.address);
+        loadRealCeloVaults(userAddress);
         loadCeloGlobalStats();
         const interval = setInterval(() => {
           updateBalances();
-          loadRealCeloVaults(wallet.address);
+          loadRealCeloVaults(userAddress);
           loadCeloGlobalStats();
         }, 10000);
         return () => clearInterval(interval);
