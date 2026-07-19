@@ -30,53 +30,34 @@ const WALLET_PROVIDERS = [
   {
     name: 'Celo (MiniPay)' as const,
     description: 'Connect using MiniPay (Opera) or Celo wallet. Zero gas fees, instant stablecoin payments.',
-    tag: 'MiniPay',
-    tagColor: 'text-[#35D07F] bg-[#35D07F]/10 border-[#35D07F]/20',
     logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-[#35D07F]">
-        <circle cx="35" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
-        <circle cx="65" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" />
-        <circle cx="50" cy="50" r="22" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="3 3" />
-      </svg>
+      <img src="/celo.png" alt="Celo Logo" className="w-8 h-8 object-contain" />
     ),
   },
   {
     name: 'Leather' as const,
     description: 'Connect using Leather browser extension. Optimized for Stacks.',
     logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-white">
-        <path d="M50 15L15 35v30l35 20 35-20V35L50 15zm0 10.5L74.5 40 50 54.5 25.5 40 50 25.5zM26 48.5l20.5 12v20.5L26 69V48.5zm48 20.5L53.5 81V60.5l20.5-12V69z" />
-      </svg>
+      <img src="/Leather.png" alt="Leather Logo" className="w-8 h-8 object-contain" />
     ),
   },
   {
     name: 'Xverse' as const,
     description: 'Connect using Xverse wallet. Popular for BTC and Stacks Layer 2.',
-    tag: 'Popular',
-    tagColor: 'text-[#F5B400] bg-[#F5B400]/10 border-[#F5B400]/20',
     logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-[#F5B400]">
-        <path d="M50 10L10 30v40l40 20 40-20V30L50 10zm-6 26.5h12V48H44V36.5zm0 17h12V70H44V53.5z" />
-      </svg>
+      <img src="/Xverse.png" alt="Xverse Logo" className="w-8 h-8 object-contain" />
     ),
   },
   {
     name: 'Asigna' as const,
     description: 'Multisig security for teams and high-net-worth vaults.',
-    tag: 'Multisig',
-    tagColor: 'text-purple-400 bg-purple-500/10 border-purple-500/20',
     logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-white">
-        <rect x="20" y="20" width="60" height="60" rx="10" stroke="currentColor" strokeWidth="6" fill="none" />
-        <path d="M35 50h30M50 35v30" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-      </svg>
+      <img src="/Asigna.png" alt="Asigna Logo" className="w-8 h-8 object-contain" />
     ),
   },
   {
     name: 'Fordefi' as const,
     description: 'Institutional-grade MPC wallet connection.',
-    tag: 'Institutional',
-    tagColor: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
     logo: (
       <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-[#A0A0A0]">
         <circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="6" fill="none" />
@@ -87,12 +68,8 @@ const WALLET_PROVIDERS = [
   {
     name: 'WalletConnect' as const,
     description: 'Connect via QR code scan. Supports multi-chain mobile wallets.',
-    tag: 'Universal',
-    tagColor: 'text-[#3b99fc] bg-[#3b99fc]/10 border-[#3b99fc]/20',
     logo: (
-      <svg viewBox="0 0 100 100" className="w-8 h-8 fill-current text-[#3b99fc]">
-        <path d="M23.33 33.33c14.73-14.73 38.6-14.73 53.34 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-8.06-8.06-21.13-8.06-29.2 0l-4.66 4.66c-.78.78-2.05.78-2.83 0l-7.25-7.25c-.78-.78-.78-2.05 0-2.83l4.66-4.66zM7.39 50c23.54-23.54 61.68-23.54 85.22 0l4.35 4.35c.78.78.78 2.05 0 2.83l-7.25 7.25c-.78.78-2.05.78-2.83 0l-4.35-4.35c-16.88-16.88-44.25-16.88-61.13 0l-4.66 4.66c-.78.78-2.05.78-2.83 0L6.64 57.5c-.78-.78-.78-2.05 0-2.83L11 54.67 7.39 50z" />
-      </svg>
+      <img src="/Wallet connect.png" alt="WalletConnect Logo" className="w-8 h-8 object-contain" />
     ),
   },
 ];
@@ -380,11 +357,6 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                               <span className="font-semibold text-white group-hover:text-[#F5B400] transition-colors text-sm">
                                 {w.name}
                               </span>
-                              {w.tag && (
-                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${w.tagColor}`}>
-                                  {w.tag}
-                                </span>
-                              )}
                             </div>
                             <p className="text-xs text-[#A0A0A0] mt-0.5 leading-relaxed">{w.description}</p>
                           </div>
