@@ -19,6 +19,9 @@ const hostGrotesk = Host_Grotesk({
 export const metadata: Metadata = {
   title: 'Continuum | Bitcoin-Native Savings Protocol',
   description: 'Time builds wealth. Secure, non-custodial time-locked savings vaults built on Stacks L2 and secured by Bitcoin. Earn penalty-redistributed rewards.',
+  icons: {
+    icon: '/Logo.png',
+  },
   openGraph: {
     title: 'Continuum | Bitcoin-Native Savings Protocol',
     description: 'Non-custodial savings vaults for STX and sBTC, secured by Bitcoin through Stacks. Earn rewards by staying committed.',
