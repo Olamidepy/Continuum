@@ -28,17 +28,7 @@ const INSTALL_URLS: Record<string, string> = {
 };
 
 const WALLET_PROVIDERS = [
-  {
-    name: 'Zerion Wallet' as const,
-    description: 'Connect Zerion on Mobile App (iPhone) or Browser Extension for Celo and multi-chain.',
-    logo: (
-      <div className="w-8 h-8 rounded-lg bg-[#2B5BFF] flex items-center justify-center font-bold text-white text-xs shadow-md shrink-0">
-        <svg viewBox="0 0 40 40" className="w-5 h-5 fill-current">
-          <path d="M10 12H30L18 23H30V28H10L22 17H10V12Z" />
-        </svg>
-      </div>
-    ),
-  },
+
   {
     name: 'Celo (MiniPay)' as const,
     description: 'Connect using MiniPay (Opera) or Celo EVM wallet. Zero gas fees, instant stablecoin payments.',
@@ -551,19 +541,6 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                   </div>
 
                   <div className="flex flex-col gap-3 w-full max-w-xs">
-                    {/* Open in Zerion App */}
-                    <a
-                      href={`zerion://browser?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
-                      onClick={() => {
-                        setTimeout(() => {
-                          window.location.href = 'https://wallet.zerion.io/';
-                        }, 1200);
-                      }}
-                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2B5BFF] text-white font-bold text-xs hover:bg-[#2B5BFF]/90 active:scale-95 transition-all shadow-[0_4px_16px_rgba(43,91,255,0.3)] cursor-pointer"
-                    >
-                      Open in Zerion App <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-
                     {/* Open in MetaMask Mobile */}
                     <a
                       href={`https://metamask.app.link/dapp/${typeof window !== 'undefined' ? window.location.host + window.location.pathname : ''}`}
