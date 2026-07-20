@@ -7,7 +7,7 @@ import { useContinuumStore } from '../lib/store';
 const TIMESTAMP_SCALE_FACTOR = 600; // 1 block = 600 seconds (10 minutes)
 
 // Celo Vaults Contract Address — Update this after deploying to Mainnet
-export const CELO_VAULTS_CONTRACT_ADDRESS: string = '0xD668AAc51298239Fb7c3D5077Ce6C405Af7bEECA';
+export const CELO_VAULTS_CONTRACT_ADDRESS: string = '0x83c247209705269Ad6FffFE23C952aa965948330';
 
 const isDeployed = CELO_VAULTS_CONTRACT_ADDRESS && CELO_VAULTS_CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000';
 
