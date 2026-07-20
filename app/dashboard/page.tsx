@@ -1145,9 +1145,15 @@ export default function Dashboard() {
                     <tr key={tx.id} className="hover:bg-white/[0.01]">
                       <td className="px-6 py-3.5 font-semibold text-white capitalize">{tx.type === 'create' ? 'Create Vault' : tx.type === 'emergency' ? 'Emergency Exit' : tx.type === 'deposit' ? 'Top Up' : tx.type}</td>
                       <td className="px-6 py-3.5 font-mono">#{String(tx.vaultId).padStart(2, '0')}</td>
-                      <td className="px-6 py-3.5 uppercase">{tx.assetType}</td>
+                      <td className="px-6 py-3.5 uppercase">
+                        {tx.assetType === 'STX' ? (isCelo ? 'CELO' : 'STX') : (isCelo ? 'CUSD' : 'SBTC')}
+                      </td>
                       <td className="px-6 py-3.5 font-mono text-white">
-                        {tx.amount === 0 ? '-' : tx.assetType === 'STX' ? `${formatSTX(tx.amount)} STX` : `${formatSBTC(tx.amount)} sBTC`}
+                        {tx.amount === 0 
+                          ? '-' 
+                          : tx.assetType === 'STX' 
+                            ? `${formatSTX(tx.amount)} ${isCelo ? 'CELO' : 'STX'}` 
+                            : `${formatSBTC(tx.amount)} ${isCelo ? 'cUSD' : 'sBTC'}`}
                       </td>
                       <td className="px-6 py-3.5 font-mono text-[10px] text-[#A0A0A0]">{tx.txId ? formatAddress(tx.txId, 8) : '-'}</td>
                       <td className="px-6 py-3.5">{new Date(tx.timestamp).toLocaleTimeString()}</td>
