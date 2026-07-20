@@ -290,6 +290,7 @@ export function useCelo() {
       to,
       value: formattedValueHex,
       data,
+      gas: '0x7a120', // 500,000 gas limit to bypass eth_estimateGas reverting when balance is tight
     };
     return await provider.request({
       method: 'eth_sendTransaction',
