@@ -429,6 +429,14 @@ export default function Dashboard() {
     .filter(v => v.assetType === 'sBTC')
     .reduce((sum, v) => sum + v.claimableRewards, 0);
 
+  // Overall Share Percentages
+  const stxSharePercent = globalStats.totalSharesSTX > 0 
+    ? ((totalSharesSTX / globalStats.totalSharesSTX) * 100).toFixed(2) 
+    : '0.00';
+  const sbtcSharePercent = globalStats.totalSharesSBTC > 0 
+    ? ((totalSharesSBTC / globalStats.totalSharesSBTC) * 100).toFixed(2) 
+    : '0.00';
+
   // Dynamic exchange rate calculators (mock rates: STX = $2, sBTC = $60k; CELO = $0.80, cUSD = $1.00)
   const stxToUsd = (microStx: number) => {
     if (isCelo) return (microStx / 1_000_000) * 0.80;
@@ -784,8 +792,8 @@ export default function Dashboard() {
               </h2>
             </div>
             <div className="flex gap-3 text-[10px] text-[#A0A0A0] mt-2 pt-2 border-t border-white/5">
-              <span>{formatNumber(totalSharesSTX / 1_000_000, 0)} {displayAssetLabel('STX')} shares</span>
-              <span>{formatNumber(totalSharesSBTC / 100_000_000, 4)} {displayAssetLabel('sBTC')} shares</span>
+              <span>{formatNumber(totalSharesSTX / 1_000_000, 0)} {displayAssetLabel('STX')} shares <span className="text-[#F5B400] font-mono">({stxSharePercent}%)</span></span>
+              <span>{formatNumber(totalSharesSBTC / 100_000_000, 4)} {displayAssetLabel('sBTC')} shares <span className="text-[#F5B400] font-mono">({sbtcSharePercent}%)</span></span>
             </div>
           </div>
 
@@ -1146,14 +1154,19 @@ export default function Dashboard() {
                       <td className="px-6 py-3.5 font-semibold text-white capitalize">{tx.type === 'create' ? 'Create Vault' : tx.type === 'emergency' ? 'Emergency Exit' : tx.type === 'deposit' ? 'Top Up' : tx.type}</td>
                       <td className="px-6 py-3.5 font-mono">#{String(tx.vaultId).padStart(2, '0')}</td>
                       <td className="px-6 py-3.5 uppercase">
-                        {tx.assetType === 'STX' ? (isCelo ? 'CELO' : 'STX') : (isCelo ? 'CUSD' : 'SBTC')}
+                        {(() => {
+                          const isTxCelo = (tx.network || 'Stacks') === 'Celo';
+                          return tx.assetType === 'STX' ? (isTxCelo ? 'CELO' : 'STX') : (isTxCelo ? 'cUSD' : 'sBTC');
+                        })()}
                       </td>
                       <td className="px-6 py-3.5 font-mono text-white">
-                        {tx.amount === 0 
-                          ? '-' 
-                          : tx.assetType === 'STX' 
-                            ? `${formatSTX(tx.amount)} ${isCelo ? 'CELO' : 'STX'}` 
-                            : `${formatSBTC(tx.amount)} ${isCelo ? 'cUSD' : 'sBTC'}`}
+                        {(() => {
+                          const isTxCelo = (tx.network || 'Stacks') === 'Celo';
+                          if (tx.amount === 0) return '-';
+                          return tx.assetType === 'STX' 
+                            ? `${formatSTX(tx.amount)} ${isTxCelo ? 'CELO' : 'STX'}` 
+                            : `${formatSBTC(tx.amount)} ${isTxCelo ? 'cUSD' : 'sBTC'}`;
+                        })()}
                       </td>
                       <td className="px-6 py-3.5 font-mono text-[10px] text-[#A0A0A0]">{tx.txId ? formatAddress(tx.txId, 8) : '-'}</td>
                       <td className="px-6 py-3.5">{new Date(tx.timestamp).toLocaleTimeString()}</td>
