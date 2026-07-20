@@ -281,10 +281,14 @@ export function useCelo() {
     if (!fromAddress) {
       throw new Error('No wallet connected.');
     }
+    let cleanValue = valueHex.replace(/^0x-?/, '');
+    if (!cleanValue || cleanValue === '') cleanValue = '0';
+    const formattedValueHex = '0x' + BigInt('0x' + cleanValue).toString(16);
+
     const txParams = {
       from: fromAddress,
       to,
-      value: valueHex,
+      value: formattedValueHex,
       data,
       gas: '0x493e0', // 300,000 gas limit to ensure transaction passes to wallet prompt
     };
@@ -306,9 +310,10 @@ export function useCelo() {
       throw new Error('No compatible wallet found for Celo transactions.');
     }
 
+    const cleanAmountRaw = Math.max(0, Math.round(Math.abs(amountRaw)));
     const weiAmount = assetType === 'STX' 
-      ? BigInt(amountRaw) * BigInt(1e12) 
-      : BigInt(amountRaw) * BigInt(1e10);
+      ? BigInt(cleanAmountRaw) * BigInt(1e12) 
+      : BigInt(cleanAmountRaw) * BigInt(1e10);
 
     let durationSeconds = 30 * 24 * 60 * 60; // 30 days
     if (durationBlocks === 12960) durationSeconds = 90 * 24 * 60 * 60;
@@ -361,9 +366,10 @@ export function useCelo() {
       return true;
     }
 
+    const cleanAmountRaw = Math.max(0, Math.round(Math.abs(amountRaw)));
     const weiAmount = assetType === 'STX' 
-      ? BigInt(amountRaw) * BigInt(1e12) 
-      : BigInt(amountRaw) * BigInt(1e10);
+      ? BigInt(cleanAmountRaw) * BigInt(1e12) 
+      : BigInt(cleanAmountRaw) * BigInt(1e10);
 
     try {
       let txHash = '';
