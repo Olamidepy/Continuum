@@ -324,8 +324,8 @@ export function useCelo() {
     try {
       if (assetType === 'STX') {
         // Native CELO: createVault(uint256 duration, uint8 assetType=0, uint256 amount=0)
-        // Selector: 0x7460c510
-        const data = '0x7460c510' + pad32Bytes(durationSeconds) + pad32Bytes(0) + pad32Bytes(0);
+        // Selector: 0x83edc035
+        const data = '0x83edc035' + pad32Bytes(durationSeconds) + pad32Bytes(0) + pad32Bytes(0);
         txHash = await runCeloContractTx(CELO_VAULTS_CONTRACT_ADDRESS, '0x' + weiAmount.toString(16), data);
       } else {
         // cUSD: (1) approve, then (2) createVault(duration, assetType=1, amount)
