@@ -285,12 +285,11 @@ export function useCelo() {
     if (!cleanValue || cleanValue === '') cleanValue = '0';
     const formattedValueHex = '0x' + BigInt('0x' + cleanValue).toString(16);
 
-    const txParams = {
+    const txParams: any = {
       from: fromAddress,
       to,
       value: formattedValueHex,
       data,
-      gas: '0x493e0', // 300,000 gas limit to ensure transaction passes to wallet prompt
     };
     return await provider.request({
       method: 'eth_sendTransaction',
@@ -316,9 +315,9 @@ export function useCelo() {
       : BigInt(cleanAmountRaw) * BigInt(1e10);
 
     let durationSeconds = 30 * 24 * 60 * 60; // 30 days
-    if (durationBlocks === 12960) durationSeconds = 90 * 24 * 60 * 60;
-    else if (durationBlocks === 25920) durationSeconds = 180 * 24 * 60 * 60;
-    else if (durationBlocks === 52560) durationSeconds = 365 * 24 * 60 * 60;
+    if (Number(durationBlocks) === 12960 || Number(durationBlocks) === 90) durationSeconds = 90 * 24 * 60 * 60;
+    else if (Number(durationBlocks) === 25920 || Number(durationBlocks) === 180) durationSeconds = 180 * 24 * 60 * 60;
+    else if (Number(durationBlocks) === 52560 || Number(durationBlocks) === 365) durationSeconds = 365 * 24 * 60 * 60;
 
     let txHash = '';
     try {
