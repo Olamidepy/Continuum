@@ -14,7 +14,7 @@ interface WalletModalProps {
   onClose: () => void;
 }
 
-type ModalPhase = 'select' | 'celo-pick' | 'connecting' | 'install' | 'success';
+type ModalPhase = 'select' | 'celo-pick' | 'connecting' | 'install' | 'mobile-guide' | 'success';
 
 // Chrome Extension install URLs
 const INSTALL_URLS: Record<string, string> = {
@@ -24,12 +24,24 @@ const INSTALL_URLS: Record<string, string> = {
   Fordefi: 'https://www.fordefi.com',
   WalletConnect: 'https://walletconnect.com',
   'Celo (MiniPay)': 'https://opera.com/minipay',
+  'Zerion Wallet': 'https://zerion.io',
 };
 
 const WALLET_PROVIDERS = [
   {
+    name: 'Zerion Wallet' as const,
+    description: 'Connect Zerion on Mobile App (iPhone) or Browser Extension for Celo and multi-chain.',
+    logo: (
+      <div className="w-8 h-8 rounded-lg bg-[#2B5BFF] flex items-center justify-center font-bold text-white text-xs shadow-md shrink-0">
+        <svg viewBox="0 0 40 40" className="w-5 h-5 fill-current">
+          <path d="M10 12H30L18 23H30V28H10L22 17H10V12Z" />
+        </svg>
+      </div>
+    ),
+  },
+  {
     name: 'Celo (MiniPay)' as const,
-    description: 'Connect using MiniPay (Opera) or Celo wallet. Zero gas fees, instant stablecoin payments.',
+    description: 'Connect using MiniPay (Opera) or Celo EVM wallet. Zero gas fees, instant stablecoin payments.',
     logo: (
       <img src="/celo.png" alt="Celo Logo" className="w-8 h-8 object-contain" />
     ),
@@ -103,8 +115,16 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const [countdown, setCountdown] = useState(5);
   const [installUrl, setInstallUrl] = useState('');
   const [evmProviders, setEvmProviders] = useState<Array<{ name: string; provider: any }>>([]);
+  const [copied, setCopied] = useState(false);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
   const confettiFired = useRef(false);
+
+  const copyCurrentUrl = () => {
+    if (typeof window === 'undefined') return;
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const startCountdown = () => {
     let remaining = 5;
@@ -183,11 +203,16 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const handleSelectWallet = async (walletName: string) => {
     setSelectedWallet(walletName);
 
-    if (walletName === 'Celo (MiniPay)') {
+    if (walletName === 'Celo (MiniPay)' || walletName === 'Zerion Wallet' || walletName === 'MetaMask' || walletName === 'WalletConnect') {
       // Discover available EVM providers and show picker
       const providers = discoverProviders();
       if (providers.length === 0) {
-        setInstallUrl('https://metamask.io/download/');
+        const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobile) {
+          setPhase('mobile-guide');
+          return;
+        }
+        setInstallUrl(INSTALL_URLS[walletName] || 'https://zerion.io');
         setPhase('install');
         return;
       }
@@ -499,6 +524,71 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                   >
                     Cancel
                   </button>
+                </motion.div>
+              )}
+
+              {/* ── MOBILE GUIDE PHASE ── */}
+              {phase === 'mobile-guide' && (
+                <motion.div
+                  key="mobile-guide"
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex flex-col items-center justify-center py-10 px-6 gap-5 text-center min-h-[400px]"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-[#2B5BFF]/15 border border-[#2B5BFF]/30 flex items-center justify-center text-[#2B5BFF]">
+                    <svg viewBox="0 0 40 40" className="w-10 h-10 fill-current">
+                      <path d="M10 12H30L18 23H30V28H10L22 17H10V12Z" />
+                    </svg>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <h3 className="text-lg font-bold text-white">Connect Mobile Wallet</h3>
+                    <p className="text-xs text-[#A0A0A0] max-w-xs leading-relaxed">
+                      On iPhone & mobile browsers, tap below to open <span className="text-white font-medium">Continuum</span> directly in your wallet app:
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3 w-full max-w-xs">
+                    {/* Open in Zerion App */}
+                    <a
+                      href={`zerion://browser?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`}
+                      onClick={() => {
+                        setTimeout(() => {
+                          window.location.href = 'https://wallet.zerion.io/';
+                        }, 1200);
+                      }}
+                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2B5BFF] text-white font-bold text-xs hover:bg-[#2B5BFF]/90 active:scale-95 transition-all shadow-[0_4px_16px_rgba(43,91,255,0.3)] cursor-pointer"
+                    >
+                      Open in Zerion App <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    {/* Open in MetaMask Mobile */}
+                    <a
+                      href={`https://metamask.app.link/dapp/${typeof window !== 'undefined' ? window.location.host + window.location.pathname : ''}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1e1e1e] border border-white/10 text-white font-bold text-xs hover:border-white/20 active:scale-95 transition-all cursor-pointer"
+                    >
+                      Open in MetaMask App <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    {/* Copy Link button */}
+                    <button
+                      onClick={copyCurrentUrl}
+                      className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black/40 border border-white/10 text-xs font-semibold text-[#A0A0A0] hover:text-white transition-colors cursor-pointer"
+                    >
+                      {copied ? '✓ Link Copied to Clipboard!' : 'Copy Link for Wallet Browser'}
+                    </button>
+
+                    <button
+                      onClick={() => { setPhase('select'); setSelectedWallet(''); }}
+                      className="text-xs text-[#A0A0A0] hover:text-white transition-colors cursor-pointer underline underline-offset-2 mt-1"
+                    >
+                      ← Back to wallet selection
+                    </button>
+                  </div>
                 </motion.div>
               )}
 
