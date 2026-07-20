@@ -414,7 +414,16 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                   </div>
 
                   <div className="p-5 flex flex-col gap-2.5">
-                    {evmProviders.map((p, i) => (
+                    {[...evmProviders].sort((a, b) => {
+                      // 1. Zerion
+                      if (a.name.includes('Zerion')) return -1;
+                      if (b.name.includes('Zerion')) return 1;
+                      // 2. MetaMask
+                      if (a.name.includes('MetaMask')) return -1;
+                      if (b.name.includes('MetaMask')) return 1;
+                      // Alphabetical for the rest
+                      return a.name.localeCompare(b.name);
+                    }).map((p, i) => (
                       <motion.button
                         key={`${p.name}-${i}`}
                         onClick={() => handleCeloProviderSelect(p.provider)}
@@ -424,14 +433,14 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-[12px] bg-[#121212] border border-white/10 flex items-center justify-center group-hover:border-[#35D07F]/40 transition-colors shrink-0">
-                            {p.name.includes('MetaMask') ? (
-                              <img src="/Metamask.png" alt="MetaMask" className="w-7 h-7 object-contain" />
+                            {p.name.includes('Zerion') ? (
+                              <img src="/Zerion.png" alt="Zerion" className="w-full h-full object-cover rounded-[12px]" />
+                            ) : p.name.includes('MetaMask') ? (
+                              <img src="/Metamask.png" alt="MetaMask" className="w-full h-full object-cover rounded-[12px]" />
                             ) : p.name.includes('Rabby') ? (
-                              <img src="/Rabbi.png" alt="Rabby" className="w-7 h-7 object-contain" />
-                            ) : p.name.includes('Zerion') ? (
-                              <img src="/Zerion.png" alt="Zerion" className="w-7 h-7 object-contain rounded-md" />
+                              <img src="/Rabbi.png" alt="Rabby" className="w-full h-full object-cover rounded-[12px]" />
                             ) : p.name.includes('Phantom') ? (
-                              <img src="/phantom.png" alt="Phantom" className="w-7 h-7 object-contain" />
+                              <img src="/Phantom.png" alt="Phantom" className="w-full h-full object-cover rounded-[12px]" />
                             ) : (
                               <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#A0A0A0]"><circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none"/><circle cx="50" cy="50" r="10" fill="currentColor"/></svg>
                             )}
