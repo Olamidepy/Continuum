@@ -21,10 +21,10 @@ export const metadata: Metadata = {
   description: 'Time builds wealth. Secure, non-custodial time-locked savings vaults built on Stacks L2 and secured by Bitcoin. Earn penalty-redistributed rewards.',
   icons: {
     icon: [
-      { url: '/fArtboard 1.png', type: 'image/png' }
+      { url: '/favicon_cropped.png', type: 'image/png' }
     ],
     apple: [
-      { url: '/fArtboard 1.png', sizes: '180x180', type: 'image/png' }
+      { url: '/favicon_cropped.png', sizes: '180x180', type: 'image/png' }
     ],
   },
   openGraph: {
