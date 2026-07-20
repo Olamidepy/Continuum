@@ -4,9 +4,9 @@ async function main() {
   // ==============================================================================
   // CONFIGURATION
   // ==============================================================================
-  const NUM_TRANSACTIONS = 25;       // Number of random wallets to create
-  const TOTAL_CELO_TO_LOCK = 2.0;    // Total CELO to lock across all wallets
-  const GAS_BUFFER = 0.15;           // Extra CELO per wallet for gas fees
+  const NUM_TRANSACTIONS = 5;       // Number of random wallets to create
+  const TOTAL_CELO_TO_LOCK = 0.001;  // Total CELO to lock across all wallets
+  const GAS_BUFFER = 0.1;           // Extra CELO per wallet for gas fees
   
   const CONTRACT_ADDRESS = "0x162fC5502B988B60d6c82e3248Fccf57C3663188"; 
   const LOCK_DURATION = 30 * 24 * 60 * 60; // 30 days
