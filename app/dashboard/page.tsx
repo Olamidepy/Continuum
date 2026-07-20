@@ -391,8 +391,8 @@ export default function Dashboard() {
           .map(tx => ({
             id: -tx.timestamp,
             owner: wallet.address || '',
-            amount: tx.amount,
-            shares: tx.amount * (tx.durationBlocks === 52560 ? 2 : tx.durationBlocks === 25920 ? 1.5 : tx.durationBlocks === 12960 ? 1.2 : 1),
+            amount: Math.abs(tx.amount),
+            shares: Math.abs(tx.amount) * (tx.durationBlocks === 52560 ? 2 : tx.durationBlocks === 25920 ? 1.5 : tx.durationBlocks === 12960 ? 1.2 : 1),
             assetType: tx.assetType,
             createdAt: currentBlockHeight,
             unlockAt: currentBlockHeight + (tx.durationBlocks || 12960),
@@ -466,7 +466,8 @@ export default function Dashboard() {
     if (!lockAmount || isSubmitting) return;
     setIsSubmitting(true);
 
-    const amountRaw = Number(lockAmount) * (assetType === 'STX' ? 1_000_000 : 100_000_000);
+    const cleanLockAmount = Math.abs(Number(lockAmount) || 0);
+    const amountRaw = cleanLockAmount * (assetType === 'STX' ? 1_000_000 : 100_000_000);
     const duration = Number(lockDuration);
 
     try {

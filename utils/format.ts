@@ -16,7 +16,7 @@ export function formatAddress(address: string | null | undefined, chars = 6): st
  * Formats micro-STX (1e6) to a readable STX amount
  */
 export function formatSTX(microStx: number, decimals = 2): string {
-  const stx = microStx / 1_000_000;
+  const stx = Math.abs(microStx) / 1_000_000;
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
@@ -27,7 +27,7 @@ export function formatSTX(microStx: number, decimals = 2): string {
  * Formats sBTC satoshis (1e8) to a readable sBTC amount
  */
 export function formatSBTC(satoshis: number, decimals = 8): string {
-  const sbtc = satoshis / 100_000_000;
+  const sbtc = Math.abs(satoshis) / 100_000_000;
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
