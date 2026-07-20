@@ -424,19 +424,26 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-[12px] bg-[#121212] border border-white/10 flex items-center justify-center group-hover:border-[#35D07F]/40 transition-colors shrink-0">
-                            {p.name === 'MetaMask' ? (
-                              <svg viewBox="0 0 100 100" className="w-7 h-7"><path d="M89.1 10L55.4 34.8l6.2-14.7L89.1 10z" fill="#E2761B"/><path d="M10.9 10l33.4 25.1-5.9-15L10.9 10z" fill="#E4761B"/><path d="M77 67.4l-9 13.8 19.2 5.3 5.5-18.7-15.7-.4z" fill="#E4761B"/><path d="M7.4 67.8L12.8 86.5l19.2-5.3-9-13.8-15.6.4z" fill="#E4761B"/><path d="M30.7 43.6l-5.3 8 19 .8-.7-20.4-13 11.6z" fill="#E4761B"/><path d="M69.3 43.6L56 31.8l-.5 20.6 19-.8-5.2-8z" fill="#E4761B"/><path d="M32 81.2l11.5-5.6-9.9-7.7-1.6 13.3z" fill="#E4761B"/><path d="M56.5 75.6L68 81.2l-1.6-13.3-9.9 7.7z" fill="#E4761B"/></svg>
-                            ) : p.name === 'Rabby' ? (
-                              <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#8697FF]"><circle cx="50" cy="50" r="35" fill="currentColor" opacity="0.15"/><circle cx="50" cy="50" r="20" fill="currentColor"/></svg>
-                            ) : p.name === 'Zerion' ? (
-                              <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#2962EF]"><rect x="20" y="20" width="60" height="60" rx="14" fill="currentColor" opacity="0.15"/><path d="M30 65L50 35l20 30H30z" fill="currentColor"/></svg>
+                            {p.name.includes('MetaMask') ? (
+                              <img src="/Metamask.png" alt="MetaMask" className="w-7 h-7 object-contain" />
+                            ) : p.name.includes('Rabby') ? (
+                              <img src="/Rabbi.png" alt="Rabby" className="w-7 h-7 object-contain" />
+                            ) : p.name.includes('Zerion') ? (
+                              <img src="/Zerion.png" alt="Zerion" className="w-7 h-7 object-contain rounded-md" />
+                            ) : p.name.includes('Phantom') ? (
+                              <img src="/phantom.png" alt="Phantom" className="w-7 h-7 object-contain" />
                             ) : (
                               <svg viewBox="0 0 100 100" className="w-7 h-7 text-[#A0A0A0]"><circle cx="50" cy="50" r="30" stroke="currentColor" strokeWidth="5" fill="none"/><circle cx="50" cy="50" r="10" fill="currentColor"/></svg>
                             )}
                           </div>
                           <div>
-                            <span className="font-semibold text-white group-hover:text-[#35D07F] transition-colors text-sm">
+                            <span className="font-semibold text-white group-hover:text-[#35D07F] transition-colors text-sm flex items-center gap-2">
                               {p.name}
+                              {p.name.includes('Zerion') && (
+                                <span className="bg-[#2B5BFF]/20 text-[#2B5BFF] border border-[#2B5BFF]/30 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full">
+                                  Recommended
+                                </span>
+                              )}
                             </span>
                             <p className="text-xs text-[#A0A0A0] mt-0.5">Connect to Celo via {p.name}</p>
                           </div>
