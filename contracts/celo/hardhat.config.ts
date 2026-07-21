@@ -22,6 +22,11 @@ const config: HardhatUserConfig = {
       chainId: 42220,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+    celoSepolia: {
+      url: "https://celo-sepolia.drpc.org",
+      chainId: 11155111,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
   },
 };
 
