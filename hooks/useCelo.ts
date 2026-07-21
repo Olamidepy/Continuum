@@ -87,42 +87,76 @@ export function useCelo() {
     let celoBal = 0;
     let cusdBal = 0;
     try {
-      // Fetch native CELO balance
-      const balanceRes = await fetch('https://forno.celo.org', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_getBalance',
-          params: [address, 'latest']
-        })
-      });
-      const balanceData = await balanceRes.json();
-      if (balanceData && balanceData.result) {
-        celoBal = parseInt(balanceData.result, 16) / 1e18;
+      const provider = getActiveProvider();
+      if (provider) {
+        try {
+          const rawBal = await provider.request({ method: 'eth_getBalance', params: [address, 'latest'] });
+          if (rawBal) celoBal = parseInt(rawBal, 16) / 1e18;
+        } catch (e) {
+          console.warn('Provider balance fetch error:', e);
+        }
       }
 
-      // Fetch cUSD balance (contract: 0x765de816845861e75a25fca122bb6898b8b1282a)
-      const cusdRes = await fetch('https://forno.celo.org', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 2,
-          method: 'eth_call',
-          params: [
-            {
-              to: '0x765de816845861e75a25fca122bb6898b8b1282a',
-              data: '0x70a08231000000000000000000000000' + address.replace('0x', '')
-            },
-            'latest'
-          ]
-        })
-      });
-      const cusdData = await cusdRes.json();
-      if (cusdData && cusdData.result) {
-        cusdBal = parseInt(cusdData.result, 16) / 1e18;
+      if (celoBal === 0) {
+        const rpcs = [
+          'https://celo-sepolia.drpc.org',
+          'https://alfajores-forno.celo-testnet.org',
+          'https://forno.celo.org'
+        ];
+        for (const rpc of rpcs) {
+          try {
+            const balanceRes = await fetch(rpc, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_getBalance',
+                params: [address, 'latest']
+              })
+            });
+            const balanceData = await balanceRes.json();
+            if (balanceData?.result && parseInt(balanceData.result, 16) > 0) {
+              celoBal = parseInt(balanceData.result, 16) / 1e18;
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+
+      // Fetch cUSD balance
+      const cusdContracts = [
+        '0x765de816845861e75a25fca122bb6898b8b1282a',
+        '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1'
+      ];
+      const rpcs = ['https://celo-sepolia.drpc.org', 'https://forno.celo.org'];
+      for (const rpc of rpcs) {
+        for (const contract of cusdContracts) {
+          try {
+            const cusdRes = await fetch(rpc, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 2,
+                method: 'eth_call',
+                params: [
+                  {
+                    to: contract,
+                    data: '0x70a08231000000000000000000000000' + address.replace('0x', '')
+                  },
+                  'latest'
+                ]
+              })
+            });
+            const cusdData = await cusdRes.json();
+            if (cusdData?.result && parseInt(cusdData.result, 16) > 0) {
+              cusdBal = parseInt(cusdData.result, 16) / 1e18;
+              break;
+            }
+          } catch (e) {}
+        }
+        if (cusdBal > 0) break;
       }
     } catch (err) {
       console.error('Error fetching Celo balances:', err);
