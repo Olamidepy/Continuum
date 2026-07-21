@@ -133,15 +133,16 @@ export default function Dashboard() {
   const [isMiniPayApp, setIsMiniPayApp] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+    if (typeof window !== 'undefined' && ((window as any).ethereum?.isMiniPay || (window as any).provider?.isMiniPay)) {
       setIsMiniPayApp(true);
     }
   }, []);
 
   useEffect(() => {
     const autoConnect = async () => {
-      if (!wallet.connected && typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
-        const ethereum = (window as any).ethereum;
+      if (!wallet.connected && typeof window !== 'undefined') {
+        const ethereum = (window as any).ethereum?.isMiniPay ? (window as any).ethereum : (window as any).provider?.isMiniPay ? (window as any).provider : ((window as any).ethereum || (window as any).provider);
+        if (ethereum?.isMiniPay) {
         try {
           const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
           const address = accounts?.[0];

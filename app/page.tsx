@@ -138,7 +138,7 @@ export default function LandingPage() {
   const [isMiniPayApp, setIsMiniPayApp] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
+    if (typeof window !== 'undefined' && ((window as any).ethereum?.isMiniPay || (window as any).provider?.isMiniPay)) {
       setIsMiniPayApp(true);
     }
   }, []);
@@ -147,8 +147,9 @@ export default function LandingPage() {
     router.prefetch('/dashboard');
 
     const autoConnectMiniPay = async () => {
-      if (typeof window !== 'undefined' && (window as any).ethereum?.isMiniPay) {
-        const ethereum = (window as any).ethereum;
+      if (typeof window !== 'undefined') {
+        const ethereum = (window as any).ethereum?.isMiniPay ? (window as any).ethereum : (window as any).provider?.isMiniPay ? (window as any).provider : ((window as any).ethereum || (window as any).provider);
+        if (ethereum?.isMiniPay) {
         try {
           // Inside MiniPay, call eth_requestAccounts directly since it's implicit
           const accounts = await ethereum.request({ method: 'eth_requestAccounts' });

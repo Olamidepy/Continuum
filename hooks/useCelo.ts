@@ -151,13 +151,14 @@ export function useCelo() {
     }
 
     // Check legacy providers array (MetaMask/Rabby/Zerion multi-provider)
-    const ethereum = (window as any).ethereum;
+    const ethereum = (window as any).ethereum || (window as any).provider;
     if (ethereum?.providers && Array.isArray(ethereum.providers)) {
       for (const p of ethereum.providers) {
         if (p && !seen.has(p)) {
           seen.add(p);
           // Note: Check specific flags BEFORE isMetaMask as other wallets copy isMetaMask for compat
-          const name = p.isZerion ? 'Zerion'
+          const name = p.isMiniPay ? 'MiniPay'
+            : p.isZerion ? 'Zerion'
             : p.isRabby ? 'Rabby' 
             : p.isMetaMask ? 'MetaMask' 
             : p.isCoinbaseWallet ? 'Coinbase'
