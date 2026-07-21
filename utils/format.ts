@@ -84,3 +84,24 @@ export function blocksToDurationLabel(blocks: number): string {
   if (blocks >= 4320) return '30 Days';
   return `${Math.round(blocks / 144)} Days`;
 }
+
+/**
+ * Formats raw CELO token amounts to 4 decimal places
+ */
+export function formatCelo(celoAmount: number, decimals = 4): string {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(Math.max(0, celoAmount));
+}
+
+/**
+ * Formats cUSD dollar amounts to 2 decimal places with currency symbol option
+ */
+export function formatCUSD(cusdAmount: number, includeSymbol = true): string {
+  const formatted = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.max(0, cusdAmount));
+  return includeSymbol ? `$${formatted}` : formatted;
+}

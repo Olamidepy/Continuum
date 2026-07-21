@@ -101,18 +101,12 @@ Configure your environment variables by copying the example manifest:
 ```bash
 cp .env.example .env.local
 ```
-Set your WalletConnect Project ID:
-```env
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_reown_project_id_here
-```
 
-### Run Local Development Server
-Execute the Next.js development server:
+### Local Development
+To launch the Next.js development server:
 ```bash
 npm run dev
 ```
-Open `http://localhost:3000` to interact with the application.
-
 ### Testing on MiniPay (Opera Mini)
 To test the MiniPay stablecoin savings flow on a mobile device:
 1. Expose your local environment using a tunneling service like [ngrok](https://ngrok.com/):

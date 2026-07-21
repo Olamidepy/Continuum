@@ -1,11 +1,14 @@
+/**
+ * Represents a savings vault on Stacks or Celo network.
+ */
 export interface Vault {
   id: number;
   owner: string;
-  amount: number; // In micro-STX (1e6) or satoshis (1e8)
+  amount: number; // In micro-STX (1e6), satoshis (1e8), or wei (1e18)
   shares: number; // Weighted amount based on duration multiplier
   assetType: 'STX' | 'sBTC';
-  unlockAt: number; // Target block height
-  createdAt: number; // Start block height
+  unlockAt: number; // Target block height or timestamp
+  createdAt: number; // Start block height or timestamp
   lastRewardPerShare: string; // Serialized BigInt representation
   claimableRewards: number; // Pending rewards available for claim
   active: boolean;
@@ -14,6 +17,9 @@ export interface Vault {
   network?: 'Stacks' | 'Celo';
 }
 
+/**
+ * Represents a historical transaction operation in the protocol.
+ */
 export interface Transaction {
   id: string;
   txId?: string;
@@ -27,6 +33,9 @@ export interface Transaction {
   network?: 'Stacks' | 'Celo';
 }
 
+/**
+ * Connected user wallet state and balance information.
+ */
 export interface WalletSession {
   connected: boolean;
   address: string | null;
@@ -40,6 +49,9 @@ export interface WalletSession {
   customAvatarName?: string;
 }
 
+/**
+ * Aggregated protocol stats across all vaults.
+ */
 export interface GlobalStats {
   totalLockedSTX: number;
   totalLockedSBTC: number;
@@ -48,6 +60,9 @@ export interface GlobalStats {
   vaultCounter: number;
 }
 
+/**
+ * Toast notification payload structure.
+ */
 export interface Toast {
   id: string;
   type: 'success' | 'error' | 'loading' | 'info';
