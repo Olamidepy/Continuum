@@ -202,9 +202,10 @@ export default function Dashboard() {
           console.error('MiniPay dashboard auto-connect failed:', e);
         }
       }
-    };
-    autoConnect();
-  }, [wallet.connected]);
+    }
+  };
+  autoConnect();
+}, [wallet.connected]);
 
   const isCelo = wallet.connected 
     ? (wallet.walletProvider !== 'Leather' && wallet.walletProvider !== 'Xverse' && wallet.walletProvider !== 'Asigna' && wallet.walletProvider !== 'Fordefi' && wallet.walletProvider !== 'WalletConnect')
