@@ -243,31 +243,36 @@ export function useCelo() {
           params: [{ chainId: '0xa4ec' }],
         });
       } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0xa4ec',
-                chainName: 'Celo Mainnet',
-                nativeCurrency: {
-                  name: 'CELO',
-                  symbol: 'CELO',
-                  decimals: 18,
+        const msg = String(switchError?.message || '').toLowerCase();
+        if (switchError?.code === 4902 || switchError?.code === -32603 || msg.includes('unrecognized') || msg.includes('unknown') || msg.includes('add')) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: '0xa4ec',
+                  chainName: 'Celo Mainnet',
+                  nativeCurrency: {
+                    name: 'CELO',
+                    symbol: 'CELO',
+                    decimals: 18,
+                  },
+                  rpcUrls: ['https://forno.celo.org'],
+                  blockExplorerUrls: ['https://celoscan.io'],
                 },
-                rpcUrls: ['https://forno.celo.org'],
-                blockExplorerUrls: ['https://celoscan.io'],
-              },
-            ],
-          });
+              ],
+            });
+          } catch (addError) {
+            console.warn('Failed to add Celo chain:', addError);
+          }
         } else {
-          throw switchError;
+          console.warn('Celo network switch handled or bypassed:', switchError);
         }
       }
 
       const { celoBal, cusdBal } = await fetchBalances(address);
-      const providerName = provider.isMiniPay ? 'MiniPay'
-        : provider.isZerion ? 'Zerion'
+      const providerName = (provider.isZerion || provider.isZerionWallet) ? 'Zerion'
+        : provider.isMiniPay ? 'MiniPay'
         : provider.isRabby ? 'Rabby'
         : provider.isMetaMask ? 'MetaMask'
         : 'Celo';
@@ -350,17 +355,10 @@ export function useCelo() {
       throw new Error('No compatible wallet found for Celo transactions.');
     }
 
-    const toWei = (val: number) => {
-      try {
-        const parts = Math.abs(val).toFixed(6).split('.');
-        const whole = BigInt(parts[0] || '0') * BigInt(1e18);
-        const frac = BigInt((parts[1] || '').padEnd(18, '0').slice(0, 18));
-        return whole + frac;
-      } catch (e) {
-        return BigInt(Math.floor(val)) * BigInt(1e18);
-      }
-    };
-    const weiAmount = toWei(amountRaw);
+    const cleanAmountRaw = Math.max(0, Math.round(Math.abs(amountRaw)));
+    const weiAmount = assetType === 'STX' 
+      ? BigInt(cleanAmountRaw) * BigInt(1e12) 
+      : BigInt(cleanAmountRaw) * BigInt(1e10);
 
     let durationSeconds = 30 * 24 * 60 * 60; // 30 days
     if (Number(durationBlocks) === 12960 || Number(durationBlocks) === 90) durationSeconds = 90 * 24 * 60 * 60;

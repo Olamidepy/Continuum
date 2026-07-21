@@ -37,6 +37,13 @@ const WALLET_PROVIDERS = [
     ),
   },
   {
+    name: 'Zerion Wallet' as const,
+    description: 'Connect Zerion Wallet for Celo & multi-chain DeFi portfolio management.',
+    logo: (
+      <img src="/Zerion.png" alt="Zerion Logo" className="w-8 h-8 object-contain rounded-lg" />
+    ),
+  },
+  {
     name: 'Leather' as const,
     description: 'Connect using Leather browser extension. Optimized for Stacks.',
     logo: (
@@ -544,19 +551,28 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                   className="flex flex-col items-center justify-center py-10 px-6 gap-5 text-center min-h-[400px]"
                 >
                   <div className="w-16 h-16 rounded-2xl bg-[#2B5BFF]/15 border border-[#2B5BFF]/30 flex items-center justify-center text-[#2B5BFF]">
-                    <svg viewBox="0 0 40 40" className="w-10 h-10 fill-current">
-                      <path d="M10 12H30L18 23H30V28H10L22 17H10V12Z" />
-                    </svg>
+                    <img src="/Zerion.png" alt="Zerion" className="w-10 h-10 object-contain rounded-xl" />
                   </div>
 
                   <div className="space-y-1.5">
                     <h3 className="text-lg font-bold text-white">Connect Mobile Wallet</h3>
                     <p className="text-xs text-[#A0A0A0] max-w-xs leading-relaxed">
-                      On iPhone & mobile browsers, tap below to open <span className="text-white font-medium">Continuum</span> directly in your wallet app:
+                      On mobile browsers, tap below to open <span className="text-white font-medium">Continuum</span> directly in your Zerion or MetaMask wallet app:
                     </p>
                   </div>
 
                   <div className="flex flex-col gap-3 w-full max-w-xs">
+                    {/* Open in Zerion Mobile */}
+                    <a
+                      href={`https://wallet.zerion.io/dapp/${typeof window !== 'undefined' ? window.location.host + window.location.pathname : ''}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#2B5BFF]/20 border border-[#2B5BFF]/40 text-white font-bold text-xs hover:border-[#2B5BFF] active:scale-95 transition-all cursor-pointer shadow-[0_4px_16px_rgba(43,91,255,0.2)]"
+                    >
+                      <img src="/Zerion.png" alt="Zerion" className="w-4 h-4 object-contain rounded-md" />
+                      Open in Zerion App <ExternalLink className="w-3.5 h-3.5 text-[#2B5BFF]" />
+                    </a>
+
                     {/* Open in MetaMask Mobile */}
                     <a
                       href={`https://metamask.app.link/dapp/${typeof window !== 'undefined' ? window.location.host + window.location.pathname : ''}`}
@@ -564,7 +580,8 @@ export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
                       rel="noopener noreferrer"
                       className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1e1e1e] border border-white/10 text-white font-bold text-xs hover:border-white/20 active:scale-95 transition-all cursor-pointer"
                     >
-                      Open in MetaMask App <ExternalLink className="w-3.5 h-3.5" />
+                      <img src="/Metamask.png" alt="MetaMask" className="w-4 h-4 object-contain rounded-md" />
+                      Open in MetaMask App <ExternalLink className="w-3.5 h-3.5 text-[#A0A0A0]" />
                     </a>
 
                     {/* Copy Link button */}
