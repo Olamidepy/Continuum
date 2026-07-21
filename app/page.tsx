@@ -213,7 +213,8 @@ export default function LandingPage() {
           console.error('Failed to auto-connect MiniPay:', e);
         }
       }
-    };
+    }
+  };
 
     autoConnectMiniPay();
   }, [router]);
