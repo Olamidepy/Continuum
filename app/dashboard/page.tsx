@@ -1144,13 +1144,13 @@ export default function Dashboard() {
                       <td className="px-6 py-3.5 font-mono">#{String(tx.vaultId).padStart(2, '0')}</td>
                       <td className="px-6 py-3.5 uppercase">
                         {(() => {
-                          const isTxCelo = (tx.network || 'Stacks') === 'Celo';
+                          const isTxCelo = isCelo || tx.network === 'Celo';
                           return tx.assetType === 'STX' ? (isTxCelo ? 'CELO' : 'STX') : (isTxCelo ? 'cUSD' : 'sBTC');
                         })()}
                       </td>
                       <td className="px-6 py-3.5 font-mono text-white">
                         {(() => {
-                          const isTxCelo = (tx.network || 'Stacks') === 'Celo';
+                          const isTxCelo = isCelo || tx.network === 'Celo';
                           if (tx.amount === 0) return '-';
                           return tx.assetType === 'STX' 
                             ? `${formatSTX(tx.amount)} ${isTxCelo ? 'CELO' : 'STX'}` 
