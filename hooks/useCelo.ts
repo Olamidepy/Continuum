@@ -219,6 +219,10 @@ export function useCelo() {
     return found;
   };
 
+  /**
+   * Connects to injected Celo or EIP-1193 compatible wallet (MetaMask, MiniPay, Rabby, Zerion).
+   * Switches chain automatically to Celo Mainnet (chainId 0xa4ec).
+   */
   const handleConnectCelo = async (selectedProvider?: any) => {
     if (typeof window === 'undefined') return;
 
