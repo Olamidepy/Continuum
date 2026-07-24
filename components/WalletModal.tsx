@@ -102,6 +102,9 @@ function shootConfetti() {
 /** Install URLs for wallets that don't use showConnect */
 const NON_STACKS_WALLETS = ['Asigna', 'Fordefi', 'WalletConnect'];
 
+/**
+ * Multi-chain wallet selection modal connecting Leather, Xverse, Opera MiniPay, and EVM providers.
+ */
 export default function WalletModal({ isOpen, onClose }: WalletModalProps) {
   const router = useRouter();
   const connectWallet = useContinuumStore((state) => state.connectWallet);

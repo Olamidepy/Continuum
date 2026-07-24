@@ -31,6 +31,9 @@ import { Vault } from '../types';
 
 type Step = 1 | 2 | 3 | 4 | 5; // 1: Select, 2: Amount, 3: Review, 4: Processing/Confirm, 5: Success/Error
 
+/**
+ * Modal dialogue managing vault standard withdrawals and early emergency exit penalties.
+ */
 export default function WithdrawModal() {
   const { 
     currentBlockHeight, 
