@@ -23,6 +23,9 @@ const SBTC_CONTRACT_NAME = 'sbtc-token';
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 const userSession = new UserSession({ appConfig });
 
+/**
+ * React hook for interacting with Stacks blockchain smart contracts and wallet sessions.
+ */
 export function useStacks() {
   const { 
     wallet, 
