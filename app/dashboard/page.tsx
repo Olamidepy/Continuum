@@ -98,6 +98,9 @@ function GenderNeutralAvatar({ seed }: { seed: string }) {
   return avatars[index];
 }
 
+/**
+ * Dashboard client interface managing active savings vaults, real-time analytics, and activity logs.
+ */
 export default function Dashboard() {
   const { 
     currentBlockHeight, 

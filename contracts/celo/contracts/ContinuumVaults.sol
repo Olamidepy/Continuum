@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ContinuumVaults
+ * @author Continuum Protocol Team
  * @notice Decentralized time-locked savings protocol on Celo.
  *         Supports native CELO and cUSD (ERC-20) deposits.
  *         Early withdrawal incurs a 10% penalty redistributed to remaining stakers.
