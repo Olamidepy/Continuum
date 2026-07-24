@@ -105,3 +105,11 @@ export function formatCUSD(cusdAmount: number, includeSymbol = true): string {
   }).format(Math.max(0, cusdAmount));
   return includeSymbol ? `$${formatted}` : formatted;
 }
+
+/**
+ * Formats Gwei gas values for display
+ */
+export function formatGwei(gwei: number): string {
+  return `${gwei.toFixed(2)} Gwei`;
+}
+

@@ -61,6 +61,20 @@ export interface GlobalStats {
 }
 
 /**
+ * Supported blockchain networks for Continuum vaults.
+ */
+export type NetworkType = 'Stacks' | 'Celo';
+
+/**
+ * Filter options for vault display and analytics.
+ */
+export interface VaultFilterOptions {
+  network?: NetworkType | 'all';
+  assetType?: 'STX' | 'sBTC' | 'all';
+  status?: 'active' | 'matured' | 'all';
+}
+
+/**
  * Toast notification payload structure.
  */
 export interface Toast {
@@ -68,4 +82,5 @@ export interface Toast {
   type: 'success' | 'error' | 'loading' | 'info';
   message: string;
 }
+
 
