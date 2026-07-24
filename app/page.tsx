@@ -128,6 +128,9 @@ function InViewTyping({ text, className, delay = 28 }: { text: string; className
   );
 }
 
+/**
+ * Continuum Landing Page showcasing protocol mechanics, MiniPay auto-connect, and multi-chain vaults.
+ */
 export default function LandingPage() {
   const router = useRouter();
   const [isExiting, setIsExiting] = useState(false);
