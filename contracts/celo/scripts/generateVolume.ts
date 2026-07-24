@@ -2,20 +2,21 @@ import { ethers } from "hardhat";
 
 async function main() {
   // ==============================================================================
-  // CONFIGURATION: 32 TRANSACTIONS WITHIN $0.30 USD (~0.50 CELO TOTAL BUDGET)
+  // CONFIGURATION: 32 NON-ZERO LOCKED VAULT TRANSACTIONS WITH REAL-TIME GAS PRICING
   // ==============================================================================
-  const NUM_TRANSACTIONS = 32;          // 32 distinct transactions
-  const TOTAL_BUDGET_CELO = 0.50;       // Total budget ($0.30 USD worth of CELO @ ~$0.60/CELO)
+  const NUM_TRANSACTIONS = 32;               // 32 distinct transactions
+  const MIN_DEPOSIT_PER_VAULT = 0.001;        // Minimum 0.001 CELO per vault (prevents 0 wei reverts)
+  const BASE_DEPOSIT_BUDGET = 0.064;          // Total deposit budget distributed (~$0.04 USD)
   
   const CONTRACT_ADDRESS = "0x162fC5502B988B60d6c82e3248Fccf57C3663188"; 
-  const LOCK_DURATION = 30 * 24 * 60 * 60; // 30 days time-lock
-  const VAULT_GAS_LIMIT = 250000n;         // Explicit gas limit per vault call
-  const FUND_GAS_LIMIT = 21000n;           // Explicit gas limit per funding transfer
+  const LOCK_DURATION = 30 * 24 * 60 * 60;    // 30 days time-lock
+  const VAULT_GAS_LIMIT = 250000n;            // Explicit gas limit per vault call
+  const FUND_GAS_LIMIT = 21000n;              // Explicit gas limit per funding transfer
   // ==============================================================================
 
   const [funder] = await ethers.getSigners();
   console.log(`╔══════════════════════════════════════════════════════════════╗`);
-  console.log(`║   CONTINUUM 32-VAULT BATCH EXECUTION ($0.30 BUDGET OPTIMIZED) ║`);
+  console.log(`║   CONTINUUM 32-VAULT BATCH EXECUTION (NON-ZERO DEPOSITS)     ║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
   console.log(`Funder Address: ${funder.address}`);
   
@@ -23,34 +24,37 @@ async function main() {
   const balanceFormatted = parseFloat(ethers.formatEther(balance));
   console.log(`Funder Balance: ${balanceFormatted.toFixed(6)} CELO\n`);
 
-  // Dynamically query network gas prices to satisfy Celo base fee requirements
+  // Dynamically query network gas prices from Celo RPC provider
   const feeData = await ethers.provider.getFeeData();
-  const currentMaxFee = feeData.maxFeePerGas || ethers.parseUnits("15", "gwei");
-  // Add 25% safety margin above base fee to avoid 'gas fee cap below minimum' error
-  const maxFeePerGas = (currentMaxFee * 125n) / 100n;
+  const currentMaxFee = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("20", "gwei");
+  // Add 15% safety margin above network base fee to ensure fast confirmation
+  const maxFeePerGas = (currentMaxFee * 115n) / 100n;
   const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas || ethers.parseUnits("2", "gwei");
 
-  // Calculate dynamic gas buffer per transaction based on live network base fee
+  // Calculate dynamic gas cost per transaction pair (funding + createVault)
   const gasPerTxWei = (VAULT_GAS_LIMIT + FUND_GAS_LIMIT) * maxFeePerGas;
-  const gasBufferPerTxWei = (gasPerTxWei * 115n) / 100n; // 15% margin on estimated gas
+  const gasBufferPerTxWei = (gasPerTxWei * 110n) / 100n; // 10% safety buffer
   const gasBufferPerTxCELO = parseFloat(ethers.formatEther(gasBufferPerTxWei));
 
   const TOTAL_GAS_RESERVE = gasBufferPerTxCELO * NUM_TRANSACTIONS;
-  const TOTAL_CELO_TO_LOCK = Math.max(0, TOTAL_BUDGET_CELO - TOTAL_GAS_RESERVE);
+  const TOTAL_DEPOSIT_LOCK = BASE_DEPOSIT_BUDGET;
+  const TOTAL_CELO_REQUIRED = TOTAL_GAS_RESERVE + TOTAL_DEPOSIT_LOCK;
 
-  console.log(`📊 Dynamic Network Gas & Budget Breakdown:`);
-  console.log(`  • Target Transactions: ${NUM_TRANSACTIONS}`);
-  console.log(`  • Network Fee Cap:     ${ethers.formatUnits(maxFeePerGas, "gwei")} Gwei`);
-  console.log(`  • Total Budget Cap:    ${TOTAL_BUDGET_CELO} CELO (~$0.30 USD)`);
-  console.log(`  • Gas Reserve Total:   ${TOTAL_GAS_RESERVE.toFixed(5)} CELO (${gasBufferPerTxCELO.toFixed(6)} CELO per tx)`);
-  console.log(`  • Net Deposit Locked:  ${TOTAL_CELO_TO_LOCK.toFixed(5)} CELO across 32 vaults\n`);
+  const gweiPriceStr = ethers.formatUnits(maxFeePerGas, "gwei");
 
-  if (balanceFormatted < TOTAL_BUDGET_CELO) {
-    console.error(`❌ Insufficient balance! Wallet has ${balanceFormatted.toFixed(6)} CELO, but total budget requires ${TOTAL_BUDGET_CELO} CELO.`);
+  console.log(`📊 Live Network Gas & Fee Report:`);
+  console.log(`  • Live Network Gas Price: ${parseFloat(gweiPriceStr).toFixed(2)} Gwei`);
+  console.log(`  • Gas Fee Per Transaction: ${gasBufferPerTxCELO.toFixed(6)} CELO (~$${(gasBufferPerTxCELO * 0.60).toFixed(5)} USD)`);
+  console.log(`  • Total 32 Tx Gas Cost:   ${TOTAL_GAS_RESERVE.toFixed(5)} CELO (~$${(TOTAL_GAS_RESERVE * 0.60).toFixed(4)} USD)`);
+  console.log(`  • Total Vault Deposits:   ${TOTAL_DEPOSIT_LOCK.toFixed(5)} CELO across 32 vaults`);
+  console.log(`  • Total CELO Required:    ${TOTAL_CELO_REQUIRED.toFixed(5)} CELO (~$${(TOTAL_CELO_REQUIRED * 0.60).toFixed(4)} USD)\n`);
+
+  if (balanceFormatted < TOTAL_CELO_REQUIRED) {
+    console.error(`❌ Insufficient balance! Wallet has ${balanceFormatted.toFixed(6)} CELO, but script requires ${TOTAL_CELO_REQUIRED.toFixed(5)} CELO.`);
     process.exit(1);
   }
 
-  // 1. Generate 32 distinct random weights for unique deposit amounts
+  // 1. Generate 32 distinct random weights for unique non-zero deposit amounts
   let weights: number[] = [];
   let totalWeight = 0;
   for (let i = 0; i < NUM_TRANSACTIONS; i++) {
@@ -59,16 +63,17 @@ async function main() {
     totalWeight += weight;
   }
 
-  // 2. Calculate exact unique CELO deposit amounts per transaction
+  // 2. Calculate exact unique CELO deposit amounts per transaction (Guaranteed >= MIN_DEPOSIT_PER_VAULT)
   let amountsToLock: number[] = [];
   for (let i = 0; i < NUM_TRANSACTIONS; i++) {
-    const amount = (weights[i] / totalWeight) * TOTAL_CELO_TO_LOCK;
-    amountsToLock.push(amount);
+    const calculatedAmount = (weights[i] / totalWeight) * TOTAL_DEPOSIT_LOCK;
+    const finalAmount = Math.max(MIN_DEPOSIT_PER_VAULT, calculatedAmount);
+    amountsToLock.push(finalAmount);
   }
 
   const ContinuumVaults = await ethers.getContractFactory("ContinuumVaults");
 
-  console.log(`🚀 Executing 32 Locked Vault Transactions with Dynamic Network Gas...\n`);
+  console.log(`🚀 Executing 32 Non-Zero Locked Vault Transactions...\n`);
 
   for (let i = 0; i < NUM_TRANSACTIONS; i++) {
     const lockAmount = amountsToLock[i];
@@ -78,6 +83,7 @@ async function main() {
     const randomWallet = ethers.Wallet.createRandom().connect(ethers.provider);
     console.log(`  • Target Wallet: ${randomWallet.address}`);
     console.log(`  • Vault Deposit: ${lockAmount.toFixed(6)} CELO`);
+    console.log(`  • Gas Allocation: ${gasBufferPerTxCELO.toFixed(6)} CELO`);
 
     const lockAmountWei = ethers.parseEther(lockAmount.toFixed(18));
     const fundAmountWei = lockAmountWei + gasBufferPerTxWei;
@@ -115,7 +121,7 @@ async function main() {
     }
   }
   
-  console.log(`🎉 All 32 Locked Vault transactions completed within $0.30 USD budget!`);
+  console.log(`🎉 All 32 Locked Vault transactions completed successfully!`);
 }
 
 main()
@@ -124,5 +130,6 @@ main()
     console.error(error);
     process.exit(1);
   });
+
 
 
