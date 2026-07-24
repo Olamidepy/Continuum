@@ -39,6 +39,7 @@ interface ContinuumState {
   simulateExternalActivity: () => void;
   addTransaction: (tx: Omit<Transaction, 'id' | 'timestamp'>) => void;
   updateTransactionStatus: (txId: string, status: 'success' | 'failed') => void;
+  clearTransactions: () => void;
   updateAvatar: (index: number, name: string) => void;
   updateCustomAvatarName: (customName: string) => void;
 
@@ -921,6 +922,8 @@ export const useContinuumStore = create<ContinuumState>()(
           tx.txId === txId || tx.id === txId ? { ...tx, status } : tx
         ),
       })),
+
+      clearTransactions: () => set({ transactions: [] }),
     }),
     {
       name: 'continuum-storage',
