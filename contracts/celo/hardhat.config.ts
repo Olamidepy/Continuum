@@ -17,6 +17,7 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
+    // Celo Mainnet RPC Endpoint (Chain ID: 42220)
     celo: {
       url: "https://rpc.ankr.com/celo",
       chainId: 42220,

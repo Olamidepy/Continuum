@@ -118,6 +118,13 @@ To test the MiniPay stablecoin savings flow on a mobile device:
 4. Input your ngrok tunnel URL into the developer settings to load Continuum inside MiniPay.
 5. The app will auto-detect the wallet and connect instantly!
 
+### Testing Batch Transactions (Hardhat)
+To test batch vault creations and live gas calculations on Celo:
+```bash
+cd contracts/celo
+npx hardhat run scripts/generateVolume.ts --network celo
+```
+
 ### Build and Compilation Check
 Compile and verify the TypeScript build output for production deployment:
 ```bash
