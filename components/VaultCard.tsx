@@ -28,6 +28,9 @@ interface VaultCardProps {
   vault: Vault;
 }
 
+/**
+ * Displays an active or matured savings vault card with action forms for top-ups, lock extensions, and yield claims.
+ */
 export default function VaultCard({ vault }: VaultCardProps) {
   const { currentBlockHeight, setWithdrawOpen, setSelectedWithdrawVault, wallet, isSimulation, simulatedNetwork, transactions } = useContinuumStore();
   const { increaseDeposit, extendLock, claimRewards } = useStacks();
