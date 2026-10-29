@@ -12,7 +12,7 @@ import { VaultStats } from "@/components/site/vault-stats";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LIVE, PENALTY, PHOTOS, SITE, STEPS, TIERS } from "@/lib/data";
+import { PENALTY, PHOTOS, SITE, STEPS, TIERS } from "@/lib/data";
 
 const TRUST = [
   { icon: KeyRound, title: "No owner, no admin", body: "Nobody can pause the vault, change its rules or move your tokens. Only your wallet can act on your vault." },
@@ -46,16 +46,10 @@ export default function HomePage() {
 
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-32 pb-20 sm:px-6 sm:pt-40 lg:min-h-[92svh] lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
-            <div className="fade-up">
-              <Badge variant="outline" className="gap-1.5 bg-background/60 backdrop-blur">
-                <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
-                {LIVE ? "Live on Ethereum" : `Launching on ${SITE.launchpad}`}
-              </Badge>
-            </div>
             <AnimatedHeading
               as="h1"
               start={120}
-              className="mt-6 max-w-[14ch] font-heading text-[clamp(2.5rem,5vw,4.4rem)] leading-[1.02] font-bold tracking-[-0.03em]"
+              className="max-w-[14ch] font-heading text-[clamp(2.5rem,5vw,4.4rem)] leading-[1.02] font-bold tracking-[-0.03em]"
               lines={[{ text: "Hold longer." }, { text: "Get paid by the ones who don't." }]}
             />
             <p className="fade-up mt-6 max-w-[50ch] text-lg text-foreground/75" style={{ "--d": "700ms" } as React.CSSProperties}>
