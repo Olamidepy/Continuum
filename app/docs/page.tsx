@@ -36,7 +36,7 @@ const FUNCTIONS = [
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="scroll-mt-24 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+    <h2 id={id} className="scroll-mt-28 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
       {children}
     </h2>
   );
@@ -58,8 +58,8 @@ export default function DocsPage() {
     <>
       <PageHeader title="How Continuum works" body="Everything a saver needs: how locks and shares work, where exit fees go, how the token launches and what the contract can and can't do." />
       <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[220px_1fr]">
-        <nav aria-label="Docs" className="lg:sticky lg:top-24 lg:self-start">
-          <ul className="flex gap-1 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible">
+        <nav aria-label="Docs" className="min-w-0 lg:sticky lg:top-28 lg:self-start">
+          <ul className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
             {TOC.map(({ id, label, icon: Icon }) => (
               <li key={id}>
                 <a href={`#${id}`} className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm whitespace-nowrap text-muted-foreground hover:bg-accent hover:text-foreground">
@@ -195,7 +195,7 @@ export default function DocsPage() {
                 <TableBody>
                   {FUNCTIONS.map((f) => (
                     <TableRow key={f.fn}>
-                      <TableCell className="pl-4 align-top font-mono text-[13px] whitespace-nowrap text-foreground">{f.fn}</TableCell>
+                      <TableCell className="pl-4 align-top font-mono text-[13px] whitespace-normal break-words text-foreground sm:whitespace-nowrap">{f.fn}</TableCell>
                       <TableCell className="pr-4 whitespace-normal">{f.does}</TableCell>
                     </TableRow>
                   ))}

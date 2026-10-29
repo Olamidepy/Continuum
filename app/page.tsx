@@ -28,7 +28,7 @@ const HERO_FACTS = [
 ];
 
 function SectionTitle({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <h2 className={`font-heading text-[clamp(1.9rem,4.2vw,3.25rem)] leading-[1.05] font-bold tracking-[-0.025em] ${className}`}>{children}</h2>;
+  return <h2 className={`font-heading text-[clamp(1.75rem,4.2vw,3.25rem)] leading-[1.05] font-bold tracking-[-0.025em] ${className}`}>{children}</h2>;
 }
 
 export default function HomePage() {
@@ -69,9 +69,9 @@ export default function HomePage() {
                 </Link>
               </Button>
             </div>
-            <dl className="fade-up mt-10 grid max-w-xl grid-cols-3 gap-3" style={{ "--d": "950ms" } as React.CSSProperties}>
+            <dl className="fade-up mt-10 grid max-w-xl grid-cols-3 gap-2 sm:gap-3" style={{ "--d": "950ms" } as React.CSSProperties}>
               {HERO_FACTS.map((f) => (
-                <div key={f.label} className="rounded-xl border bg-card/70 p-4 backdrop-blur">
+                <div key={f.label} className="rounded-xl border bg-card/70 p-3 backdrop-blur sm:p-4">
                   <dt className="sr-only">{f.label}</dt>
                   <dd className="num font-heading text-2xl font-bold sm:text-3xl">{f.value}</dd>
                   <dd className="mt-1 text-xs leading-snug text-muted-foreground">{f.label}</dd>
@@ -94,7 +94,7 @@ export default function HomePage() {
             <Hourglass className="size-3" aria-hidden="true" />
             Why Continuum
           </Badge>
-          <p className="font-heading text-[clamp(1.6rem,3.4vw,2.75rem)] leading-[1.15] font-semibold tracking-[-0.02em]">
+          <p className="font-heading text-[clamp(1.4rem,3.4vw,2.75rem)] leading-[1.18] font-semibold tracking-[-0.02em]">
             Most launches reward whoever sells first. Continuum turns that around.{" "}
             <span className="text-muted-foreground">Every early exit pays the people still holding, so the longer you stay, the more you earn.</span>
           </p>
@@ -104,12 +104,12 @@ export default function HomePage() {
       {/* Bento */}
       <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-16 sm:px-6 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
-          <Card className="relative isolate h-full min-h-[440px] justify-end overflow-hidden p-0">
+          <Card className="relative isolate h-full min-h-[360px] justify-end sm:min-h-[440px] overflow-hidden p-0">
             <div className="absolute inset-0 -z-10">
               <Photo photo={PHOTOS.hourglassRed} sizes="(min-width: 1024px) 680px, 100vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             </div>
-            <div className="p-8">
+            <div className="p-6 sm:p-8">
               <Badge className="mb-4">Time is the strategy</Badge>
               <h3 className="max-w-[18ch] font-heading text-3xl leading-tight font-bold tracking-tight text-white sm:text-4xl">Your lock is a promise the contract keeps for you.</h3>
               <Button asChild variant="secondary" className="mt-6 rounded-full">
@@ -127,7 +127,7 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <CardDescription>Share weight by lock length</CardDescription>
-                <CardTitle className="num font-heading text-6xl font-bold tracking-tight">2.0x</CardTitle>
+                <CardTitle className="num font-heading text-5xl font-bold tracking-tight sm:text-6xl">2.0x</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex h-28 items-end gap-3" role="img" aria-label="Weights: 1.0x, 1.2x, 1.5x and 2.0x">
@@ -145,7 +145,7 @@ export default function HomePage() {
             <Card>
               <CardHeader>
                 <CardDescription>Early-exit fee</CardDescription>
-                <CardTitle className="num font-heading text-6xl font-bold tracking-tight">{PENALTY.pct}%</CardTitle>
+                <CardTitle className="num font-heading text-5xl font-bold tracking-tight sm:text-6xl">{PENALTY.pct}%</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
                 <div className="flex h-2.5 overflow-hidden rounded-full">
@@ -163,7 +163,7 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section className="mx-auto max-w-6xl px-4 pt-28 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal>
           <SectionTitle className="max-w-[22ch]">Three steps, one rule: finishing is free.</SectionTitle>
         </Reveal>
@@ -183,7 +183,7 @@ export default function HomePage() {
       </section>
 
       {/* Early exit split, with photo */}
-      <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-28 sm:px-6 lg:grid-cols-2">
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-20 sm:px-6 sm:pt-28 lg:grid-cols-2">
         <Reveal className="flex flex-col justify-between gap-8">
           <div>
             <SectionTitle>Where an early exit goes</SectionTitle>
@@ -204,7 +204,7 @@ export default function HomePage() {
             {/* Tints the blue star trails into the site's red. */}
             <div className="absolute inset-0 -z-10 bg-primary mix-blend-multiply" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
-            <div className="mt-auto p-8">
+            <div className="mt-auto p-6 sm:p-8">
               <p className="max-w-[22ch] font-heading text-2xl leading-snug font-semibold text-white">Rewards arrive in real time, one exit at a time, for as long as you stay.</p>
             </div>
           </Card>
@@ -212,7 +212,7 @@ export default function HomePage() {
       </section>
 
       {/* Live numbers */}
-      <section className="mx-auto max-w-6xl px-4 pt-28 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <SectionTitle>The vault, live</SectionTitle>
           <p className="max-w-[40ch] text-muted-foreground">Read straight from Ethereum. These fill in the moment the vault is deployed.</p>
@@ -223,7 +223,7 @@ export default function HomePage() {
       </section>
 
       {/* Lock lengths */}
-      <section className="mx-auto max-w-6xl px-4 pt-28 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <SectionTitle>Pick your length</SectionTitle>
           <p className="max-w-[44ch] text-muted-foreground">Your shares are the amount you lock times its weight. More shares, bigger cut of every exit fee.</p>
@@ -246,12 +246,12 @@ export default function HomePage() {
       </section>
 
       {/* Trust */}
-      <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-28 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
+      <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-20 sm:px-6 sm:pt-28 lg:grid-cols-[1fr_1.4fr]">
         <Reveal>
-          <Card className="relative isolate h-full min-h-[420px] justify-end overflow-hidden p-0">
+          <Card className="relative isolate h-full min-h-[320px] justify-end sm:min-h-[420px] overflow-hidden p-0">
             <Photo photo={PHOTOS.hourglass} sizes="(min-width: 1024px) 460px, 100vw" className="absolute inset-0 -z-10" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-transparent" />
-            <div className="p-8">
+            <div className="p-6 sm:p-8">
               <SectionTitle className="text-white">Nobody holds the keys but you</SectionTitle>
             </div>
           </Card>
@@ -273,12 +273,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="pt-28">
+      <div className="pt-20 sm:pt-28">
         <Ticker slow />
       </div>
 
       {/* FAQ preview */}
-      <section className="mx-auto grid max-w-6xl gap-10 px-4 pt-28 sm:px-6 lg:grid-cols-[1fr_1.5fr]">
+      <section className="mx-auto grid max-w-6xl gap-10 px-4 pt-20 sm:px-6 sm:pt-28 lg:grid-cols-[1fr_1.5fr]">
         <Reveal>
           <SectionTitle>Questions, answered</SectionTitle>
           <p className="mt-4 max-w-[36ch] text-muted-foreground">The short version. The Docs page has the full detail, contract functions included.</p>
@@ -297,7 +297,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 pt-28 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal>
           <Card className="relative isolate items-start gap-6 overflow-hidden p-8 sm:p-14">
             <Photo photo={PHOTOS.curves} decorative sizes="(min-width: 1152px) 1152px, 100vw" className="absolute inset-0 -z-10 opacity-60" />

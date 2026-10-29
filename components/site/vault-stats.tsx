@@ -16,11 +16,11 @@ export function VaultStats() {
   ];
   return (
     <Card className="py-0">
-      <CardContent className="grid divide-y px-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      <CardContent className="grid grid-cols-3 divide-x px-0">
         {items.map((i) => (
-          <div key={i.label} className="px-6 py-5">
-            <div className="text-sm text-muted-foreground">{i.label}</div>
-            <div className="num mt-1 font-heading text-2xl font-semibold">
+          <div key={i.label} className="min-w-0 px-3 py-4 sm:px-6 sm:py-5">
+            <div className="text-xs text-muted-foreground sm:text-sm">{i.label}</div>
+            <div className="num mt-1 truncate font-heading text-base font-semibold sm:text-2xl">
               {LIVE ? i.value ?? <Skeleton className="mt-1 h-7 w-32" /> : <span className="text-muted-foreground">At launch</span>}
             </div>
           </div>
