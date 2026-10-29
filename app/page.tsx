@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, FileCode2, Hourglass, KeyRound, Lock, Rocket, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, FileCode2, Hourglass, KeyRound, Lock, Rocket, ShieldCheck } from "lucide-react";
 
 import { AnimatedHeading } from "@/components/site/animated-heading";
 import { ExitSplit } from "@/components/site/exit-split";
@@ -39,7 +39,10 @@ export default function HomePage() {
       {/* Hero: full-bleed photo under the floating nav */}
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <Photo photo={PHOTOS.trails} decorative priority className="slow-zoom opacity-70" />
+          {/* Softly blurred; the wrapper bleeds past the edges so the blur never shows a hard border. */}
+          <div className="absolute -inset-6 blur-[6px]">
+            <Photo photo={PHOTOS.trails} decorative priority className="slow-zoom opacity-70" />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/30" />
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent" />
         </div>
@@ -57,16 +60,10 @@ export default function HomePage() {
             </p>
             <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ "--d": "820ms" } as React.CSSProperties}>
               <Button asChild size="lg" className="rounded-full">
-                <Link href="/vaults">
-                  <Lock />
-                  Open a vault
-                </Link>
+                <Link href="/vaults">Open a vault</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-full bg-background/50 backdrop-blur">
-                <Link href="/docs">
-                  <BookOpen />
-                  How it works
-                </Link>
+                <Link href="/docs">How it works</Link>
               </Button>
             </div>
             <dl className="fade-up mt-10 grid max-w-xl grid-cols-3 gap-2 sm:gap-3" style={{ "--d": "950ms" } as React.CSSProperties}>
