@@ -140,3 +140,25 @@ export const FAQ = [
 ] as const;
 
 export const FAQ_GROUPS = ["All", "Basics", "Rewards", "Token", "Safety"] as const;
+
+/** Free Unsplash photos, loaded from Unsplash's image CDN (as Unsplash asks). Credits show in the footer. */
+const unsplash = (id: string) => (w: number) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+
+export const PHOTOS = {
+  trails: { src: unsplash("photo-1484734278752-212d8c88a568"), alt: "Red and white light trails from traffic at night", by: "Paul Smith", href: "https://unsplash.com/photos/Sz0kMDeDUc0" },
+  hourglass: { src: unsplash("photo-1643810064714-7c80c7bf68e8"), alt: "An hourglass on a black background", by: "Pablo Añón", href: "https://unsplash.com/photos/XMW-B70xZy4" },
+  hourglassRed: { src: unsplash("photo-1591360236494-e6557e5ffa25"), alt: "A clear hourglass against a red background", by: "Daniele Franchi", href: "https://unsplash.com/photos/WyJ0rahs_2k" },
+  curves: { src: unsplash("photo-1708533548050-16703eff12ec"), alt: "Abstract black and red curves", by: "Pawel Czerwinski", href: "https://unsplash.com/photos/GycPY2LU2Ew" },
+  stars: { src: unsplash("photo-1502864580248-63061f3f5998"), alt: "Star trails over a night sky", by: "Mohdammed Ali", href: "https://unsplash.com/photos/zZvofYjfVXw" },
+} as const;
+
+export const TICKER = [
+  "Lock 30 to 365 days",
+  "10% early-exit fee",
+  "80% of every exit fee goes to lockers",
+  "Up to 2.0x weight",
+  "No owner, no admin, no pause",
+  "Finishing is free",
+  "Launching on Programmable",
+  "Uniswap v4 on Ethereum",
+] as const;

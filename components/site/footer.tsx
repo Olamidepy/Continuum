@@ -4,7 +4,7 @@ import { FileCode2 } from "lucide-react";
 import { LogoMark } from "@/components/site/logo";
 import { XIcon } from "@/components/site/x-icon";
 import { Separator } from "@/components/ui/separator";
-import { NAV, SITE } from "@/lib/data";
+import { NAV, PHOTOS, SITE } from "@/lib/data";
 
 export function Footer() {
   return (
@@ -29,9 +29,22 @@ export function Footer() {
       </div>
       <Separator />
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p className="max-w-2xl">
+        <div className="grid max-w-2xl gap-2">
+        <p>
           Tokens can lose all value. Locked tokens can only leave early with the 10% exit fee. The vault code is public but has not been audited. Nothing here is financial advice.
         </p>
+        <p>
+          Photos from Unsplash by{" "}
+          {Object.values(PHOTOS).map((p, i, arr) => (
+            <span key={p.by}>
+              <a href={p.href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+                {p.by}
+              </a>
+              {i < arr.length - 2 ? ", " : i === arr.length - 2 ? " and " : "."}
+            </span>
+          ))}
+        </p>
+        </div>
         <div className="flex items-center gap-3">
           <a href={SITE.github} target="_blank" rel="noopener noreferrer" aria-label="Source on GitHub" className="hover:text-foreground">
             <FileCode2 className="size-4" />
