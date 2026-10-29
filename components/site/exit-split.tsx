@@ -10,7 +10,7 @@ export function ExitSplit() {
   const rows = [
     { label: "Back to the saver who left", value: back, className: "bg-muted-foreground/40" },
     { label: "Shared with everyone still locked", value: lockers, className: "bg-primary" },
-    { label: "Treasury", value: treasury, className: "bg-dawn" },
+    { label: "Treasury", value: treasury, className: "bg-ember" },
   ];
   return (
     <div>

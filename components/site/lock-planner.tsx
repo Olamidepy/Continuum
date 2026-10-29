@@ -76,7 +76,7 @@ export function LockPlanner() {
             ))}
             <span
               suppressHydrationWarning
-              className="absolute -top-8 -translate-x-1/2 rounded-md bg-dawn px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-primary-foreground transition-[left] duration-500 ease-out"
+              className="absolute -top-8 -translate-x-1/2 rounded-md bg-primary px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-primary-foreground transition-[left] duration-500 ease-out"
               style={{ left: `clamp(2.5rem, ${pos}%, calc(100% - 2.5rem))` }}
             >
               {unlock}

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary", site: SITE.xHandle },
 };
 
-export const viewport: Viewport = { themeColor: "#0c1020", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#050505", colorScheme: "dark" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -129,7 +129,7 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 pt-24 sm:px-6">
         <Card className="items-start gap-6 p-8 sm:p-12">
-          <ShieldCheck className="size-6 text-dawn" aria-hidden="true" />
+          <ShieldCheck className="size-6 text-primary" aria-hidden="true" />
           <h2 className="max-w-[20ch] font-heading text-[clamp(1.75rem,4vw,2.75rem)] leading-tight font-bold tracking-tight">Patience should pay. Here, it does.</h2>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">

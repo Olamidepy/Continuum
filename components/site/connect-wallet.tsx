@@ -114,7 +114,7 @@ export function ConnectWallet({ size = "sm", className }: { size?: "sm" | "defau
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={wrongChain ? "outline" : "secondary"} size={size} className={cn("num", className)}>
-          {wrongChain ? <TriangleAlert className="text-dawn" /> : <span className="size-2 rounded-full bg-primary" aria-hidden="true" />}
+          {wrongChain ? <TriangleAlert className="text-primary" /> : <span className="size-2 rounded-full bg-primary" aria-hidden="true" />}
           {wrongChain ? "Wrong network" : shortAddress(address)}
         </Button>
       </DialogTrigger>
