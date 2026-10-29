@@ -1,138 +1,64 @@
-# Continuum: Bitcoin-Native and Multi-Chain Decentralized Savings Protocol
+# Continuum
 
-Continuum is a production-grade, non-custodial time-locked savings protocol built on the Stacks blockchain and optimized for Celo/MiniPay mobile stablecoin integration. Designed to encourage long-term wealth accumulation, the protocol enables users to securely lock Stacks (STX) / Super Bitcoin (sBTC) or Celo (CELO) / Celo Dollars (cUSD) into smart-contract-governed vaults. Discipline is incentivized by transparently redistributing early withdrawal penalties directly to remaining active pool participants.
+**Hold longer. Get paid by the ones who don't.**
 
-This codebase contains Clarity smart contracts, React connectors, and a Next.js client interface fully compatible with desktop wallet extensions (Leather, Xverse) and mobile stablecoin wallets (Opera MiniPay).
+Continuum is a time-locked vault on Ethereum. Lock the Continuum token for 30, 90, 180 or 365 days. Anyone who breaks a lock early pays 10% of it: 80% is shared with every vault still locked, 20% goes to the treasury. Finishing is free.
 
----
+The token launches through [Programmable](https://programmable.market)'s Custom Launch (protected launch token + Uniswap v4 hook). The vault is a separate, ownerless contract. See [LAUNCH.md](LAUNCH.md) for the launch checklist.
 
-## Core Protocol Mechanics
-
-### Non-Custodial Time-Locks
-Deposits are locked directly in smart contracts. The code contains no administrator override backdoors, ensuring user assets can only be retrieved by the lock owner.
-
-### Multi-Chain Extension (Celo & MiniPay)
-In addition to the Stacks network, Continuum includes Celo native stablecoin savings options tailored for Opera's **MiniPay** mobile-first browser environment. 
-- **Auto-Connection**: Automatically detects the injected `window.ethereum` EIP-1193 MiniPay provider on load, signing users in instantly without a manual click.
-- **Micro-Gas Fees**: Optimized for sub-cent transaction costs in emerging markets.
-- **cUSD Pegged Savings**: Supports locking Celo Dollars (cUSD) to earn yield denominated in stable assets.
-
-### O(1) Scalable Reward Redistribution
-Typical pool yield systems iterate through active balances to distribute rewards, which scales at O(N) and risks exceeding block transaction limits. Continuum resolves this with a scalable O(1) rewards-per-share algorithm:
-- Shares are computed as Locked Amount multiplied by the Duration Multiplier.
-- When an early exit occurs, a 10% penalty is deducted.
-- 80% of the penalty is left in the contract, and the global accumulated rewards-per-share variable increases.
-- 20% of the penalty is transferred to the treasury address for reserve pool stability.
-- Saver vaults calculate and claim accrued rewards lazily during user interactions (claims, top-ups, extends, or standard withdrawals).
-
-### Lock Duration Multiplier Tiers
-Commitment duration governs the share weight allocation, rewarding longer locks with a larger percentage of penalty distributions:
-- 30 Days: 1.0x share weight multiplier
-- 90 Days: 1.2x share weight multiplier
-- 180 Days: 1.5x share weight multiplier
-- 365 Days: 2.0x share weight multiplier
-
----
-
-## Directory Structure
+## What's in here
 
 ```
-continuum/
-├── app/
-│   ├── layout.tsx         # HTML shell with Google Poppins fonts and global configuration
-│   ├── page.tsx           # Premium landing page detailing protocol specifications & MiniPay auto-connect
-│   └── dashboard/
-│       └── page.tsx       # Interactive savings client with Recharts analytics and forms
-├── components/
-│   ├── MockupPhone.tsx    # Responsive vector mockup of the dashboard layout
-│   ├── VaultCard.tsx      # Active vault item representing lock counters and action forms
-│   └── WalletModal.tsx    # Wallet overlay targeting Leather, Xverse, Celo (MiniPay), Asigna, etc.
-├── contracts/
-│   ├── Clarinet.toml      # Clarinet configuration manifest
-│   ├── continuum-vaults.clar # Primary Stacks Clarity 2 vaults contract
-│   ├── sbtc-token-mock.clar  # Mock sBTC implementation for localized compiler checks
-│   └── sip-010-trait-mock.clar # SIP-010 token trait specification
-├── hooks/
-│   ├── useStacks.ts       # React hook for Stacks browser extension calls and blockchain queries
-│   └── useCelo.ts         # React hook for Celo/MiniPay EIP-1193 calls and Forno RPC balance fetching
-├── lib/
-│   └── store.ts           # Client store tracking wallets and mirror contract calculations
-├── styles/
-│   └── globals.css        # Tailwind CSS v4 variables, blurs, and float animations
-├── types/
-│   └── index.ts           # Domain models for vaults, transactions, and user stats
-├── utils/
-│   └── format.ts          # Conversion helpers for STX, sBTC, and blocks
-├── package.json           # Project manifest and package configurations
-└── tsconfig.json          # TypeScript compiler configurations
+app/                 Next.js pages: home, vaults, trade, docs, faq
+components/ui/       stock shadcn/ui (new-york)
+components/site/     Continuum components (lock planner, vault list, swap, …)
+lib/data.ts          all copy, numbers and addresses (driven by env vars)
+lib/web3/            wagmi config, pool price reader, vault hooks, generated ABI
+contracts/           ContinuumVault.sol, tests, deploy script (Hardhat)
 ```
 
----
+## The vault
 
-## Technology Stack
+`contracts/src/ContinuumVault.sol`
 
-### Frontend Client
-- Framework: Next.js 15 (App Router, React 19)
-- Styling: Tailwind CSS v4 and vanilla CSS backdrop filters
-- State Management: Zustand (persisted local storage state)
-- Visualizations: Recharts
-- Animations: Framer Motion
+| | |
+|---|---|
+| Lock lengths | 30 / 90 / 180 / 365 days |
+| Weights | 1.0x / 1.2x / 1.5x / 2.0x |
+| Shares | amount × weight |
+| Early exit | 10% of principal: 80% to open vaults by share, 20% to treasury |
+| Rewards | early-exit fees + anyone can `fund()`; O(1) reward-per-share accounting |
+| Admin | none: no owner, pause, proxy or setters. Token and treasury are immutable |
 
-### Blockchain Interface
-- **Stacks Network**: Clarity 2 Smart Contracts, Stacks.js Connect (network, transactions)
-- **Celo Network (MiniPay)**: Injected EIP-1193 Provider, Celo Mainnet Forno RPC integration (balance queries, cUSD stablecoin ERC20 transfers)
+Functions: `lock`, `topUp`, `extend`, `claim`, `withdraw`, `exitEarly`, `fund`, plus views `getVault`, `vaultsOf`, `pending`, `previewExit`, `stats`.
 
----
+```bash
+cd contracts
+npm install
+npm test          # 14 tests
+npm run abi       # copy the compiled ABI into the website after any contract change
+```
 
-## Getting Started
+The Hardhat config uses the compiler bundled in `node_modules/solc`, so it works without downloading a compiler.
 
-### Prerequisites
-- Node.js (version 18.0.0 or higher)
-- npm or pnpm package manager
+## The website
 
-### Installation
-Install all client dependencies:
+Next.js 16, React 19, Tailwind v4, stock shadcn/ui, Lucide icons, wagmi + viem on Ethereum mainnet. Headings in Syne, body in Nunito (self-hosted).
+
 ```bash
 npm install
-```
-
-### Environment Variables
-Configure your environment variables by copying the example manifest:
-```bash
 cp .env.example .env.local
-```
-
-### Local Development
-To launch the Next.js development server:
-```bash
 npm run dev
 ```
-### Testing on MiniPay (Opera Mini)
-To test the MiniPay stablecoin savings flow on a mobile device:
-1. Expose your local environment using a tunneling service like [ngrok](https://ngrok.com/):
-   ```bash
-   ngrok http 3000
-   ```
-2. Open the Opera Mini browser on your Android or iOS device (with MiniPay activated).
-3. Turn on **Developer Mode** in the MiniPay settings.
-4. Input your ngrok tunnel URL into the developer settings to load Continuum inside MiniPay.
-5. The app will auto-detect the wallet and connect instantly!
 
-### Testing Batch Transactions (Hardhat)
-To test batch vault creations and live gas calculations on Celo:
-```bash
-cd contracts/celo
-npx hardhat run scripts/generateVolume.ts --network celo
-```
+Before launch the site works with no addresses set: prices, vault actions and contract addresses show "At launch". Set the env vars in [.env.example](.env.example) as each piece goes live.
 
-### Build and Compilation Check
-Compile and verify the TypeScript build output for production deployment:
-```bash
-npm run build
-```
+### Deploy on Vercel
 
----
+1. Import the repo in Vercel (framework: Next.js, root: repo root).
+2. Add the env vars from `.env.example` that you have so far.
+3. Deploy. Redeploy whenever you add addresses.
 
 ## License
 
-This project is licensed under the MIT License. Details can be found in the LICENSE file.
+MIT

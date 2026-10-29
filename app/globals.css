@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Continuum is dark only. Stock shadcn tokens, recoloured:
+  night indigo base, periwinkle for "now", dawn amber for "unlock day".
+  The periwinkle → dawn ramp is used only for lock timelines.
+*/
+:root {
+  --radius: 0.75rem;
+  --background: #0c1020;
+  --foreground: #e8ebf4;
+  --card: #121729;
+  --card-foreground: #e8ebf4;
+  --popover: #121729;
+  --popover-foreground: #e8ebf4;
+  --primary: #9aa8ff;
+  --primary-foreground: #0c1020;
+  --secondary: #1a2138;
+  --secondary-foreground: #e8ebf4;
+  --muted: #171d32;
+  --muted-foreground: #8d94ae;
+  --accent: #1d2540;
+  --accent-foreground: #e8ebf4;
+  --destructive: #f26d6d;
+  --border: rgb(232 235 244 / 0.09);
+  --input: rgb(232 235 244 / 0.14);
+  --ring: #9aa8ff;
+  --dawn: #f3c37e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-dawn: var(--dawn);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: "Nunito Variable", "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Syne Variable", "Syne", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "tnum" 0;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+}
+
+@layer utilities {
+  .timeline-ramp {
+    background-image: linear-gradient(90deg, var(--primary), var(--dawn));
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* The one moving thing: the hero timeline marker glides to the picked unlock day. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

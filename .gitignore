@@ -1,42 +1,42 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Dependencies
 node_modules/
 /.pnp
 .pnp.js
 
-# Hardhat build artifacts
-contracts/celo/artifacts/
-contracts/celo/cache/
-contracts/celo/typechain-types/
-
-
-# testing
+# Testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# Next.js build output
+.next/
+out/
+build/
 
-# production
-/build
+# Environment files
+.env
+.env*.local
+.env.development
+.env.test
+.env.production
+.env*
+!.env.example
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Debug and system logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
+# Operating System files
+.DS_Store
+Thumbs.db
 
-# vercel
-.vercel
-
-# typescript
+# TypeScript build cache
 *.tsbuildinfo
-next-env.d.ts
+
+# Archives and binaries
+*.tar
+*.zip
+*.gz
+
+# Deployment platforms
+.vercel
