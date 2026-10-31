@@ -16,14 +16,14 @@ import { PENALTY, PHOTOS, SITE, STEPS, TIERS } from "@/lib/data";
 
 const TRUST = [
   { icon: KeyRound, title: "No owner, no admin", body: "Nobody can pause the vault, change its rules or move your tokens. Only your wallet can act on your vault." },
-  { icon: Lock, title: "Fixed at deploy", body: "The token, the treasury, the lock lengths and the 10% exit fee are written into the contract and can't change." },
+  { icon: Lock, title: "Fixed at deploy", body: "The token, the lock lengths and the 10% exit fee are written into the contract and can't change. There is no treasury cut." },
   { icon: FileCode2, title: "Open source", body: "The contract and its tests are public on GitHub, so anyone can read exactly what it does." },
   { icon: Rocket, title: `Launched on ${SITE.launchpad}`, body: `The token launches through ${SITE.launchpad}'s protected launch on Uniswap v4. The vault is a separate contract.` },
 ];
 
 const HERO_FACTS = [
   { value: "2.0x", label: "Weight for a 30-day lock" },
-  { value: `${PENALTY.toLockers}%`, label: "Of every exit fee goes to lockers" },
+  { value: "100%", label: "Of every exit fee goes to holders" },
   { value: "0", label: "Admin keys on the vault" },
 ];
 
@@ -56,7 +56,7 @@ export default function HomePage() {
               lines={[{ text: "Hold longer." }, { text: "Get paid by the ones who don't." }]}
             />
             <p className="fade-up mt-6 max-w-[50ch] text-lg text-foreground/75" style={{ "--d": "700ms" } as React.CSSProperties}>
-              Lock your tokens for 3 to 30 days. If someone breaks their lock early, they pay {PENALTY.pct}%, and most of it is shared with everyone who stayed.
+              Lock your tokens for 3 to 30 days. Every early exit forfeits {PENALTY.pct}%, and it flows straight to the holders who kept their word.
             </p>
             <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ "--d": "820ms" } as React.CSSProperties}>
               <Button asChild size="lg" className="rounded-full">
@@ -145,14 +145,8 @@ export default function HomePage() {
                 <CardTitle className="num font-heading text-5xl font-bold tracking-tight sm:text-6xl">{PENALTY.pct}%</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
-                <div className="flex h-2.5 overflow-hidden rounded-full">
-                  <div className="bg-primary" style={{ width: `${PENALTY.toLockers}%` }} />
-                  <div className="bg-ember" style={{ width: `${PENALTY.toTreasury}%` }} />
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{PENALTY.toLockers}% to everyone still locked</span>
-                  <span>{PENALTY.toTreasury}% treasury</span>
-                </div>
+                <div className="h-2.5 rounded-full bg-primary" />
+                <div className="text-xs text-muted-foreground">All of it goes to the holders still locked. No treasury, no team cut.</div>
               </CardContent>
             </Card>
           </Reveal>
@@ -185,8 +179,8 @@ export default function HomePage() {
           <div>
             <SectionTitle>Where an early exit goes</SectionTitle>
             <p className="mt-4 max-w-[46ch] text-muted-foreground">
-              The {PENALTY.pct}% fee is split on the spot. {PENALTY.toLockers}% joins the reward pool for every open vault, weighted by shares. {PENALTY.toTreasury}% goes to the
-              treasury. Nobody chooses who gets paid; the contract does it the moment someone leaves.
+              The {PENALTY.pct}% forfeit is shared on the spot with every open vault, weighted by shares. All of it goes to holders; there is no treasury
+              cut. Nobody chooses who gets paid; the contract does it the moment someone leaves.
             </p>
           </div>
           <Card>

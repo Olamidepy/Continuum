@@ -51,7 +51,6 @@ export default function DocsPage() {
     { name: "Token (Programmable protected launch)", address: TOKEN.address },
     { name: "Pool hook (Programmable protected launch)", address: TOKEN.hook },
     { name: "ContinuumVault", address: VAULT.address },
-    { name: "Treasury (receives 20% of exit fees)", address: VAULT.treasury },
   ];
 
   return (
@@ -137,10 +136,7 @@ export default function DocsPage() {
                 <strong>900</strong> come back to you, plus every reward the vault already earned.
               </li>
               <li>
-                <strong>80</strong> ({PENALTY.toLockers}% of the fee) are shared with every vault still open.
-              </li>
-              <li>
-                <strong>20</strong> ({PENALTY.toTreasury}% of the fee) go to the treasury.
+                <strong>100</strong> (the whole forfeit) are shared with every vault still open, weighted by shares.
               </li>
             </ul>
             <p>Your vault is removed before the fee is shared, so you never earn from your own exit fee. After the unlock day there's no fee at all: <Code>withdraw</Code> returns everything.</p>
@@ -223,7 +219,7 @@ export default function DocsPage() {
             <H2 id="security">Security</H2>
             <ul className="list-disc space-y-2 pl-5">
               <li>The vault has no owner, no admin keys, no pause and no proxy. Nobody can change its rules after deploy.</li>
-              <li>The token and treasury addresses, lock lengths, weights and the {PENALTY.pct}% fee are fixed in the contract.</li>
+              <li>The token address, lock lengths, weights and the {PENALTY.pct}% forfeit are fixed in the contract. There is no treasury.</li>
               <li>Only the wallet that opened a vault can claim, add, extend, withdraw or exit it.</li>
               <li>Every write is protected against reentrancy and uses balance checks on transfers.</li>
               <li>Continuum will never ask for your seed phrase or private key.</li>

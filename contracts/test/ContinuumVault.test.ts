@@ -6,27 +6,26 @@ const E = (n: number | string) => ethers.parseEther(String(n));
 const DAY = 24 * 60 * 60;
 
 async function setup() {
-  const [deployer, treasury, alice, bob, carol] = await ethers.getSigners();
+  const [deployer, alice, bob, carol] = await ethers.getSigners();
   const token = await ethers.deployContract("MockToken");
-  const vault = await ethers.deployContract("ContinuumVault", [await token.getAddress(), treasury.address]);
+  const vault = await ethers.deployContract("ContinuumVault", [await token.getAddress()]);
   for (const s of [alice, bob, carol, deployer]) {
     await token.mint(s.address, E(1_000_000));
     await token.connect(s).approve(await vault.getAddress(), ethers.MaxUint256);
   }
-  return { deployer, treasury, alice, bob, carol, token, vault };
+  return { deployer, alice, bob, carol, token, vault };
 }
 
 describe("ContinuumVault", () => {
-  it("rejects zero addresses", async () => {
-    const [a] = await ethers.getSigners();
+  it("rejects a zero token address", async () => {
     const F = await ethers.getContractFactory("ContinuumVault");
-    await expect(F.deploy(ethers.ZeroAddress, a.address)).to.be.revertedWithCustomError(F, "ZeroAddress");
+    await expect(F.deploy(ethers.ZeroAddress)).to.be.revertedWithCustomError(F, "ZeroAddress");
   });
 
   it("has no owner or admin functions", async () => {
     const { vault } = await setup();
     const names = vault.interface.fragments.filter((f) => f.type === "function").map((f: any) => f.name);
-    for (const bad of ["owner", "transferOwnership", "setTreasury", "setToken", "pause", "upgradeTo"]) {
+    for (const bad of ["owner", "treasury", "transferOwnership", "setTreasury", "setToken", "pause", "upgradeTo"]) {
       expect(names).to.not.include(bad);
     }
   });
@@ -62,23 +61,19 @@ describe("ContinuumVault", () => {
     await expect(vault.connect(bob).claim(1)).to.be.revertedWithCustomError(vault, "NotVaultOwner");
   });
 
-  it("splits the early-exit penalty 80/20 and pays it to remaining lockers by share", async () => {
-    const { vault, token, treasury, alice, bob, carol } = await setup();
+  it("sends the whole 10% early-exit penalty to remaining lockers by share", async () => {
+    const { vault, token, alice, bob, carol } = await setup();
     await vault.connect(alice).lock(E(100), 0); // 100 shares
     await vault.connect(bob).lock(E(100), 3); //   200 shares
     await vault.connect(carol).lock(E(1000), 0);
 
-    const tBefore = await token.balanceOf(treasury.address);
     const cBefore = await token.balanceOf(carol.address);
-    await vault.connect(carol).exitEarly(3); // penalty 100: 80 to lockers, 20 to treasury
-    expect((await token.balanceOf(treasury.address)) - tBefore).to.eq(E(20));
+    await expect(vault.connect(carol).exitEarly(3)).to.emit(vault, "ExitedEarly").withArgs(3, carol.address, E(900), E(100));
     expect((await token.balanceOf(carol.address)) - cBefore).to.eq(E(900));
 
-    // 80 split by shares 100:200 → alice 26.67, bob 53.33 (rounding dust stays in the vault)
-    const a = await vault.pending(1);
-    const b = await vault.pending(2);
-    expect(a).to.be.closeTo(E("26.666666666666666666"), 1000n);
-    expect(b).to.be.closeTo(E("53.333333333333333333"), 1000n);
+    // 100 split by shares 100:200 → alice 33.33, bob 66.67 (rounding dust stays in the vault)
+    expect(await vault.pending(1)).to.be.closeTo(E("33.333333333333333333"), 1000n);
+    expect(await vault.pending(2)).to.be.closeTo(E("66.666666666666666666"), 1000n);
     expect(await vault.pending(3)).to.eq(0n);
   });
 
@@ -88,7 +83,7 @@ describe("ContinuumVault", () => {
     const before = await token.balanceOf(alice.address);
     await vault.connect(alice).exitEarly(1);
     expect((await token.balanceOf(alice.address)) - before).to.eq(E(90));
-    expect(await vault.queuedRewards()).to.eq(E(8));
+    expect(await vault.queuedRewards()).to.eq(E(10));
   });
 
   it("queues rewards when nobody is locked and releases them to the next locker", async () => {

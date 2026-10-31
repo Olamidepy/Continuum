@@ -4,17 +4,15 @@ import { PENALTY, TOKEN } from "@/lib/data";
 export function ExitSplit() {
   const total = 1000;
   const fee = (total * PENALTY.pct) / 100;
-  const lockers = (fee * PENALTY.toLockers) / 100;
-  const treasury = fee - lockers;
+  const lockers = fee;
   const back = total - fee;
   const rows = [
     { label: "Back to the saver who left", value: back, className: "bg-muted-foreground/40" },
     { label: "Shared with everyone still locked", value: lockers, className: "bg-primary" },
-    { label: "Treasury", value: treasury, className: "bg-ember" },
   ];
   return (
     <div>
-      <div className="flex h-4 overflow-hidden rounded-full" role="img" aria-label={`Of ${total} tokens: ${back} returned, ${lockers} to lockers, ${treasury} to treasury`}>
+      <div className="flex h-4 overflow-hidden rounded-full" role="img" aria-label={`Of ${total} tokens: ${back} returned, ${lockers} to holders still locked`}>
         {rows.map((r) => (
           <div key={r.label} className={r.className} style={{ width: `${(r.value / total) * 100}%` }} />
         ))}

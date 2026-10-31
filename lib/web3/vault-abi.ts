@@ -7,11 +7,6 @@ export const vaultAbi = [
         "internalType": "contract IERC20",
         "name": "token_",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "treasury_",
-        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -141,13 +136,7 @@ export const vaultAbi = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "toLockers",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "toTreasury",
+        "name": "forfeited",
         "type": "uint256"
       }
     ],
@@ -301,19 +290,6 @@ export const vaultAbi = [
   {
     "inputs": [],
     "name": "TIERS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "TREASURY_BPS",
     "outputs": [
       {
         "internalType": "uint256",
@@ -694,19 +670,6 @@ export const vaultAbi = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "treasury",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

@@ -10,9 +10,9 @@ const addr = (v: string | undefined) => {
 
 export const SITE = {
   name: "Continuum",
-  tagline: "Lock your tokens. Earn from everyone who leaves early.",
+  tagline: "Where leaving early has a price, and holding has a payout.",
   description:
-    "Continuum is a time-locked vault on Ethereum. Lock for 3 to 30 days. Anyone who exits early pays 10%, and most of it goes to the people who stayed.",
+    "Continuum is where leaving early has a price, and holding has a payout. Lock your tokens for up to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who kept their word.",
   url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.continuumxyz.live",
   x: env(process.env.NEXT_PUBLIC_X_URL) ?? "https://x.com/continuum_xyz",
   xHandle: env(process.env.NEXT_PUBLIC_X_HANDLE) ?? "@continuum_xyz",
@@ -65,7 +65,6 @@ export const TOKEN = {
 /** ContinuumVault. Deployed after the token is live. */
 export const VAULT = {
   address: addr(process.env.NEXT_PUBLIC_CONTINUUM_VAULT_ADDRESS),
-  treasury: addr(process.env.NEXT_PUBLIC_TREASURY_ADDRESS),
 };
 
 export const LIVE = Boolean(TOKEN.address && VAULT.address);
@@ -87,11 +86,12 @@ export const TIERS: Tier[] = [
   { id: 3, days: 30, weight: 2.0, label: "30 days" },
 ];
 
-export const PENALTY = { pct: 10, toLockers: 80, toTreasury: 20 } as const;
+/** Early-exit forfeit. All of it goes to the vaults still locked. */
+export const PENALTY = { pct: 10 } as const;
 
 export const STEPS = [
   { title: "Lock", body: "Pick an amount and a length: 3, 7, 14 or 30 days. Longer locks get a bigger share of rewards." },
-  { title: "Earn while you wait", body: "When someone leaves early, 8% of what they locked is shared across every vault still locked. Claim it any time." },
+  { title: "Earn while you wait", body: "When someone leaves early, the 10% they forfeit is shared across every vault still locked. Claim it any time." },
   { title: "Take it all back", body: "On your unlock day, withdraw your full amount plus everything you earned. No fee for finishing." },
 ] as const;
 
@@ -99,7 +99,7 @@ export const FAQ = [
   {
     group: "Basics",
     q: "What is Continuum?",
-    a: "A vault for the Continuum token on Ethereum. You lock tokens for a set time. People who break their lock early pay 10%, and 80% of that is paid to everyone who is still locked.",
+    a: "A vault for the Continuum token on Ethereum. You lock tokens for a set time. People who break their lock early forfeit 10%, and all of it is paid to everyone who is still locked.",
   },
   {
     group: "Basics",
@@ -109,7 +109,7 @@ export const FAQ = [
   {
     group: "Basics",
     q: "Where does the early-exit fee go?",
-    a: "80% is added to the reward pool for everyone still locked, split by share. 20% goes to the treasury address that was fixed when the vault was deployed.",
+    a: "All of it goes to the holders still locked, split by shares. There is no treasury cut and no team cut.",
   },
   {
     group: "Rewards",
@@ -139,7 +139,7 @@ export const FAQ = [
   {
     group: "Safety",
     q: "Can the team take my locked tokens?",
-    a: "No. The vault has no owner, no admin, no pause and no upgrade. The token and treasury addresses are fixed at deploy. Only the wallet that opened a vault can act on it.",
+    a: "No. The vault has no owner, no admin, no pause and no upgrade. The token address is fixed at deploy, and there is no treasury. Only the wallet that opened a vault can act on it.",
   },
   {
     group: "Safety",
@@ -164,7 +164,7 @@ export const PHOTOS = {
 export const TICKER = [
   "Lock 3 to 30 days",
   "10% early-exit fee",
-  "80% of every exit fee goes to lockers",
+  "Every early exit pays the holders who stayed",
   "Up to 2.0x weight",
   "No owner, no admin, no pause",
   "Finishing is free",

@@ -1,8 +1,8 @@
 # Continuum
 
-**Hold longer. Get paid by the ones who don't.**
+**Where leaving early has a price, and holding has a payout.**
 
-Continuum is a time-locked vault on Ethereum. Lock the Continuum token for 3, 7, 14 or 30 days. Anyone who breaks a lock early pays 10% of it: 80% is shared with every vault still locked, 20% goes to the treasury. Finishing is free.
+Continuum is a time-locked vault on Ethereum. Lock the Continuum token for 3, 7, 14 or 30 days. Anyone who breaks a lock early forfeits 10% of it, and all of it is shared with every vault still locked. Finishing is free.
 
 The token launches through [Programmable](https://programmable.market)'s Custom Launch (protected launch token + Uniswap v4 hook). The vault is a separate, ownerless contract. See [LAUNCH.md](LAUNCH.md) for the launch checklist.
 
@@ -26,9 +26,9 @@ contracts/           ContinuumVault.sol, tests, deploy script (Hardhat)
 | Lock lengths | 3 / 7 / 14 / 30 days |
 | Weights | 1.0x / 1.2x / 1.5x / 2.0x |
 | Shares | amount × weight |
-| Early exit | 10% of principal: 80% to open vaults by share, 20% to treasury |
+| Early exit | 10% of principal, all of it to open vaults by share (no treasury) |
 | Rewards | early-exit fees + anyone can `fund()`; O(1) reward-per-share accounting |
-| Admin | none: no owner, pause, proxy or setters. Token and treasury are immutable |
+| Admin | none: no owner, treasury, pause, proxy or setters. The token is immutable |
 
 Functions: `lock`, `topUp`, `extend`, `claim`, `withdraw`, `exitEarly`, `fund`, plus views `getVault`, `vaultsOf`, `pending`, `previewExit`, `stats`.
 

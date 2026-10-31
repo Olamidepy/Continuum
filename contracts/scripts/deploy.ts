@@ -4,13 +4,11 @@ import { ethers, network, run } from "hardhat";
  * Deploys ContinuumVault for the token from your Programmable launch.
  * Run only AFTER the launch is finalized and the token address is public.
  *
- *   CONTINUUM_TOKEN_ADDRESS=0x... TREASURY_ADDRESS=0x... npm run deploy
+ *   CONTINUUM_TOKEN_ADDRESS=0x... npm run deploy
  */
 async function main() {
   const token = process.env.CONTINUUM_TOKEN_ADDRESS;
-  const treasury = process.env.TREASURY_ADDRESS;
   if (!token || !ethers.isAddress(token)) throw new Error("Set CONTINUUM_TOKEN_ADDRESS to the launched token address");
-  if (!treasury || !ethers.isAddress(treasury)) throw new Error("Set TREASURY_ADDRESS (receives 20% of early-exit penalties)");
 
   const code = await ethers.provider.getCode(token);
   if (code === "0x") throw new Error(`No contract at ${token} on ${network.name}`);
@@ -19,9 +17,8 @@ async function main() {
   console.log(`Network   ${network.name} (${network.config.chainId})`);
   console.log(`Deployer  ${deployer.address}`);
   console.log(`Token     ${token}`);
-  console.log(`Treasury  ${treasury}`);
 
-  const vault = await ethers.deployContract("ContinuumVault", [token, treasury]);
+  const vault = await ethers.deployContract("ContinuumVault", [token]);
   await vault.waitForDeployment();
   const address = await vault.getAddress();
   console.log(`\nContinuumVault deployed: ${address}`);
@@ -30,7 +27,7 @@ async function main() {
   if (process.env.ETHERSCAN_API_KEY && network.name !== "hardhat") {
     console.log("Waiting for 5 confirmations before verifying…");
     await vault.deploymentTransaction()?.wait(5);
-    await run("verify:verify", { address, constructorArguments: [token, treasury] });
+    await run("verify:verify", { address, constructorArguments: [token] });
   }
 }
 

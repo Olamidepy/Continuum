@@ -16,7 +16,7 @@ Continuum launches the same way Goblin did: through Programmable's **Custom Laun
 
 - [ ] Deploy this site to Vercel (see README) with `NEXT_PUBLIC_RPC_URL` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`.
 - [x] X account: https://x.com/continuum_xyz (already set as the site default)
-- [ ] Set up a fresh **dev wallet** for the launch (it receives creator fees) and a **treasury** address for the vault. They can be the same wallet.
+- [ ] Set up a fresh **dev wallet** for the launch. It receives creator fees and makes the $4 first buy.
 - [ ] Pick the ticker, but keep `NEXT_PUBLIC_TOKEN_TICKER` empty until launch so it isn't copied.
 - [ ] Optional but strongly recommended: deploy the vault on Sepolia against a test token and run through lock, claim, exit and withdraw on the site.
 
@@ -30,8 +30,8 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 | Ticker | your pick |
 | Chain | Ethereum Mainnet |
 | Pair | ETH |
-| Website | your Vercel / custom domain |
-| X | your new account |
+| Website | https://www.continuumxyz.live |
+| X | https://x.com/continuum_xyz |
 | Source | https://github.com/Olamidepy/Continuum |
 | Image | `public/logo.svg` (export a 1000×1000 PNG) |
 | Mechanics | Programmable's protected launch token + hook. No custom hook. |
@@ -43,7 +43,7 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 
 **Description** (paste as is or edit):
 
-> Continuum rewards holding instead of selling. Holders lock the token in a vault for 3, 7, 14 or 30 days; longer locks get more weight. Anyone who breaks a lock early pays 10% of it: 80% is shared on the spot with everyone still locked, 20% goes to the treasury. Finishing is free. The vault is a separate, ownerless contract with no admin, pause or upgrade, open source with tests on GitHub.
+> Continuum is where leaving early has a price, and holding has a payout. Lock your tokens for up to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who kept their word.
 
 **Note to the founder** (if the form has a message field, or send it on X/Discord):
 
@@ -60,12 +60,12 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 ```bash
 cd contracts
 npm install
-cp .env.example .env   # fill DEPLOYER_PRIVATE_KEY, MAINNET_RPC_URL, CONTINUUM_TOKEN_ADDRESS, TREASURY_ADDRESS, ETHERSCAN_API_KEY
+cp .env.example .env   # fill DEPLOYER_PRIVATE_KEY, MAINNET_RPC_URL, CONTINUUM_TOKEN_ADDRESS, ETHERSCAN_API_KEY
 npm test               # 14 tests should pass
 npm run deploy         # prints the vault address and verifies it on Etherscan
 ```
 
-Use a fresh deployer wallet with only enough ETH for gas. The treasury address is permanent once deployed.
+Use a fresh deployer wallet with only enough ETH for gas. The token address is permanent once deployed.
 
 ## 5. Switch the site to live
 
@@ -77,7 +77,6 @@ NEXT_PUBLIC_CONTINUUM_TOKEN_ADDRESS=0x...
 NEXT_PUBLIC_CONTINUUM_HOOK_ADDRESS=0x...
 NEXT_PUBLIC_PROGRAMMABLE_COIN_URL=https://programmable.market/...
 NEXT_PUBLIC_CONTINUUM_VAULT_ADDRESS=0x...
-NEXT_PUBLIC_TREASURY_ADDRESS=0x...
 ```
 
 The Trade page then shows the live price from the pool, the Vaults page turns on, and the Docs page lists the real addresses.

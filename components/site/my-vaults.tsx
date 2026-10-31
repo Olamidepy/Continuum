@@ -212,7 +212,7 @@ function ExitDialog({ v, open, onClose }: { v: VaultRow; open: boolean; onClose:
         <DialogHeader>
           <DialogTitle>Leave vault #{v.id.toString()} early?</DialogTitle>
           <DialogDescription>
-            {timeLeft(v.unlockAt)}. Leaving now costs {PENALTY.pct}% of what you locked. {PENALTY.toLockers}% of that goes to the savers still locked.
+            {timeLeft(v.unlockAt)}. Leaving now costs {PENALTY.pct}% of what you locked. All of it goes to the holders still locked.
           </DialogDescription>
         </DialogHeader>
         <dl className="grid gap-px overflow-hidden rounded-lg border bg-border text-sm">

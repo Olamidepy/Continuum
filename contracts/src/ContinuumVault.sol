@@ -8,9 +8,9 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 /// @title ContinuumVault
 /// @notice Time-locked vaults for the Continuum token on Ethereum.
 ///         Lock tokens for 3, 7, 14 or 30 days. Longer locks earn a bigger share.
-///         Leaving early costs 10% of the principal: 80% of that goes to everyone still locked,
-///         20% goes to the treasury. Anyone can also add tokens to the reward pool.
-/// @dev    No owner, no admin, no pause, no proxy. The token and treasury are fixed at deploy.
+///         Leaving early forfeits 10% of the principal, and all of it goes to everyone still locked.
+///         Anyone can also add tokens to the reward pool.
+/// @dev    No owner, no admin, no pause, no proxy, no treasury. The token is fixed at deploy.
 ///         Rewards use the accumulated-reward-per-share pattern, so every action is O(1).
 ///         The token is launched through Programmable's protected launch; this vault is a
 ///         separate contract and never touches the pool or the hook.
@@ -33,20 +33,18 @@ contract ContinuumVault is ReentrancyGuard {
     event Extended(uint256 indexed id, uint8 tier, uint64 unlockAt);
     event Claimed(uint256 indexed id, address indexed owner, uint256 amount);
     event Withdrawn(uint256 indexed id, address indexed owner, uint256 principal, uint256 rewards);
-    event ExitedEarly(uint256 indexed id, address indexed owner, uint256 returned, uint256 toLockers, uint256 toTreasury);
+    event ExitedEarly(uint256 indexed id, address indexed owner, uint256 returned, uint256 forfeited);
     event Funded(address indexed from, uint256 amount);
     event Distributed(uint256 amount, uint256 accRewardPerShare);
 
     // ─── Constants ──────────────────────────────────────────
     uint256 private constant ACC = 1e18;
     uint256 public constant PENALTY_BPS = 1_000; // 10% of principal
-    uint256 public constant TREASURY_BPS = 2_000; // 20% of the penalty
     uint256 private constant BPS = 10_000;
     uint256 public constant TIERS = 4;
 
     // ─── Immutable config ───────────────────────────────────
     IERC20 public immutable token;
-    address public immutable treasury;
 
     // ─── Types ──────────────────────────────────────────────
     struct Vault {
@@ -76,10 +74,9 @@ contract ContinuumVault is ReentrancyGuard {
     mapping(uint256 => Vault) private _vaults;
     mapping(address => uint256[]) private _vaultsOf;
 
-    constructor(IERC20 token_, address treasury_) {
-        if (address(token_) == address(0) || treasury_ == address(0)) revert ZeroAddress();
+    constructor(IERC20 token_) {
+        if (address(token_) == address(0)) revert ZeroAddress();
         token = token_;
-        treasury = treasury_;
     }
 
     // ─── Tiers ──────────────────────────────────────────────
@@ -197,8 +194,8 @@ contract ContinuumVault is ReentrancyGuard {
         emit Withdrawn(id, msg.sender, principal, rewards);
     }
 
-    /// @notice Leave before the unlock time. 10% of the principal is kept: 80% of it goes to
-    ///         everyone still locked and 20% to the treasury. Rewards already earned are paid in full.
+    /// @notice Leave before the unlock time. 10% of the principal is forfeited and shared with
+    ///         everyone still locked. Rewards already earned are paid in full.
     function exitEarly(uint256 id) external nonReentrant {
         Vault storage v = _owned(id);
         if (block.timestamp >= v.unlockAt) revert AlreadyUnlocked();
@@ -207,19 +204,16 @@ contract ContinuumVault is ReentrancyGuard {
         uint256 principal = v.amount;
         uint256 rewards = v.owed;
         uint256 penalty = (principal * PENALTY_BPS) / BPS;
-        uint256 toTreasury = (penalty * TREASURY_BPS) / BPS;
-        uint256 toLockers = penalty - toTreasury;
 
         // Remove this vault first so the exiting saver never earns from their own penalty.
         _close(v);
-        _distribute(toLockers);
+        _distribute(penalty);
 
         uint256 returned = principal - penalty + rewards;
         totalRewardsPaid += rewards;
-        if (toTreasury > 0) token.safeTransfer(treasury, toTreasury);
         token.safeTransfer(msg.sender, returned);
 
-        emit ExitedEarly(id, msg.sender, returned, toLockers, toTreasury);
+        emit ExitedEarly(id, msg.sender, returned, penalty);
     }
 
     /// @notice Add tokens to the reward pool for everyone currently locked
