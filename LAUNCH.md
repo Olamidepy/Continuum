@@ -38,7 +38,7 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 | Supply | 1,000,000,000 (fixed) |
 | Initial buy | about $4 of ETH (Programmable's minimum is $1) |
 | Anti-sniper fee | starts at 99%, falls to the normal fee over **2 minutes** (120 s) instead of 30 s |
-| Router-only window | first 5 minutes, only Programmable's router can buy |
+| Router-only window | **none**: anyone can buy from the first block (protection comes from the anti-sniper fee) |
 | Creator fee | your choice (site defaults to 2.7%; update `NEXT_PUBLIC_CREATOR_FEE` to match what's approved) |
 
 **Description** (paste as is or edit):

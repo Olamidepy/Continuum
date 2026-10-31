@@ -162,7 +162,11 @@ export default function DocsPage() {
               reviews and approves the launch before it goes live, and the launch is stamped on-chain by its router so explorers and terminals can verify where the token came from.
             </p>
             <ul className="list-disc space-y-2 pl-5">
-              <li>For the first {Math.round(TOKEN.protectionSeconds / 60)} minutes, only {SITE.launchpad}&apos;s router can buy.</li>
+              {TOKEN.protectionSeconds > 0 ? (
+                <li>For the first {Math.round(TOKEN.protectionSeconds / 60)} minutes, only {SITE.launchpad}&apos;s router can buy.</li>
+              ) : (
+                <li>Trading is open to everyone from the first block, on {SITE.launchpad} or straight through the pool.</li>
+              )}
               <li>
                 Anti-sniper opening fee: trading starts at a {TOKEN.openingFeePct}% fee that falls smoothly to the normal {(TOKEN.platformFee + TOKEN.creatorFee).toFixed(1)}% over the
                 first {TOKEN.openingFeeSeconds / 60} minutes, so bots that buy in the first block pay almost everything they put in.

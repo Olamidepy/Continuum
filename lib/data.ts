@@ -41,8 +41,8 @@ export const TOKEN = {
   /** Pool settings from the launch record. Defaults match Programmable's protected launch (ETH pair, hook pool). */
   poolFee: Number(process.env.NEXT_PUBLIC_POOL_FEE || 0),
   tickSpacing: Number(process.env.NEXT_PUBLIC_POOL_TICK_SPACING || 60),
-  /** Seconds after launch when only Programmable's router can buy. */
-  protectionSeconds: Number(process.env.NEXT_PUBLIC_PROTECTION_SECONDS || 300),
+  /** Seconds after launch when only Programmable's router can buy. 0 = open to everyone from the start. */
+  protectionSeconds: Number(process.env.NEXT_PUBLIC_PROTECTION_SECONDS || 0),
   /** Anti-sniper opening fee: starts at this % and falls to the normal fee over openingFeeSeconds. */
   openingFeePct: Number(process.env.NEXT_PUBLIC_OPENING_FEE_PCT || 99),
   openingFeeSeconds: Number(process.env.NEXT_PUBLIC_OPENING_FEE_SECONDS || 120),
