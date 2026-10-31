@@ -17,7 +17,7 @@ import { PENALTY, PHOTOS, SITE, STEPS, TIERS } from "@/lib/data";
 const TRUST = [
   { icon: KeyRound, title: "No owner, no admin", body: "Nobody can pause the vault, change its rules or move your tokens. Only your wallet can act on your vault." },
   { icon: Lock, title: "Fixed at deploy", body: "The token, the lock lengths and the 10% exit fee are written into the contract and can't change. There is no treasury cut." },
-  { icon: FileCode2, title: "Open source", body: "The contract and its tests are public on GitHub, so anyone can read exactly what it does." },
+  { icon: FileCode2, title: "Verified on Etherscan", body: "The vault's code is verified on Etherscan when it's deployed, so anyone can read exactly what it does." },
   { icon: Rocket, title: `Launched on ${SITE.launchpad}`, body: `The token launches through ${SITE.launchpad}'s protected launch on Uniswap v4. The vault is a separate contract.` },
 ];
 

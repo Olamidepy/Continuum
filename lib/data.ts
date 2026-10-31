@@ -16,7 +16,6 @@ export const SITE = {
   url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.continuumxyz.live",
   x: env(process.env.NEXT_PUBLIC_X_URL) ?? "https://x.com/continuum_xyz",
   xHandle: env(process.env.NEXT_PUBLIC_X_HANDLE) ?? "@continuum_xyz",
-  github: "https://github.com/Olamidepy/Continuum",
   chain: "Ethereum",
   launchpad: "Programmable",
   launchpadUrl: "https://programmable.market",
@@ -147,7 +146,7 @@ export const FAQ = [
   {
     group: "Safety",
     q: "Has the code been audited?",
-    a: "Not yet. The source and tests are public on GitHub. Don't lock more than you're prepared to lose, and never share your seed phrase. Continuum will never ask for it.",
+    a: "Not yet. The vault's code is verified on Etherscan when it's deployed. Don't lock more than you're prepared to lose, and never share your seed phrase. Continuum will never ask for it.",
   },
 ] as const;
 

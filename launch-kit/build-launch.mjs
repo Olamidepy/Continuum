@@ -24,7 +24,6 @@ const LAUNCH = {
     "Continuum is where leaving early has a price, and holding has a payout. Lock your tokens for up to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who kept their word.",
   website: "https://www.continuumxyz.live/",
   x: "https://x.com/continuum_xyz",
-  github: "https://github.com/Olamidepy/Continuum",
   imageUri: "https://www.continuumxyz.live/token.png",
   supply: "1000000000000000000000000000", // 1,000,000,000 tokens (18 decimals)
   creatorFeeBps: 270, // 2.7% on buys and sells, paid to the launch wallet. Programmable adds its 0.3%.
@@ -152,7 +151,6 @@ async function main() {
       links: [
         { kind: "website", uri: LAUNCH.website },
         { kind: "x", uri: LAUNCH.x },
-        { kind: "github", uri: LAUNCH.github },
       ],
     },
   };

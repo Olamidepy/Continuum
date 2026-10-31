@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FileCode2 } from "lucide-react";
 
 import { Wordmark } from "@/components/site/logo";
 import { XIcon } from "@/components/site/x-icon";
@@ -46,9 +45,6 @@ export function Footer() {
         </p>
         </div>
         <div className="flex items-center gap-3">
-          <a href={SITE.github} target="_blank" rel="noopener noreferrer" aria-label="Source on GitHub" className="hover:text-foreground">
-            <FileCode2 className="size-4" />
-          </a>
           {SITE.x ? (
             <a href={SITE.x} target="_blank" rel="noopener noreferrer" aria-label="Continuum on X" className="hover:text-foreground">
               <XIcon className="size-4" />

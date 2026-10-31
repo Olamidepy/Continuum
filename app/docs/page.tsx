@@ -207,13 +207,7 @@ export default function DocsPage() {
                 </TableBody>
               </Table>
             </Card>
-            <p>
-              Source and tests:{" "}
-              <a href={`${SITE.github}/tree/main/contracts`} target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-4">
-                github.com/Olamidepy/Continuum
-              </a>
-              .
-            </p>
+            <p>Each contract&apos;s source is verified on Etherscan once it&apos;s deployed.</p>
           </section>
 
           <section className="flex flex-col gap-4">

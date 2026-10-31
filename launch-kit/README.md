@@ -11,7 +11,7 @@ Nothing here signs or sends a transaction: you sign on programmable.market with 
 | Fees | 0.3% Programmable + 2.7% creator, on buys and sells |
 | First buy | about $4 of ETH, from the dev wallet (skips the 99% opening fee) |
 | Protection | 99% opening fee falling to normal over 30 s; 2% per-wallet cap for 5 min; starting FDV ≥ $15,000; liquidity locked |
-| Links | continuumxyz.live, x.com/continuum_xyz, github.com/Olamidepy/Continuum |
+| Links | continuumxyz.live, x.com/continuum_xyz |
 
 All settings live at the top of `build-launch.mjs`.
 
