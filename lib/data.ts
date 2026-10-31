@@ -41,11 +41,16 @@ export const TOKEN = {
   /** Pool settings from the launch record. Defaults match Programmable's protected launch (ETH pair, hook pool). */
   poolFee: Number(process.env.NEXT_PUBLIC_POOL_FEE || 0),
   tickSpacing: Number(process.env.NEXT_PUBLIC_POOL_TICK_SPACING || 60),
-  /** Seconds after launch when only Programmable's router can buy. 0 = open to everyone from the start. */
-  protectionSeconds: Number(process.env.NEXT_PUBLIC_PROTECTION_SECONDS || 0),
-  /** Anti-sniper opening fee: starts at this % and falls to the normal fee over openingFeeSeconds. */
-  openingFeePct: Number(process.env.NEXT_PUBLIC_OPENING_FEE_PCT || 99),
-  openingFeeSeconds: Number(process.env.NEXT_PUBLIC_OPENING_FEE_SECONDS || 120),
+  /*
+   * Programmable launch protection (fixed by Programmable, api.programmable.market/v1/launch-protection):
+   * for the first 300 s no wallet can buy or receive more than 2% of supply in total, and the buy fee
+   * starts at 99% and falls to the normal fee over 30 s. The extra fee goes to Programmable's treasury.
+   */
+  protectionSeconds: 300,
+  walletCapPct: 2,
+  openingFeePct: 99,
+  openingFeeSeconds: 30,
+  minFdvUsd: 15_000,
   /** Dev's first buy at launch, in USD. */
   initialBuyUsd: Number(process.env.NEXT_PUBLIC_INITIAL_BUY_USD || 4),
   /** Creator fee on trades in the official pool, in percent. */

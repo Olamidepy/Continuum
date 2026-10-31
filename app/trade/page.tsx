@@ -25,10 +25,8 @@ export default function TradePage() {
             <CircleAlert />
             <AlertTitle>Only trade through the official pool</AlertTitle>
             <AlertDescription>
-              The official addresses are on this page and posted by {SITE.xHandle ?? "our X account"}. {TOKEN.protectionSeconds > 0
-                ? `For the first ${Math.round(TOKEN.protectionSeconds / 60)} minutes after launch, only ${SITE.launchpad} can route buys. `
-                : null}
-              An anti-sniper fee starts at {TOKEN.openingFeePct}% at launch and falls to normal over {TOKEN.openingFeeSeconds / 60} minutes. Wait it out. Trades are final and tokens can lose all value.
+              The official addresses are on this page and posted by {SITE.xHandle ?? "our X account"}. At launch the buy fee starts at {TOKEN.openingFeePct}% and falls to normal over {TOKEN.openingFeeSeconds} seconds, and for the first{" "}
+              {TOKEN.protectionSeconds / 60} minutes no wallet can hold more than {TOKEN.walletCapPct}% of supply. Wait out the first 30 seconds. Trades are final and tokens can lose all value.
             </AlertDescription>
           </Alert>
           <TokenCard />

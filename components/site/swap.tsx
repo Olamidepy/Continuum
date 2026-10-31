@@ -57,8 +57,7 @@ export function Swap() {
   }, []);
   const protectedLeft = !live ? 0 : startedAt ? Math.max(0, Math.ceil(startedAt + TOKEN.protectionSeconds - now / 1000)) : TOKEN.protectionSeconds;
   const coinPage = TOKEN.coinPage ?? SITE.launchpadUrl;
-  const href = protectedLeft > 0 ? coinPage : TOKEN.uniswap ?? coinPage;
-  const protectedLeftLabel = protectedLeft > 0 ? `${SITE.launchpad} only` : `${SITE.launchpad}, Uniswap`;
+  const href = TOKEN.coinPage ?? TOKEN.uniswap ?? coinPage;
 
   // Anti-sniper fee: starts high at launch and falls in a straight line to the normal fee.
   const normalFee = TOKEN.platformFee + TOKEN.creatorFee;
@@ -133,8 +132,8 @@ export function Swap() {
           </div>
           <Separator className="my-1" />
           <div className="flex justify-between">
-            <dt className="text-muted-foreground">Where it trades</dt>
-            <dd>{protectedLeftLabel}</dd>
+            <dt className="text-muted-foreground">Max per wallet</dt>
+            <dd className="num">{protectedLeft > 0 ? `${TOKEN.walletCapPct}% of supply for ${Math.floor(protectedLeft / 60)}:${String(protectedLeft % 60).padStart(2, "0")}` : "No limit"}</dd>
           </div>
         </dl>
       </CardContent>
@@ -144,14 +143,14 @@ export function Swap() {
           <>
             <Button asChild size="lg" className="w-full">
               <a href={href} target="_blank" rel="noopener noreferrer">
-                {protectedLeft > 0 ? `Buy on ${SITE.launchpad}` : payEth ? `Buy ${TOKEN.symbol}` : `Sell ${TOKEN.symbol}`}
+                {payEth ? `Buy ${TOKEN.symbol}` : `Sell ${TOKEN.symbol}`}
                 <ArrowUpRight />
               </a>
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              {protectedLeft > 0
-                ? `Launch protection: ${Math.floor(protectedLeft / 60)}:${String(protectedLeft % 60).padStart(2, "0")} left. Only ${SITE.launchpad} can route buys until then.`
-                : `Opens the official pool on Uniswap. Set your slippage there. Also tradable on ${SITE.launchpad}.`}
+              {openingLeft > 0
+                ? `Anti-sniper fee is still high. Waiting ${openingLeft}s brings it back to ${normalFee.toFixed(1)}%.`
+                : `Opens the official pool. Set your slippage there.`}
             </p>
           </>
         ) : (

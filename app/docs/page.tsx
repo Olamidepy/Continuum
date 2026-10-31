@@ -162,15 +162,15 @@ export default function DocsPage() {
               reviews and approves the launch before it goes live, and the launch is stamped on-chain by its router so explorers and terminals can verify where the token came from.
             </p>
             <ul className="list-disc space-y-2 pl-5">
-              {TOKEN.protectionSeconds > 0 ? (
-                <li>For the first {Math.round(TOKEN.protectionSeconds / 60)} minutes, only {SITE.launchpad}&apos;s router can buy.</li>
-              ) : (
-                <li>Trading is open to everyone from the first block, on {SITE.launchpad} or straight through the pool.</li>
-              )}
+              <li>Trading is open to everyone from the first block, on {SITE.launchpad} or straight through the pool.</li>
               <li>
-                Anti-sniper opening fee: trading starts at a {TOKEN.openingFeePct}% fee that falls smoothly to the normal {(TOKEN.platformFee + TOKEN.creatorFee).toFixed(1)}% over the
-                first {TOKEN.openingFeeSeconds / 60} minutes, so bots that buy in the first block pay almost everything they put in.
+                Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal {(TOKEN.platformFee + TOKEN.creatorFee).toFixed(1)}% over the first{" "}
+                {TOKEN.openingFeeSeconds} seconds, so bots that buy in the first block pay almost everything they put in. The extra fee goes to {SITE.launchpad}.
               </li>
+              <li>
+                Wallet cap: for the first {TOKEN.protectionSeconds / 60} minutes, no wallet can buy or receive more than {TOKEN.walletCapPct}% of supply in total.
+              </li>
+              <li>Starting value: the pool opens at a fully diluted value of at least ${TOKEN.minFdvUsd.toLocaleString("en-US")}.</li>
               <li>Supply is {TOKEN.supply.toLocaleString("en-US")} tokens, fixed. The creator&apos;s first buy at launch is about ${TOKEN.initialBuyUsd}.</li>
               <li>The vault is deployed after the launch is final, pointing at the launched token. It never touches the pool or the hook.</li>
             </ul>
