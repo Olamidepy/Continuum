@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: "Continuum: hold longer, get paid", template: "%s · Continuum" },
   description: SITE.description,
-  icons: { icon: "/logo.svg" },
-  twitter: { card: "summary", site: SITE.xHandle },
+  openGraph: { images: ["/avatar.png"] },
+  twitter: { card: "summary", site: SITE.xHandle, images: ["/avatar.png"] },
 };
 
 export const viewport: Viewport = { themeColor: "#050505", colorScheme: "dark" };

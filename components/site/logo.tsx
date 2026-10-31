@@ -1,12 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import { cn } from "@/lib/utils";
 
-/** The Continuum mark: three blocks forming a C. All three are the signal red, in three tones. */
+/** The Continuum mark on its own (the striped C). Use where there's no room for the name. */
 export function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 228 235" aria-hidden="true" className={cn("h-auto w-6", className)}>
-      <path d="M0 70 71 0v157L0 228Z" className="fill-primary" />
-      <path d="M71 0h157v78h-79Z" className="fill-[#ff6a52]" />
-      <path d="M71 157h157l-79 78H71Z" className="fill-ember" />
-    </svg>
-  );
+  return <img src="/logo-mark.png" alt="" aria-hidden="true" width={298} height={256} className={cn("h-auto w-6", className)} />;
+}
+
+/** The full Continuum wordmark: the striped C followed by "ontinuum". Sized by height. */
+export function Wordmark({ className }: { className?: string }) {
+  return <img src="/logo-wordmark.png" alt="Continuum" width={828} height={120} className={cn("h-5 w-auto", className)} />;
 }

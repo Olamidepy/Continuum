@@ -31,7 +31,7 @@ function TokenPill({ eth }: { eth: boolean }) {
         <EthDot />
       ) : (
         <span className="grid size-6 place-items-center rounded-full bg-background">
-          <LogoMark className="w-3.5" />
+          <LogoMark className="w-4" />
         </span>
       )}
       {eth ? "ETH" : TOKEN.symbol}

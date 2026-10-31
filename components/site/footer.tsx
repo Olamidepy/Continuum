@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FileCode2 } from "lucide-react";
 
-import { LogoMark } from "@/components/site/logo";
+import { Wordmark } from "@/components/site/logo";
 import { XIcon } from "@/components/site/x-icon";
 import { Separator } from "@/components/ui/separator";
 import { NAV, PHOTOS, SITE } from "@/lib/data";
@@ -11,8 +11,8 @@ export function Footer() {
     <footer className="mt-24 border-t">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto]">
         <div className="max-w-sm">
-          <Link href="/" className="flex items-center gap-2.5 font-heading text-lg font-bold">
-            <LogoMark className="w-5" /> Continuum
+          <Link href="/" className="inline-flex" aria-label="Continuum home">
+            <Wordmark className="h-6" />
           </Link>
           <p className="mt-3 text-sm text-muted-foreground">{SITE.tagline}</p>
         </div>

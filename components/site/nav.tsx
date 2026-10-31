@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 import { ConnectWallet } from "@/components/site/connect-wallet";
-import { LogoMark } from "@/components/site/logo";
+import { Wordmark } from "@/components/site/logo";
 import { XIcon } from "@/components/site/x-icon";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -35,9 +35,8 @@ export function Nav() {
           scrolled ? "max-w-4xl border-white/12 bg-background/85" : "max-w-6xl bg-background/45",
         )}
       >
-        <Link href="/" className="flex items-center gap-2.5 font-heading text-lg font-bold tracking-tight">
-          <LogoMark className="w-[22px]" />
-          Continuum
+        <Link href="/" className="flex items-center py-1" aria-label="Continuum home">
+          <Wordmark className="h-[18px] sm:h-5" />
         </Link>
 
         <ul className="hidden items-center gap-1 md:flex">
@@ -72,8 +71,8 @@ export function Nav() {
               </Button>
             </DialogTrigger>
             <DialogContent className="top-4 translate-y-0 sm:max-w-sm">
-              <DialogTitle className="flex items-center gap-2 font-heading">
-                <LogoMark className="w-5" /> Continuum
+              <DialogTitle>
+                <Wordmark className="h-[18px]" />
               </DialogTitle>
               <ul className="grid gap-1">
                 {[{ href: "/", label: "Home" }, ...NAV].map((item) => (
