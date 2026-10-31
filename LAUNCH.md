@@ -28,7 +28,7 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 |---|---|
 | Name | Continuum |
 | Dev / controller wallet | `0x64b646C9B4ec3C03f16A47e3F4e838615EeBddD7` |
-| Ticker | your pick |
+| Ticker | CNTM (keep it off the site and X until launch) |
 | Chain | Ethereum Mainnet |
 | Pair | ETH |
 | Website | https://www.continuumxyz.live |
