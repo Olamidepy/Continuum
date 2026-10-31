@@ -39,7 +39,7 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 
 **Description** (paste as is or edit):
 
-> Continuum rewards holding instead of selling. Holders lock the token in a vault for 30, 90, 180 or 365 days; longer locks get more weight. Anyone who breaks a lock early pays 10% of it: 80% is shared on the spot with everyone still locked, 20% goes to the treasury. Finishing is free. The vault is a separate, ownerless contract with no admin, pause or upgrade, open source with tests on GitHub.
+> Continuum rewards holding instead of selling. Holders lock the token in a vault for 3, 7, 14 or 30 days; longer locks get more weight. Anyone who breaks a lock early pays 10% of it: 80% is shared on the spot with everyone still locked, 20% goes to the treasury. Finishing is free. The vault is a separate, ownerless contract with no admin, pause or upgrade, open source with tests on GitHub.
 
 **Note to the founder** (if the form has a message field, or send it on X/Discord):
 

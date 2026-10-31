@@ -22,7 +22,7 @@ const TRUST = [
 ];
 
 const HERO_FACTS = [
-  { value: "2.0x", label: "Weight for a one-year lock" },
+  { value: "2.0x", label: "Weight for a 30-day lock" },
   { value: `${PENALTY.toLockers}%`, label: "Of every exit fee goes to lockers" },
   { value: "0", label: "Admin keys on the vault" },
 ];
@@ -56,7 +56,7 @@ export default function HomePage() {
               lines={[{ text: "Hold longer." }, { text: "Get paid by the ones who don't." }]}
             />
             <p className="fade-up mt-6 max-w-[50ch] text-lg text-foreground/75" style={{ "--d": "700ms" } as React.CSSProperties}>
-              Lock your tokens for 30 to 365 days. If someone breaks their lock early, they pay {PENALTY.pct}%, and most of it is shared with everyone who stayed.
+              Lock your tokens for 3 to 30 days. If someone breaks their lock early, they pay {PENALTY.pct}%, and most of it is shared with everyone who stayed.
             </p>
             <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ "--d": "820ms" } as React.CSSProperties}>
               <Button asChild size="lg" className="rounded-full">

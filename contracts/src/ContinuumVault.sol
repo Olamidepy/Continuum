@@ -7,7 +7,7 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 
 /// @title ContinuumVault
 /// @notice Time-locked vaults for the Continuum token on Ethereum.
-///         Lock tokens for 30, 90, 180 or 365 days. Longer locks earn a bigger share.
+///         Lock tokens for 3, 7, 14 or 30 days. Longer locks earn a bigger share.
 ///         Leaving early costs 10% of the principal: 80% of that goes to everyone still locked,
 ///         20% goes to the treasury. Anyone can also add tokens to the reward pool.
 /// @dev    No owner, no admin, no pause, no proxy. The token and treasury are fixed at deploy.
@@ -84,12 +84,12 @@ contract ContinuumVault is ReentrancyGuard {
 
     // ─── Tiers ──────────────────────────────────────────────
 
-    /// @notice Lock length for a tier: 0 = 30 days, 1 = 90, 2 = 180, 3 = 365.
+    /// @notice Lock length for a tier: 0 = 3 days, 1 = 7, 2 = 14, 3 = 30.
     function duration(uint8 tier) public pure returns (uint64) {
-        if (tier == 0) return 30 days;
-        if (tier == 1) return 90 days;
-        if (tier == 2) return 180 days;
-        if (tier == 3) return 365 days;
+        if (tier == 0) return 3 days;
+        if (tier == 1) return 7 days;
+        if (tier == 2) return 14 days;
+        if (tier == 3) return 30 days;
         revert InvalidTier();
     }
 

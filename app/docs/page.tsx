@@ -24,7 +24,7 @@ const TOC = [
 ];
 
 const FUNCTIONS = [
-  { fn: "lock(amount, tier)", does: "Opens a vault. Tier 0–3 is 30, 90, 180 or 365 days. Approve the vault for the amount first." },
+  { fn: "lock(amount, tier)", does: "Opens a vault. Tier 0–3 is 3, 7, 14 or 30 days. Approve the vault for the amount first." },
   { fn: "topUp(id, amount)", does: "Adds tokens to a vault that's still locked. The unlock day doesn't change." },
   { fn: "extend(id, tier)", does: "Restarts the lock from now on the same or a longer tier and re-weights its shares." },
   { fn: "claim(id)", does: "Pays out the rewards a vault has earned. The vault stays locked." },
@@ -117,7 +117,7 @@ export default function DocsPage() {
           <section className="flex flex-col gap-4">
             <H2 id="rewards">Rewards</H2>
             <p>
-              A vault's <strong>shares</strong> are its amount times its weight. 1,000 tokens locked for 365 days is 2,000 shares; the same amount for 30 days is 1,000 shares.
+              A vault's <strong>shares</strong> are its amount times its weight. 1,000 tokens locked for 30 days is 2,000 shares; the same amount for 3 days is 1,000 shares.
             </p>
             <p>
               Every time rewards come in, they're split across all open vaults by shares, from that moment on. A vault opened later never earns from rewards that arrived before it. The contract

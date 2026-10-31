@@ -38,7 +38,7 @@ describe("ContinuumVault", () => {
     expect(v.owner).to.eq(alice.address);
     expect(v.amount).to.eq(E(100));
     expect(v.shares).to.eq(E(200));
-    expect(v.unlockAt - v.createdAt).to.eq(365n * BigInt(DAY));
+    expect(v.unlockAt - v.createdAt).to.eq(30n * BigInt(DAY));
     expect(await vault.vaultsOf(alice.address)).to.deep.eq([1n]);
     await expect(vault.connect(alice).lock(E(1), 4)).to.be.revertedWithCustomError(vault, "InvalidTier");
     await expect(vault.connect(alice).lock(0, 0)).to.be.revertedWithCustomError(vault, "ZeroAmount");
@@ -48,7 +48,7 @@ describe("ContinuumVault", () => {
     const { vault, token, alice } = await setup();
     await vault.connect(alice).lock(E(100), 0);
     await expect(vault.connect(alice).withdraw(1)).to.be.revertedWithCustomError(vault, "StillLocked");
-    await time.increase(30 * DAY);
+    await time.increase(3 * DAY);
     const before = await token.balanceOf(alice.address);
     await vault.connect(alice).withdraw(1);
     expect((await token.balanceOf(alice.address)) - before).to.eq(E(100));
@@ -110,7 +110,7 @@ describe("ContinuumVault", () => {
     await expect(vault.connect(alice).claim(1)).to.be.revertedWithCustomError(vault, "ZeroAmount");
 
     await vault.connect(deployer).fund(E(10));
-    await time.increase(90 * DAY);
+    await time.increase(7 * DAY);
     const b1 = await token.balanceOf(alice.address);
     await vault.connect(alice).withdraw(1);
     expect((await token.balanceOf(alice.address)) - b1).to.be.closeTo(E(110), 1000n);
@@ -131,7 +131,7 @@ describe("ContinuumVault", () => {
     const { vault, alice } = await setup();
     await vault.connect(alice).lock(E(100), 2);
     const v0 = await vault.getVault(1);
-    await time.increase(10 * DAY);
+    await time.increase(2 * DAY);
     await vault.connect(alice).topUp(1, E(50));
     const v1 = await vault.getVault(1);
     expect(v1.amount).to.eq(E(150));
@@ -161,7 +161,7 @@ describe("ContinuumVault", () => {
     await vault.connect(bob).exitEarly(2);
     await vault.connect(alice).topUp(1, E(11));
     await vault.connect(carol).claim(3);
-    await time.increase(366 * DAY);
+    await time.increase(31 * DAY);
     await vault.connect(alice).withdraw(1);
     await vault.connect(carol).withdraw(3);
     expect(await vault.totalLocked()).to.eq(0n);

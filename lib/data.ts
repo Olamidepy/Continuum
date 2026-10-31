@@ -12,7 +12,7 @@ export const SITE = {
   name: "Continuum",
   tagline: "Lock your tokens. Earn from everyone who leaves early.",
   description:
-    "Continuum is a time-locked vault on Ethereum. Lock for 30 to 365 days. Anyone who exits early pays 10%, and most of it goes to the people who stayed.",
+    "Continuum is a time-locked vault on Ethereum. Lock for 3 to 30 days. Anyone who exits early pays 10%, and most of it goes to the people who stayed.",
   url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://continuum.example",
   /** Set NEXT_PUBLIC_X_URL and NEXT_PUBLIC_X_HANDLE once the X account exists. */
   x: env(process.env.NEXT_PUBLIC_X_URL),
@@ -72,16 +72,16 @@ export type Tier = { id: 0 | 1 | 2 | 3; days: number; weight: number; label: str
 
 /** Must match ContinuumVault.duration() and multiplier(). */
 export const TIERS: Tier[] = [
-  { id: 0, days: 30, weight: 1.0, label: "30 days" },
-  { id: 1, days: 90, weight: 1.2, label: "90 days" },
-  { id: 2, days: 180, weight: 1.5, label: "180 days" },
-  { id: 3, days: 365, weight: 2.0, label: "365 days" },
+  { id: 0, days: 3, weight: 1.0, label: "3 days" },
+  { id: 1, days: 7, weight: 1.2, label: "7 days" },
+  { id: 2, days: 14, weight: 1.5, label: "14 days" },
+  { id: 3, days: 30, weight: 2.0, label: "30 days" },
 ];
 
 export const PENALTY = { pct: 10, toLockers: 80, toTreasury: 20 } as const;
 
 export const STEPS = [
-  { title: "Lock", body: "Pick an amount and a length: 30, 90, 180 or 365 days. Longer locks get a bigger share of rewards." },
+  { title: "Lock", body: "Pick an amount and a length: 3, 7, 14 or 30 days. Longer locks get a bigger share of rewards." },
   { title: "Earn while you wait", body: "When someone leaves early, 8% of what they locked is shared across every vault still locked. Claim it any time." },
   { title: "Take it all back", body: "On your unlock day, withdraw your full amount plus everything you earned. No fee for finishing." },
 ] as const;
@@ -105,7 +105,7 @@ export const FAQ = [
   {
     group: "Rewards",
     q: "How are rewards split?",
-    a: "By shares. Your shares are the amount you lock times your tier weight: 1.0x for 30 days, 1.2x for 90, 1.5x for 180 and 2.0x for 365. Rewards only count from the moment you lock.",
+    a: "By shares. Your shares are the amount you lock times your tier weight: 1.0x for 3 days, 1.2x for 7, 1.5x for 14 and 2.0x for 30. Rewards only count from the moment you lock.",
   },
   {
     group: "Rewards",
@@ -153,7 +153,7 @@ export const PHOTOS = {
 } as const;
 
 export const TICKER = [
-  "Lock 30 to 365 days",
+  "Lock 3 to 30 days",
   "10% early-exit fee",
   "80% of every exit fee goes to lockers",
   "Up to 2.0x weight",

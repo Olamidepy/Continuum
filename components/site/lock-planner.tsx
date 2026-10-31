@@ -12,10 +12,10 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { PENALTY, TIERS, TOKEN } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
-const MAX_DAYS = 365;
+const MAX_DAYS = 30;
 
 /**
- * The home page's planner: pick an amount and a length, see the unlock day on a one-year line
+ * The home page's planner: pick an amount and a length, see the unlock day on a 30-day line
  * and what your weight means. Nothing is sent; it only explains the vault.
  */
 export function LockPlanner() {
@@ -63,7 +63,7 @@ export function LockPlanner() {
           </ToggleGroup>
         </div>
 
-        {/* One year as a line: today on the left, a year out on the right. */}
+        {/* 30 days as a line: today on the left, 30 days out on the right. */}
         <div aria-hidden="true" className="pt-7">
           <div className="relative h-2 rounded-full bg-muted">
             <div className="timeline-ramp absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out" style={{ width: `${pos}%` }} />
@@ -84,7 +84,7 @@ export function LockPlanner() {
           </div>
           <div className="mt-3 flex justify-between text-xs text-muted-foreground">
             <span>Today</span>
-            <span>1 year</span>
+            <span>30 days</span>
           </div>
         </div>
 
