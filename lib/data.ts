@@ -67,6 +67,9 @@ export const VAULT = {
   address: addr(process.env.NEXT_PUBLIC_CONTINUUM_VAULT_ADDRESS),
 };
 
+/** The project's dev wallet: signs the launch, makes the first buy and receives the creator fee. Public on purpose. */
+export const DEV_WALLET = "0x64b646C9B4ec3C03f16A47e3F4e838615EeBddD7" as Address;
+
 export const LIVE = Boolean(TOKEN.address && VAULT.address);
 
 export const NAV = [

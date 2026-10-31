@@ -16,7 +16,7 @@ Continuum launches the same way Goblin did: through Programmable's **Custom Laun
 
 - [ ] Deploy this site to Vercel (see README) with `NEXT_PUBLIC_RPC_URL` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`.
 - [x] X account: https://x.com/continuum_xyz (already set as the site default)
-- [ ] Set up a fresh **dev wallet** for the launch. It receives creator fees and makes the $4 first buy.
+- [x] Dev wallet: `0x64b646C9B4ec3C03f16A47e3F4e838615EeBddD7`. It submits and signs the launch, makes the $4 first buy (exempt from the 99% anti-sniper fee, still under the 2% cap) and receives creator fees.
 - [ ] Pick the ticker, but keep `NEXT_PUBLIC_TOKEN_TICKER` empty until launch so it isn't copied.
 - [ ] Optional but strongly recommended: deploy the vault on Sepolia against a test token and run through lock, claim, exit and withdraw on the site.
 
@@ -27,6 +27,7 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 | Field | Value |
 |---|---|
 | Name | Continuum |
+| Dev / controller wallet | `0x64b646C9B4ec3C03f16A47e3F4e838615EeBddD7` |
 | Ticker | your pick |
 | Chain | Ethereum Mainnet |
 | Pair | ETH |

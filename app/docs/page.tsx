@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/site/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PENALTY, SITE, TIERS, TOKEN, VAULT } from "@/lib/data";
+import { DEV_WALLET, PENALTY, SITE, TIERS, TOKEN, VAULT } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Docs" };
 
@@ -51,6 +51,7 @@ export default function DocsPage() {
     { name: "Token (Programmable protected launch)", address: TOKEN.address },
     { name: "Pool hook (Programmable protected launch)", address: TOKEN.hook },
     { name: "ContinuumVault", address: VAULT.address },
+    { name: "Dev wallet (receives the creator fee)", address: DEV_WALLET },
   ];
 
   return (
