@@ -84,7 +84,17 @@ async function main() {
 
   // 2. Chain reads.
   const client = createPublicClient({ chain: mainnet, transport: http(RPC) });
-  if ((await client.getChainId()) !== 1) fail("ETH_RPC_URL is not Ethereum Mainnet.");
+  let chainId;
+  try {
+    chainId = await client.getChainId();
+  } catch (e) {
+    const msg = String(e?.details || e?.message || e);
+    if (/whitelist|allowlist|origin/i.test(msg)) {
+      fail("Your Alchemy key only works from your website (domain allowlist). Create a SECOND Alchemy app with no allowlist and use its URL as ETH_RPC_URL.");
+    }
+    fail(`The RPC didn't answer: ${msg.split("\n")[0]}`);
+  }
+  if (chainId !== 1) fail("ETH_RPC_URL is not Ethereum Mainnet.");
   const [, answer] = await client.readContract({
     address: ETH_USD_FEED,
     abi: parseAbi(["function latestRoundData() view returns (uint80,int256,uint256,uint256,uint80)"]),

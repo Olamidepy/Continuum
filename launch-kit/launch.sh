@@ -13,7 +13,8 @@ REPO="Olamidepy/continuum-launch"
 bash "$KIT/setup.sh"
 
 echo; echo "── Build (draft)"
-node "$KIT/build-launch.mjs" | grep -v '^  ' || true
+node "$KIT/build-launch.mjs" >/dev/null   # stops here on any error (bad RPC key, changed rules, ...)
+[ -d "$LAUNCH_DIR/src" ] || { echo "✖ The draft build didn't write the contract sources."; exit 1; }
 
 echo; echo "── Publish the contract sources to github.com/$REPO"
 cd "$LAUNCH_DIR"
@@ -24,6 +25,7 @@ if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
   gh repo view "$REPO" >/dev/null 2>&1 || gh repo create "$REPO" --public --description "Continuum (CNTM) protected launch sources" >/dev/null
 fi
 git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/$REPO.git"
+git rev-parse -q --verify HEAD >/dev/null || { echo "✖ Nothing committed to publish."; exit 1; }
 git push -q -u origin main
 
 echo; echo "── Build (final)"
