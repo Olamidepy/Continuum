@@ -72,6 +72,7 @@ async function main() {
   const { createPublicClient, http, parseAbi, formatEther } = require("viem");
   const { mainnet } = require("viem/chains");
   const { buildProtectedEthereumLaunchV1 } = await import(pathToFileURL(path.join(PKG, "src", "launch-protection.mjs")).href);
+  const { packLaunch } = await import(pathToFileURL(path.join(PKG, "src", "pack.mjs")).href);
 
   // 1. Programmable's live rules.
   const protection = await getJson(`${API}/v1/launch-protection`);
@@ -198,6 +199,16 @@ DRAFT: sources written to ${LAUNCH_DIR}. Publish them, then run this script agai
   node ${process.argv[1]}
 `);
   } else {
+    // Pack here with the live fee policy. Programmable's CLI `pack` skips the live policy when the config
+    // already names profile 3.6.0 (as their protected builder writes it), so it can't be used for this step.
+    await packLaunch({
+      configPath,
+      outputPath: path.join(LAUNCH_DIR, "launch.json"),
+      receiptPath: path.join(LAUNCH_DIR, "pack.receipt.json"),
+      directNativeProfileVersion: capabilities.profile.profileVersion,
+      directNativeTradeFeePolicy: capabilities.programmableTradeFeePolicy?.policy,
+    });
+    say(`Request          ${path.join(LAUNCH_DIR, "launch.json")}`);
     say(`
 READY: bound to commit ${revision}.
 Next:  bash ${path.join(path.dirname(process.argv[1]), "submit.sh")}
