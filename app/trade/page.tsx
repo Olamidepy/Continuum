@@ -26,7 +26,7 @@ export default function TradePage() {
             <AlertTitle>Only trade through the official pool</AlertTitle>
             <AlertDescription>
               The official addresses are on this page and posted by {SITE.xHandle ?? "our X account"}. For the first {Math.round(TOKEN.protectionSeconds / 60)} minutes after launch, only{" "}
-              {SITE.launchpad} can route buys. Trades are final and tokens can lose all value.
+              {SITE.launchpad} can route buys, and an anti-sniper fee starts at {TOKEN.openingFeePct}% and falls to normal over {TOKEN.openingFeeSeconds / 60} minutes. Wait it out. Trades are final and tokens can lose all value.
             </AlertDescription>
           </Alert>
           <TokenCard />

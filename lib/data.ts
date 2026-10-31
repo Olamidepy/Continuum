@@ -13,10 +13,9 @@ export const SITE = {
   tagline: "Lock your tokens. Earn from everyone who leaves early.",
   description:
     "Continuum is a time-locked vault on Ethereum. Lock for 3 to 30 days. Anyone who exits early pays 10%, and most of it goes to the people who stayed.",
-  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://continuum.example",
-  /** Set NEXT_PUBLIC_X_URL and NEXT_PUBLIC_X_HANDLE once the X account exists. */
-  x: env(process.env.NEXT_PUBLIC_X_URL),
-  xHandle: env(process.env.NEXT_PUBLIC_X_HANDLE),
+  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.continuumxyz.live",
+  x: env(process.env.NEXT_PUBLIC_X_URL) ?? "https://x.com/continuum_xyz",
+  xHandle: env(process.env.NEXT_PUBLIC_X_HANDLE) ?? "@continuum_xyz",
   github: "https://github.com/Olamidepy/Continuum",
   chain: "Ethereum",
   launchpad: "Programmable",
@@ -44,6 +43,11 @@ export const TOKEN = {
   tickSpacing: Number(process.env.NEXT_PUBLIC_POOL_TICK_SPACING || 60),
   /** Seconds after launch when only Programmable's router can buy. */
   protectionSeconds: Number(process.env.NEXT_PUBLIC_PROTECTION_SECONDS || 300),
+  /** Anti-sniper opening fee: starts at this % and falls to the normal fee over openingFeeSeconds. */
+  openingFeePct: Number(process.env.NEXT_PUBLIC_OPENING_FEE_PCT || 99),
+  openingFeeSeconds: Number(process.env.NEXT_PUBLIC_OPENING_FEE_SECONDS || 120),
+  /** Dev's first buy at launch, in USD. */
+  initialBuyUsd: Number(process.env.NEXT_PUBLIC_INITIAL_BUY_USD || 4),
   /** Creator fee on trades in the official pool, in percent. */
   creatorFee: Number(process.env.NEXT_PUBLIC_CREATOR_FEE || 2.7),
   platformFee: 0.3,

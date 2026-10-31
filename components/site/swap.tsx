@@ -49,8 +49,6 @@ export function Swap() {
   const n = Number(amount) || 0;
   const payEth = side === "buy";
   const { live, startedAt, priceEth, priceUsd, marketCapUsd } = useLiveToken();
-  const keep = 1 - (TOKEN.platformFee + TOKEN.creatorFee) / 100;
-  const out = live && priceEth ? (payEth ? (n * keep) / priceEth : n * priceEth * keep) : undefined;
 
   const [now, setNow] = React.useState(() => Date.now());
   React.useEffect(() => {
@@ -61,6 +59,14 @@ export function Swap() {
   const coinPage = TOKEN.coinPage ?? SITE.launchpadUrl;
   const href = protectedLeft > 0 ? coinPage : TOKEN.uniswap ?? coinPage;
   const protectedLeftLabel = protectedLeft > 0 ? `${SITE.launchpad} only` : `${SITE.launchpad}, Uniswap`;
+
+  // Anti-sniper fee: starts high at launch and falls in a straight line to the normal fee.
+  const normalFee = TOKEN.platformFee + TOKEN.creatorFee;
+  const sinceStart = live && startedAt ? Math.max(0, now / 1000 - startedAt) : undefined;
+  const openingLeft = sinceStart === undefined ? 0 : Math.max(0, Math.ceil(TOKEN.openingFeeSeconds - sinceStart));
+  const feeNow = openingLeft > 0 && sinceStart !== undefined ? TOKEN.openingFeePct - (TOKEN.openingFeePct - normalFee) * (sinceStart / TOKEN.openingFeeSeconds) : normalFee;
+  const keep = 1 - feeNow / 100;
+  const out = live && priceEth ? (payEth ? (n * keep) / priceEth : n * priceEth * keep) : undefined;
 
   return (
     <Card className="gap-4">
@@ -109,6 +115,14 @@ export function Swap() {
         </div>
 
         <dl className="mt-3 grid gap-2.5 px-1 text-sm">
+          {openingLeft > 0 ? (
+            <div className="flex justify-between rounded-md bg-primary/10 px-2 py-1.5 text-primary">
+              <dt>Anti-sniper fee now</dt>
+              <dd className="num">
+                {feeNow.toFixed(1)}% · normal in {Math.floor(openingLeft / 60)}:{String(openingLeft % 60).padStart(2, "0")}
+              </dd>
+            </div>
+          ) : null}
           <div className="flex justify-between">
             <dt className="text-muted-foreground">Platform fee</dt>
             <dd className="num">{TOKEN.platformFee}%</dd>

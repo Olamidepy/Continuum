@@ -15,7 +15,7 @@ Continuum launches the same way Goblin did: through Programmable's **Custom Laun
 ## 1. Before you submit
 
 - [ ] Deploy this site to Vercel (see README) with `NEXT_PUBLIC_RPC_URL` and `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`.
-- [ ] Create the X account, then set `NEXT_PUBLIC_X_URL` and `NEXT_PUBLIC_X_HANDLE` and redeploy.
+- [x] X account: https://x.com/continuum_xyz (already set as the site default)
 - [ ] Set up a fresh **dev wallet** for the launch (it receives creator fees) and a **treasury** address for the vault. They can be the same wallet.
 - [ ] Pick the ticker, but keep `NEXT_PUBLIC_TOKEN_TICKER` empty until launch so it isn't copied.
 - [ ] Optional but strongly recommended: deploy the vault on Sepolia against a test token and run through lock, claim, exit and withdraw on the site.
@@ -35,6 +35,10 @@ Submit the Custom Launch request on programmable.market. Use these fields:
 | Source | https://github.com/Olamidepy/Continuum |
 | Image | `public/logo.svg` (export a 1000×1000 PNG) |
 | Mechanics | Programmable's protected launch token + hook. No custom hook. |
+| Supply | 1,000,000,000 (fixed) |
+| Initial buy | about $4 of ETH (Programmable's minimum is $1) |
+| Anti-sniper fee | starts at 99%, falls to the normal fee over **2 minutes** (120 s) instead of 30 s |
+| Router-only window | first 5 minutes, only Programmable's router can buy |
 | Creator fee | your choice (site defaults to 2.7%; update `NEXT_PUBLIC_CREATOR_FEE` to match what's approved) |
 
 **Description** (paste as is or edit):
