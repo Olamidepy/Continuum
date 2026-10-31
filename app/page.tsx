@@ -47,7 +47,7 @@ export default function HomePage() {
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-32 pb-20 sm:px-6 sm:pt-40 lg:min-h-[92svh] lg:grid-cols-[1.1fr_1fr] lg:gap-16">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-40 pb-20 sm:px-6 sm:pt-48 lg:min-h-[92svh] lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div>
             <AnimatedHeading
               as="h1"

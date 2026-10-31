@@ -36,7 +36,7 @@ const FUNCTIONS = [
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="scroll-mt-28 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+    <h2 id={id} className="scroll-mt-36 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
       {children}
     </h2>
   );
@@ -58,7 +58,7 @@ export default function DocsPage() {
     <>
       <PageHeader title="How Continuum works" body="Everything a saver needs: how locks and shares work, where exit fees go, how the token launches and what the contract can and can't do." />
       <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[220px_1fr]">
-        <nav aria-label="Docs" className="min-w-0 lg:sticky lg:top-28 lg:self-start">
+        <nav aria-label="Docs" className="min-w-0 lg:sticky lg:top-36 lg:self-start">
           <ul className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
             {TOC.map(({ id, label, icon: Icon }) => (
               <li key={id}>

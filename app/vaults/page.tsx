@@ -15,7 +15,7 @@ export default function VaultsPage() {
       <section className="mx-auto grid max-w-6xl gap-6 px-4 sm:px-6">
         <VaultStats />
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
-          <div className="lg:sticky lg:top-28">
+          <div className="lg:sticky lg:top-36">
             <Suspense>
               <LockForm />
             </Suspense>
