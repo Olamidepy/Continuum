@@ -26,12 +26,13 @@ export const SITE = {
  * so the site never shows an address that could be copied by scammers before then.
  * The ticker stays off the site until NEXT_PUBLIC_TOKEN_TICKER is set.
  */
-const tokenAddress = addr(process.env.NEXT_PUBLIC_CONTINUUM_TOKEN_ADDRESS);
-const ticker = env(process.env.NEXT_PUBLIC_TOKEN_TICKER);
+/** Live on Ethereum Mainnet since 3 Nov 2026. Env vars still override these. */
+const tokenAddress = addr(process.env.NEXT_PUBLIC_CONTINUUM_TOKEN_ADDRESS || "0xE56CbF8bCDa7f4A6D69F4f4aad12C5F9eBE97cf4");
+const ticker = env(process.env.NEXT_PUBLIC_TOKEN_TICKER) ?? "CNTM";
 
 export const TOKEN = {
   address: tokenAddress,
-  hook: addr(process.env.NEXT_PUBLIC_CONTINUUM_HOOK_ADDRESS),
+  hook: addr(process.env.NEXT_PUBLIC_CONTINUUM_HOOK_ADDRESS || "0x4B207E4302Ee7235f9eb71c25AD5065c8a8560cc"),
   /** Display name until the ticker is public. */
   symbol: ticker ? `$${ticker.replace(/^\$/, "")}` : "Continuum",
   unit: ticker ? ticker.replace(/^\$/, "") : "tokens",
