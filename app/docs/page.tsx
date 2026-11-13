@@ -156,14 +156,14 @@ export default function DocsPage() {
           <section className="flex flex-col gap-4">
             <H2 id="launch">The launch</H2>
             <p>
-              WRON launches on Ethereum mainnet with its own Uniswap v4 hook, using the same Uniswap PoolManager and Universal Router as every other v4 pool. The dev wallet deploys the token,
-              the hook and a launch contract, and one transaction creates the pool, locks the liquidity and makes the first buy. All the contracts are verified on Etherscan.
+              WRON launches on Ethereum mainnet through Programmable&apos;s Custom Launch, using Programmable&apos;s reviewed protected launch token and Uniswap v4 hook. Programmable
+              reviews the launch before it goes live, and one transaction creates the pool, locks the liquidity and makes the first buy.
             </p>
             <ul className="list-disc space-y-2 pl-5">
               <li>Trading is open to everyone from the first block, on this site&apos;s Trade page or straight through the pool.</li>
               <li>
                 Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal fee over the first {TOKEN.openingFeeSeconds} seconds, so bots
-                that buy in the first block lose most of what they put in. The dev wallet skips this extra fee but is still under the wallet cap.
+                that buy in the first block lose most of what they put in. The extra fee goes to Programmable. The dev wallet skips it but is still under the wallet cap.
               </li>
               <li>
                 Wallet cap: for the first {TOKEN.protectionSeconds / 60} minutes, no wallet can buy more than {TOKEN.walletCapPct}% of supply in total. Sells are never capped.

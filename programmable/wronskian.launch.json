@@ -1,0 +1,16 @@
+{
+  "name": "Wronskian",
+  "symbol": "WRON",
+  "description": "Wronskian (WRON): W ≠ 0. Stay independent. A community token on Ethereum with a time-locked savings vault, fixed fees and permanently locked launch liquidity.",
+  "imageFile": "../public/avatar.png",
+  "imageUrl": "https://www.wronskian.live/avatar.png",
+  "website": "https://www.wronskian.live",
+  "x": "https://x.com/wronskian_xyz",
+  "controller": "NEW_DEV_WALLET",
+  "creatorFeeBps": 470,
+  "targetFdvUsd": 15000,
+  "additionalTaxExemptWallets": [],
+  "initialBuyUsd": 2,
+  "initialBuyBufferPercent": 0,
+  "supply": "1000000000000000000000000000"
+}

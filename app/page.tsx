@@ -18,7 +18,7 @@ const TRUST = [
   { icon: KeyRound, title: "No owner, no admin", body: "Nobody can pause the vault, change its rules or move your tokens. Only your wallet can act on your vault." },
   { icon: Lock, title: "Fixed at deploy", body: "The token, the lock lengths and the 10% exit fee are written into the contract and can't change. There is no treasury cut." },
   { icon: FileCode2, title: "Verified on Etherscan", body: "The vault's code is verified on Etherscan when it's deployed, so anyone can read exactly what it does." },
-  { icon: Rocket, title: "Its own Uniswap v4 hook", body: "Liquidity locked forever and launch protection against snipers. The vault is a separate contract." },
+  { icon: Rocket, title: "Launched on Programmable", body: "Programmable's protected Uniswap v4 launch: liquidity locked forever and protection against snipers. The vault is a separate contract." },
 ];
 
 const HERO_FACTS = [

@@ -80,7 +80,7 @@ export function Swap() {
   }, []);
   const protectedLeft = !live ? 0 : startedAt ? Math.max(0, Math.ceil(startedAt + TOKEN.protectionSeconds - now / 1000)) : TOKEN.protectionSeconds;
 
-  // Anti-sniper fee: starts at 80% and falls in a straight line to the normal fee. Only buys pay it.
+  // Anti-sniper fee: starts at 99% and falls in a straight line to the normal fee. Only buys pay it.
   const normalFee = TOKEN.fee;
   const sinceStart = live && startedAt ? Math.max(0, now / 1000 - startedAt) : undefined;
   const openingLeft = sinceStart === undefined ? 0 : Math.max(0, Math.ceil(TOKEN.openingFeeSeconds - sinceStart));

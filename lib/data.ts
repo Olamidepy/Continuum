@@ -43,13 +43,13 @@ export const TOKEN = {
   tickSpacing: 60,
   /*
    * Launch protection, fixed in WronskianHook: for the first 300 s no wallet can buy more than 2% of supply in
-   * total, and the buy fee starts at 80% and falls to the normal 5% over 30 s.
+   * total, and the buy fee starts at 99% and falls to the normal 5% over 30 s.
    */
   protectionSeconds: 300,
   walletCapPct: 2,
-  openingFeePct: 80,
+  openingFeePct: 99,
   openingFeeSeconds: 30,
-  startFdvUsd: 4_000,
+  startFdvUsd: 15_000,
   /** Dev's first buy at launch, in USD. */
   initialBuyUsd: 2,
   /** Fee on every buy and sell in the official pool, in percent. All of it goes to the dev wallet. */
@@ -133,7 +133,7 @@ export const FAQ = [
   {
     group: "Token",
     q: "What fees apply to trades?",
-    a: "5% of every buy and sell in the official pool, taken in ETH and paid to the dev wallet. For the first 30 seconds after launch the buy fee starts at 80% and falls to 5%, to stop sniping bots. Locking, claiming and withdrawing only cost Ethereum gas.",
+    a: "5% of every buy and sell in the official pool, taken in ETH and paid to the dev wallet. For the first 30 seconds after launch the buy fee starts at 99% and falls to 5%, to stop sniping bots. Locking, claiming and withdrawing only cost Ethereum gas.",
   },
   {
     group: "Safety",
