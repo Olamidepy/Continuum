@@ -266,8 +266,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="pt-20 sm:pt-28">
-        <Ticker slow />
+      {/* Brand band: the same pattern as the X banner */}
+      <div className="pt-20 sm:pt-28" aria-hidden="true">
+        <div className="h-36 bg-[url('/banner.png')] bg-cover bg-center sm:h-48 lg:h-56" />
       </div>
 
       {/* FAQ preview */}

@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: "Wronskian (WRON): W ≠ 0. Stay independent.", template: "%s · Wronskian" },
   description: SITE.description,
-  openGraph: { images: ["/avatar.png"] },
-  twitter: { card: "summary", site: SITE.xHandle, images: ["/avatar.png"] },
+  openGraph: { images: [{ url: "/og.png", width: 1200, height: 630 }] },
+  twitter: { card: "summary_large_image", site: SITE.xHandle, images: ["/og.png"] },
 };
 
 export const viewport: Viewport = { themeColor: "#050505", colorScheme: "dark" };

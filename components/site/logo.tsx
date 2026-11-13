@@ -8,5 +8,5 @@ export function LogoMark({ className }: { className?: string }) {
 
 /** The full Wronskian wordmark. Sized by height. */
 export function Wordmark({ className }: { className?: string }) {
-  return <img src="/logo-wordmark.png" alt="Wronskian" width={565} height={120} className={cn("h-5 w-auto", className)} />;
+  return <img src="/logo-wordmark.png" alt="Wronskian" width={555} height={120} className={cn("h-5 w-auto", className)} />;
 }
