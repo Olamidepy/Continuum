@@ -64,7 +64,7 @@ export const VAULT = {
 };
 
 /** The dev wallet: launches the token, makes the first buy and receives the 5% fee. Public on purpose. */
-export const DEV_WALLET = "0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2" as Address;
+export const DEV_WALLET = "0x4044bEBa840B1820B7d3858b65Aa5Fa8729b2db5" as Address;
 
 export const LIVE = Boolean(TOKEN.address && VAULT.address);
 

@@ -6,7 +6,7 @@
   "imageUrl": "https://www.wronskian.live/avatar.png",
   "website": "https://www.wronskian.live",
   "x": "https://x.com/wronskian_xyz",
-  "controller": "NEW_DEV_WALLET",
+  "controller": "0x4044bEBa840B1820B7d3858b65Aa5Fa8729b2db5",
   "creatorFeeBps": 470,
   "targetFdvUsd": 15000,
   "additionalTaxExemptWallets": [],
