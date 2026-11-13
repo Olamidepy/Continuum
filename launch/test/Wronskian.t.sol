@@ -232,11 +232,11 @@ contract WronskianTest is Test, IUnlockCallback {
 
     // ───────────────────────── anti-sniper ─────────────────────────
 
-    function test_openingFeeStartsAt99AndFallsTo5() public {
+    function test_openingFeeStartsAt80AndFallsTo5() public {
         _launch();
-        assertEq(hook.feeBps(true, address(this), trader), 9_900, "launch second");
+        assertEq(hook.feeBps(true, address(this), trader), 8_000, "launch second");
         vm.warp(block.timestamp + 15);
-        assertEq(hook.feeBps(true, address(this), trader), 5_200, "halfway");
+        assertEq(hook.feeBps(true, address(this), trader), 4_250, "halfway");
         vm.warp(block.timestamp + 15);
         assertEq(hook.feeBps(true, address(this), trader), 500, "after 30 s");
         assertEq(hook.feeBps(false, address(this), trader), 500, "sells");
@@ -248,7 +248,7 @@ contract WronskianTest is Test, IUnlockCallback {
         vm.startPrank(address(this), trader);
         BalanceDelta buy = _swap(true, -int256(0.001 ether));
         vm.stopPrank();
-        assertEq(vault.creatorAccrued() - c0, _ceil(0.001 ether * 9_900, 10_000), "99% at launch");
+        assertEq(vault.creatorAccrued() - c0, _ceil(0.001 ether * 8_000, 10_000), "80% at launch");
         assertGt(buy.amount1(), 0);
     }
 

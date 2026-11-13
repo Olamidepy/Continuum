@@ -163,7 +163,7 @@ export default function DocsPage() {
               <li>Trading is open to everyone from the first block, on this site&apos;s Trade page or straight through the pool.</li>
               <li>
                 Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal {TOKEN.fee}% over the first {TOKEN.openingFeeSeconds} seconds, so bots
-                that buy in the first block pay almost everything they put in. The dev wallet skips this extra fee but is still under the wallet cap.
+                that buy in the first block lose most of what they put in. The dev wallet skips this extra fee but is still under the wallet cap.
               </li>
               <li>
                 Wallet cap: for the first {TOKEN.protectionSeconds / 60} minutes, no wallet can buy more than {TOKEN.walletCapPct}% of supply in total. Sells are never capped.

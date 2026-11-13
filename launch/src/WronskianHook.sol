@@ -21,7 +21,7 @@ import { WronskianFeeVault } from "./WronskianFeeVault.sol";
 /// @title Wronskian hook
 /// @notice Uniswap v4 hook for the single native ETH / WRON pool on Ethereum mainnet.
 ///         - Every buy and sell pays 5% of its gross ETH value, all to the fixed creator wallet.
-///         - Anti-sniper: for the first 30 seconds the buy fee starts at 99% and falls in a straight line to 5%.
+///         - Anti-sniper: for the first 30 seconds the buy fee starts at 80% and falls in a straight line to 5%.
 ///         - Wallet cap: for the first 5 minutes no transaction origin can buy more than 2% of the supply in total.
 ///         - Only the launch position may ever add liquidity, and it can never be removed.
 ///         The rates are constants: nobody can change them after deployment. There is no owner.
@@ -36,7 +36,7 @@ contract WronskianHook is BaseHook {
     uint256 public constant CHAIN_ID = 1;
     address public constant CANONICAL_POOL_MANAGER = 0x000000000004444c5dc75cB358380D2e3dE08A90;
     uint256 public constant FEE_BPS = 500; // 5%
-    uint256 public constant OPENING_FEE_BPS = 9_900; // 99% at the launch block
+    uint256 public constant OPENING_FEE_BPS = 8_000; // 80% at the launch block
     uint256 public constant OPENING_FEE_SECONDS = 30;
     uint256 public constant PROTECTION_SECONDS = 300;
     uint256 public constant WALLET_TOKEN_LIMIT = 20_000_000 ether; // 2% of the 1,000,000,000 supply

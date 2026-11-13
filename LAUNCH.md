@@ -16,7 +16,7 @@ WRON launches with its own Uniswap v4 hook (`launch/`). No launchpad, no review,
 
 - [ ] Deploy this site to Vercel with `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL`.
 - [x] X account: https://x.com/wronskian_xyz
-- [x] Dev wallet: `0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2`. It deploys, makes the $2 first buy (skips the 99% opening fee, still under the 2% cap) and receives the 5% fee.
+- [x] Dev wallet: `0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2`. It deploys, makes the $2 first buy (skips the 80% opening fee, still under the 2% cap) and receives the 5% fee.
 
 ## 2. Test (Ubuntu, in `launch/`)
 

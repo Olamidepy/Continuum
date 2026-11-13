@@ -8,7 +8,7 @@ contracts, and trade through the same Uniswap v4 PoolManager and Universal Route
 |---|---|
 | Token | Wronskian (WRON), 1,000,000,000 supply. No owner, no mint, no tax on transfers, no pause, no upgrade. |
 | Fee | **5% of every buy and sell**, taken in ETH, all to the dev wallet `0x311A…9eC2`. Fixed forever. |
-| Anti-sniper | Buy fee starts at **99%** at launch and falls in a straight line to 5% over **30 seconds**. The dev wallet skips this extra fee. |
+| Anti-sniper | Buy fee starts at **80%** at launch and falls in a straight line to 5% over **30 seconds**. The dev wallet skips this extra fee. |
 | Wallet cap | For the first **5 minutes**, no wallet can buy more than **2% of supply** in total. Sells are never capped. |
 | Start | **$4,000 FDV**, priced from Chainlink's ETH/USD at launch. |
 | Liquidity | The whole supply goes into one position owned by the initializer, which has no way to remove it. **Locked forever.** No ETH needed: buyers' ETH flows in as they buy. |
