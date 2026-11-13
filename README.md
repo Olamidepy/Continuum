@@ -2,7 +2,7 @@
 
 **W ≠ 0. Stay independent.**
 
-WRON is a token on Ethereum with its own Uniswap v4 hook: a fixed 5% fee on every buy and sell (paid to the dev wallet), liquidity locked forever, and launch protection (99% → 5% buy fee over 30 s, 2% wallet cap for 5 minutes). It opens at a $2,000 FDV.
+WRON is a token on Ethereum with its own Uniswap v4 hook: a fixed 5% fee on every buy and sell (paid to the dev wallet), liquidity locked forever, and launch protection (99% → 5% buy fee over 30 s, 2% wallet cap for 5 minutes). It opens at a $4,000 FDV.
 
 WronskianVault is a time-locked vault for WRON. Lock for 3, 7, 14 or 30 days. Anyone who breaks a lock early forfeits 10% of it, and all of it is shared with every vault still locked. Finishing is free.
 

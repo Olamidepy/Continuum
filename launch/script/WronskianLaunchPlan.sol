@@ -37,7 +37,7 @@ abstract contract WronskianLaunchPlan {
         uint256 minTokensOut;
     }
 
-    /// @param fdvUsd Target starting fully diluted value in whole dollars (e.g. 2000).
+    /// @param fdvUsd Target starting fully diluted value in whole dollars (e.g. 4000).
     /// @param firstBuyUsdCents First buy in US cents (e.g. 200 for $2).
     function _plan(uint256 fdvUsd, uint256 firstBuyUsdCents) internal view returns (Plan memory p) {
         (, int256 answer,, uint256 updatedAt,) = IChainlinkFeed(ETH_USD_FEED).latestRoundData();

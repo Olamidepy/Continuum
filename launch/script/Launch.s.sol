@@ -17,14 +17,14 @@ import { WronskianLaunchPlan } from "./WronskianLaunchPlan.sol";
 ///   forge script script/Launch.s.sol --rpc-url $ETH_RPC_URL --sender 0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2 \
 ///     --account wron-dev --broadcast
 ///
-/// Optional environment: FDV_USD (default 2000), FIRST_BUY_USD_CENTS (default 200).
+/// Optional environment: FDV_USD (default 4000), FIRST_BUY_USD_CENTS (default 200).
 contract Launch is Script, WronskianLaunchPlan {
     address internal constant DEV = 0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2;
 
     function run() external {
         require(msg.sender == DEV, "Run with --sender 0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2");
         require(block.chainid == 1, "Not Ethereum mainnet");
-        Plan memory p = _plan(vm.envOr("FDV_USD", uint256(2000)), vm.envOr("FIRST_BUY_USD_CENTS", uint256(200)));
+        Plan memory p = _plan(vm.envOr("FDV_USD", uint256(4000)), vm.envOr("FIRST_BUY_USD_CENTS", uint256(200)));
         require(DEV.balance > p.firstBuyWei, "Dev wallet can't cover the first buy");
 
         console2.log("ETH/USD (8 decimals)  ", p.ethUsd8);

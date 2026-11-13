@@ -68,7 +68,7 @@ contract WronskianForkTest is Test, WronskianLaunchPlan {
             return;
         }
         vm.createSelectFork(rpc);
-        plan = _plan(2000, 200);
+        plan = _plan(4000, 200);
         (init, token, hook) = _deploy(plan, DEV, address(this));
         vault = hook.feeVault();
         key = PoolKey(Currency.wrap(address(0)), Currency.wrap(address(token)), 0, 60, IHooks(address(hook)));
@@ -82,8 +82,8 @@ contract WronskianForkTest is Test, WronskianLaunchPlan {
         console2.log("Start FDV USD  ", plan.startFdvUsd);
         console2.log("First buy wei  ", plan.firstBuyWei);
         console2.log("Dev got WRON   ", token.balanceOf(DEV) / 1e18);
-        assertGe(plan.startFdvUsd, 1999);
-        assertLe(plan.startFdvUsd, 2020);
+        assertGe(plan.startFdvUsd, 3999);
+        assertLe(plan.startFdvUsd, 4040);
         assertGe(token.balanceOf(DEV), plan.minTokensOut);
         assertEq(init.initialTokensOut(), token.balanceOf(DEV));
         assertTrue(hook.initialized());

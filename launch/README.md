@@ -10,7 +10,7 @@ contracts, and trade through the same Uniswap v4 PoolManager and Universal Route
 | Fee | **5% of every buy and sell**, taken in ETH, all to the dev wallet `0x311A…9eC2`. Fixed forever. |
 | Anti-sniper | Buy fee starts at **99%** at launch and falls in a straight line to 5% over **30 seconds**. The dev wallet skips this extra fee. |
 | Wallet cap | For the first **5 minutes**, no wallet can buy more than **2% of supply** in total. Sells are never capped. |
-| Start | **$2,000 FDV**, priced from Chainlink's ETH/USD at launch. |
+| Start | **$4,000 FDV**, priced from Chainlink's ETH/USD at launch. |
 | Liquidity | The whole supply goes into one position owned by the initializer, which has no way to remove it. **Locked forever.** No ETH needed: buyers' ETH flows in as they buy. |
 | First buy | **$2 of ETH** to the dev wallet, in the same transaction that creates the pool. |
 
