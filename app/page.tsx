@@ -12,13 +12,13 @@ import { VaultStats } from "@/components/site/vault-stats";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PENALTY, PHOTOS, SITE, STEPS, TIERS, TOKEN } from "@/lib/data";
+import { PENALTY, PHOTOS, SITE, STEPS, TIERS } from "@/lib/data";
 
 const TRUST = [
   { icon: KeyRound, title: "No owner, no admin", body: "Nobody can pause the vault, change its rules or move your tokens. Only your wallet can act on your vault." },
   { icon: Lock, title: "Fixed at deploy", body: "The token, the lock lengths and the 10% exit fee are written into the contract and can't change. There is no treasury cut." },
   { icon: FileCode2, title: "Verified on Etherscan", body: "The vault's code is verified on Etherscan when it's deployed, so anyone can read exactly what it does." },
-  { icon: Rocket, title: "Its own Uniswap v4 hook", body: `A ${TOKEN.fee}% fee on every trade, liquidity locked forever, and launch protection against snipers. The vault is a separate contract.` },
+  { icon: Rocket, title: "Its own Uniswap v4 hook", body: "Liquidity locked forever and launch protection against snipers. The vault is a separate contract." },
 ];
 
 const HERO_FACTS = [
@@ -242,7 +242,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-20 sm:px-6 sm:pt-28 lg:grid-cols-[1fr_1.4fr]">
         <Reveal>
           <Card className="relative isolate h-full min-h-[320px] justify-end sm:min-h-[420px] overflow-hidden p-0">
-            <Photo photo={PHOTOS.road} sizes="(min-width: 1024px) 460px, 100vw" className="absolute inset-0 -z-10" />
+            <Photo photo={PHOTOS.road} sizes="(min-width: 1024px) 460px, 100vw" className="absolute inset-0 -z-10 origin-[50%_62%] scale-[1.9]" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-transparent" />
             <div className="p-6 sm:p-8">
               <SectionTitle className="text-white">Nobody holds the keys but you</SectionTitle>
