@@ -18,6 +18,7 @@ import { WronskianLaunchPlan } from "./WronskianLaunchPlan.sol";
 ///     --account wron-dev --broadcast
 ///
 /// Optional environment: FDV_USD (default 4000), FIRST_BUY_USD_CENTS (default 200).
+/// Dry run with an empty dev wallet: PRETEND_FUNDED=true forge script ... (without --broadcast).
 contract Launch is Script, WronskianLaunchPlan {
     address internal constant DEV = 0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2;
 
@@ -25,6 +26,11 @@ contract Launch is Script, WronskianLaunchPlan {
         require(msg.sender == DEV, "Run with --sender 0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2");
         require(block.chainid == 1, "Not Ethereum mainnet");
         Plan memory p = _plan(vm.envOr("FDV_USD", uint256(4000)), vm.envOr("FIRST_BUY_USD_CENTS", uint256(200)));
+        if (vm.envOr("PRETEND_FUNDED", false)) {
+            // Dry run only: give the dev wallet pretend ETH so the simulation can show the full gas cost.
+            // Never set this together with --broadcast.
+            vm.deal(DEV, 1 ether);
+        }
         require(DEV.balance > p.firstBuyWei, "Dev wallet can't cover the first buy");
 
         console2.log("ETH/USD (8 decimals)  ", p.ethUsd8);
