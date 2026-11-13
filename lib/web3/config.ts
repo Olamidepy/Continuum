@@ -8,7 +8,7 @@ export const CHAIN = mainnet;
 /** WalletConnect powers mobile wallets and QR codes. Free id from dashboard.reown.com. */
 export const WALLETCONNECT_ID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "";
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.wronskian.xyz";
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://wronskian.live";
 
 /** Optional RPC link for reads. Use a key restricted to this site's domain; it is visible in the browser. */
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || undefined;

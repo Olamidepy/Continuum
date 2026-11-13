@@ -16,7 +16,7 @@ export const SITE = {
   tagline: "W ≠ 0. Stay independent.",
   description:
     "Wronskian (WRON): W ≠ 0. Stay independent. Lock WRON for 3 to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who stayed.",
-  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.wronskian.xyz",
+  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://wronskian.live",
   x: "https://x.com/wronskian_xyz",
   xHandle: "@wronskian_xyz",
   chain: "Ethereum",
