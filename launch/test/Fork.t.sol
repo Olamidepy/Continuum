@@ -133,7 +133,7 @@ contract WronskianForkTest is Test, WronskianLaunchPlan {
         uint256 feesBefore = vault.creatorAccrued();
         vm.prank(trader, trader);
         IUniversalRouter(ROUTER).execute{ value: 0.001 ether }(hex"1004", _buyInputs(0.001 ether, 1), block.timestamp + 600);
-        assertEq(vault.creatorAccrued() - feesBefore, (0.001 ether * 9_900 + 9_999) / 10_000, "99% opening fee");
+        assertEq(vault.creatorAccrued() - feesBefore, (uint256(0.001 ether) * 9_900 + 9_999) / 10_000, "99% opening fee");
         // After 30 s the fee is 5%, but one wallet still can't buy more than 2% of supply in the first 5 minutes.
         vm.warp(block.timestamp + 31);
         vm.prank(trader, trader);
