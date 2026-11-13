@@ -20,7 +20,7 @@ abstract contract WronskianLaunchPlan {
     /// @dev Chainlink ETH/USD on Ethereum mainnet (8 decimals).
     address internal constant ETH_USD_FEED = 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419;
     /// @dev Forge deploys `new X{salt: ...}` through this deterministic CREATE2 deployer when broadcasting.
-    address internal constant CREATE2_FACTORY = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
+    address internal constant CREATE2_DEPLOYER = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
     uint160 internal constant HOOK_FLAGS = 0x28cc;
     int24 internal constant SPACING = 60;
     /// @dev The position covers a 10,000x price range: from the starting FDV up to about 10,000 times it.
@@ -62,7 +62,7 @@ abstract contract WronskianLaunchPlan {
     }
 
     /// @param dev The dev wallet: launcher, first buyer and fee recipient.
-    /// @param deployer The address that deploys the hook with CREATE2 (CREATE2_FACTORY when broadcasting).
+    /// @param deployer The address that deploys the hook with CREATE2 (CREATE2_DEPLOYER when broadcasting).
     function _deploy(Plan memory p, address dev, address deployer)
         internal
         returns (WronskianInitializer init, WronskianToken token, WronskianHook hook)

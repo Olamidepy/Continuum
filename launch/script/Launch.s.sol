@@ -37,7 +37,7 @@ contract Launch is Script, WronskianLaunchPlan {
         console2.log("Minimum WRON          ", p.minTokensOut / 1e18);
 
         vm.startBroadcast(DEV);
-        (WronskianInitializer init, WronskianToken token, WronskianHook hook) = _deploy(p, DEV, CREATE2_FACTORY);
+        (WronskianInitializer init, WronskianToken token, WronskianHook hook) = _deploy(p, DEV, CREATE2_DEPLOYER);
         init.initialize{ value: p.firstBuyWei }(address(token), address(hook), DEV, p.minTokensOut);
         vm.stopBroadcast();
 

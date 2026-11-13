@@ -156,7 +156,7 @@ contract WronskianForkTest is Test, WronskianLaunchPlan {
         params[0] = abi.encode(ExactInputSingleParams(key, buy, amountIn, minOut, 0, ""));
         params[1] = abi.encode(buy ? address(0) : address(token), uint256(amountIn)); // SETTLE_ALL
         params[2] = abi.encode(buy ? address(token) : address(0), uint256(minOut)); // TAKE_ALL
-        return abi.encode(hex"060c0f", params);
+        return abi.encode(bytes(hex"060c0f"), params);
     }
 
     function _buyInputs(uint128 ethIn, uint256 minOut) internal view returns (bytes[] memory inputs) {
