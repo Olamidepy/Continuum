@@ -153,11 +153,12 @@ export const FAQ_GROUPS = ["All", "Basics", "Rewards", "Token", "Safety"] as con
 const unsplash = (id: string) => (w: number) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const PHOTOS = {
-  trails: { src: unsplash("photo-1484734278752-212d8c88a568"), alt: "Red and white light trails from traffic at night", by: "Paul Smith", href: "https://unsplash.com/photos/Sz0kMDeDUc0" },
-  hourglass: { src: unsplash("photo-1643810064714-7c80c7bf68e8"), alt: "An hourglass on a black background", by: "Pablo Añón", href: "https://unsplash.com/photos/XMW-B70xZy4" },
-  hourglassRed: { src: unsplash("photo-1591360236494-e6557e5ffa25"), alt: "A clear hourglass against a red background", by: "Daniele Franchi", href: "https://unsplash.com/photos/WyJ0rahs_2k" },
-  curves: { src: unsplash("photo-1708533548050-16703eff12ec"), alt: "Abstract black and red curves", by: "Pawel Czerwinski", href: "https://unsplash.com/photos/GycPY2LU2Ew" },
-  stars: { src: unsplash("photo-1502864580248-63061f3f5998"), alt: "Star trails over a night sky", by: "Mohdammed Ali", href: "https://unsplash.com/photos/zZvofYjfVXw" },
+  // One set: gold light on black, all by long exposure or soft focus, so every section feels the same.
+  trails: { src: unsplash("photo-1629041172784-fe1bc68dc1c6"), alt: "Gold light trails in a dark room", by: "Tomás Mendes", href: "https://unsplash.com/photos/Vgxby1hqORQ" },
+  disc: { src: unsplash("photo-1727564845242-a82f22476091"), alt: "A yellow ringed disc on a black background", by: "Buddha Elemental 3D", href: "https://unsplash.com/photos/edlL1vvGcLI" },
+  threads: { src: unsplash("photo-1644673640522-b1b122c1cecc"), alt: "Threads of yellow light on a black background", by: "Tomás Mendes", href: "https://unsplash.com/photos/sr96SQ6jG5w" },
+  road: { src: unsplash("photo-1629041172736-ccd4b630a307"), alt: "Gold streaks of traffic at night", by: "Tomás Mendes", href: "https://unsplash.com/photos/YFAQhvLhQp0" },
+  glow: { src: unsplash("photo-1707568774879-49bcd6421a00"), alt: "A soft yellow glow in the dark", by: "Veronica Karoli", href: "https://unsplash.com/photos/DHgn8v93MnE" },
 } as const;
 
 export const TICKER = [

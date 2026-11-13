@@ -43,22 +43,26 @@ export default function HomePage() {
           <div className="absolute -inset-6 blur-[6px]">
             <Photo photo={PHOTOS.trails} decorative priority className="slow-zoom opacity-70" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/30" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,var(--background)_75%)] opacity-90" />
+          <div className="absolute inset-0 bg-background/45" />
           <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background to-transparent" />
         </div>
 
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-40 pb-20 sm:px-6 sm:pt-48 lg:min-h-[92svh] lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-          <div>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-14 px-4 pt-40 pb-20 text-center sm:px-6 sm:pt-48">
+          <div className="flex flex-col items-center">
+            <span className="fade-up mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary" style={{ "--d": "60ms" } as React.CSSProperties}>
+              {SITE.ticker} · {SITE.definition}
+            </span>
             <AnimatedHeading
               as="h1"
               start={120}
-              className="max-w-[14ch] font-heading text-[clamp(2.5rem,5vw,4.4rem)] leading-[1.02] font-bold tracking-[-0.03em]"
+              className="mx-auto max-w-[16ch] font-heading text-[clamp(2.5rem,6vw,5rem)] leading-[1.02] font-bold tracking-[-0.03em]"
               lines={[{ text: "Hold longer." }, { text: "Get paid by the ones who don't." }]}
             />
-            <p className="fade-up mt-6 max-w-[50ch] text-lg text-foreground/75" style={{ "--d": "700ms" } as React.CSSProperties}>
+            <p className="fade-up mx-auto mt-6 max-w-[50ch] text-lg text-foreground/75" style={{ "--d": "700ms" } as React.CSSProperties}>
               Lock your tokens for 3 to 30 days. Every early exit forfeits {PENALTY.pct}%, and it flows straight to the holders who kept their word.
             </p>
-            <div className="fade-up mt-8 flex flex-wrap gap-3" style={{ "--d": "820ms" } as React.CSSProperties}>
+            <div className="fade-up mt-8 flex flex-wrap justify-center gap-3" style={{ "--d": "820ms" } as React.CSSProperties}>
               <Button asChild size="lg" className="rounded-full">
                 <Link href="/vaults">Open a vault</Link>
               </Button>
@@ -66,9 +70,9 @@ export default function HomePage() {
                 <Link href="/docs">How it works</Link>
               </Button>
             </div>
-            <dl className="fade-up mt-10 grid max-w-xl grid-cols-3 gap-2 sm:gap-3" style={{ "--d": "950ms" } as React.CSSProperties}>
+            <dl className="fade-up mx-auto mt-10 grid w-full max-w-xl grid-cols-3 gap-2 sm:gap-3" style={{ "--d": "950ms" } as React.CSSProperties}>
               {HERO_FACTS.map((f) => (
-                <div key={f.label} className="rounded-xl border bg-card/70 p-3 backdrop-blur sm:p-4">
+                <div key={f.label} className="wcard p-3 sm:p-4">
                   <dt className="sr-only">{f.label}</dt>
                   <dd className="num font-heading text-2xl font-bold sm:text-3xl">{f.value}</dd>
                   <dd className="mt-1 text-xs leading-snug text-muted-foreground">{f.label}</dd>
@@ -76,7 +80,7 @@ export default function HomePage() {
               ))}
             </dl>
           </div>
-          <div className="fade-up" style={{ "--d": "400ms" } as React.CSSProperties}>
+          <div className="fade-up w-full max-w-xl text-left" style={{ "--d": "1050ms" } as React.CSSProperties}>
             <LockPlanner />
           </div>
         </div>
@@ -86,7 +90,7 @@ export default function HomePage() {
 
       {/* Statement */}
       <section className="mx-auto max-w-6xl px-4 pt-24 sm:px-6 sm:pt-32">
-        <Reveal className="grid gap-8 lg:grid-cols-[200px_1fr]">
+        <Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-8 text-center">
           <Badge variant="outline" className="h-fit gap-1.5">
             <Hourglass className="size-3" aria-hidden="true" />
             Why Wronskian
@@ -103,7 +107,7 @@ export default function HomePage() {
         <Reveal className="lg:col-span-7">
           <Card className="relative isolate h-full min-h-[360px] justify-end sm:min-h-[440px] overflow-hidden p-0">
             <div className="absolute inset-0 -z-10">
-              <Photo photo={PHOTOS.hourglassRed} sizes="(min-width: 1024px) 680px, 100vw" />
+              <Photo photo={PHOTOS.disc} sizes="(min-width: 1024px) 680px, 100vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             </div>
             <div className="p-6 sm:p-8">
@@ -156,7 +160,7 @@ export default function HomePage() {
       {/* How it works */}
       <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal>
-          <SectionTitle className="max-w-[22ch]">Three steps, one rule: finishing is free.</SectionTitle>
+          <SectionTitle className="mx-auto max-w-[22ch] text-center">Three steps, one rule: finishing is free.</SectionTitle>
         </Reveal>
         <ol className="mt-10 grid gap-4 md:grid-cols-3">
           {STEPS.map((s, i) => (
@@ -191,9 +195,7 @@ export default function HomePage() {
         </Reveal>
         <Reveal delay={100}>
           <Card className="relative isolate h-full min-h-[380px] overflow-hidden p-0">
-            <Photo photo={PHOTOS.stars} sizes="(min-width: 1024px) 560px, 100vw" className="absolute inset-0 -z-10 grayscale" />
-            {/* Tints the blue star trails into the site's red. */}
-            <div className="absolute inset-0 -z-10 bg-primary mix-blend-multiply" />
+            <Photo photo={PHOTOS.threads} sizes="(min-width: 1024px) 560px, 100vw" className="absolute inset-0 -z-10" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
             <div className="mt-auto p-6 sm:p-8">
               <p className="max-w-[22ch] font-heading text-2xl leading-snug font-semibold text-white">Rewards arrive in real time, one exit at a time, for as long as you stay.</p>
@@ -204,7 +206,7 @@ export default function HomePage() {
 
       {/* Live numbers */}
       <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
-        <Reveal className="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <Reveal className="mb-10 flex flex-col items-center gap-3 text-center">
           <SectionTitle>The vault, live</SectionTitle>
           <p className="max-w-[40ch] text-muted-foreground">Read straight from Ethereum. These fill in the moment the vault is deployed.</p>
         </Reveal>
@@ -215,7 +217,7 @@ export default function HomePage() {
 
       {/* Lock lengths */}
       <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
-        <Reveal className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <Reveal className="flex flex-col items-center gap-4 text-center">
           <SectionTitle>Pick your length</SectionTitle>
           <p className="max-w-[44ch] text-muted-foreground">Your shares are the amount you lock times its weight. More shares, bigger cut of every exit fee.</p>
         </Reveal>
@@ -240,7 +242,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-4 px-4 pt-20 sm:px-6 sm:pt-28 lg:grid-cols-[1fr_1.4fr]">
         <Reveal>
           <Card className="relative isolate h-full min-h-[320px] justify-end sm:min-h-[420px] overflow-hidden p-0">
-            <Photo photo={PHOTOS.hourglass} sizes="(min-width: 1024px) 460px, 100vw" className="absolute inset-0 -z-10" />
+            <Photo photo={PHOTOS.road} sizes="(min-width: 1024px) 460px, 100vw" className="absolute inset-0 -z-10" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/30 to-transparent" />
             <div className="p-6 sm:p-8">
               <SectionTitle className="text-white">Nobody holds the keys but you</SectionTitle>
@@ -290,12 +292,12 @@ export default function HomePage() {
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-4 pt-20 sm:px-6 sm:pt-28">
         <Reveal>
-          <Card className="relative isolate items-start gap-6 overflow-hidden p-8 sm:p-14">
-            <Photo photo={PHOTOS.curves} decorative sizes="(min-width: 1152px) 1152px, 100vw" className="absolute inset-0 -z-10 opacity-60" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black via-black/70 to-transparent" />
+          <Card className="relative isolate items-center gap-6 overflow-hidden p-8 text-center sm:p-14">
+            <Photo photo={PHOTOS.glow} decorative sizes="(min-width: 1152px) 1152px, 100vw" className="absolute inset-0 -z-10 opacity-60" />
+            <div className="absolute inset-0 -z-10 bg-black/55" />
             <ShieldCheck className="size-7 text-primary" aria-hidden="true" />
             <SectionTitle className="max-w-[16ch] text-white">Patience should pay. Here, it does.</SectionTitle>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="rounded-full">
                 <Link href="/vaults">Open a vault</Link>
               </Button>

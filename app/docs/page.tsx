@@ -49,10 +49,10 @@ function Code({ children }: { children: React.ReactNode }) {
 export default function DocsPage() {
   const contracts = [
     { name: "WRON token", address: TOKEN.address },
-    { name: "Pool hook (5% fee, anti-sniper)", address: TOKEN.hook },
-    { name: "Fee vault (pays the dev wallet)", address: TOKEN.feeVault },
+    { name: "Pool hook (trading fee, anti-sniper)", address: TOKEN.hook },
+    { name: "Fee vault", address: TOKEN.feeVault },
     { name: "WronskianVault", address: VAULT.address },
-    { name: "Dev wallet (receives the creator fee)", address: DEV_WALLET },
+    { name: "Dev wallet", address: DEV_WALLET },
   ];
 
   return (
@@ -147,8 +147,8 @@ export default function DocsPage() {
           <section className="flex flex-col gap-4">
             <H2 id="fees">Trading fees</H2>
             <p>
-              WRON trades in one official Uniswap v4 pool. Every buy and sell in that pool pays a <strong>{TOKEN.fee}% fee</strong>, taken in ETH and paid to the dev wallet{" "}
-              <CopyAddress address={DEV_WALLET} full={false} />. The rate is fixed in the hook and can never change. Normal transfers between wallets are free, and locking, claiming and withdrawing only cost Ethereum gas.
+              WRON trades in one official Uniswap v4 pool. Every buy and sell in that pool pays a small trading fee, taken in ETH. The rate is fixed in the hook and can never change. Normal
+              transfers between wallets are free, and locking, claiming and withdrawing only cost Ethereum gas.
             </p>
             <p>Anyone can send WRON into the vault with <Code>fund</Code> to boost rewards for savers. Every top-up shows on-chain as a Funded event.</p>
           </section>
@@ -162,7 +162,7 @@ export default function DocsPage() {
             <ul className="list-disc space-y-2 pl-5">
               <li>Trading is open to everyone from the first block, on this site&apos;s Trade page or straight through the pool.</li>
               <li>
-                Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal {TOKEN.fee}% over the first {TOKEN.openingFeeSeconds} seconds, so bots
+                Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal fee over the first {TOKEN.openingFeeSeconds} seconds, so bots
                 that buy in the first block lose most of what they put in. The dev wallet skips this extra fee but is still under the wallet cap.
               </li>
               <li>
