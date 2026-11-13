@@ -1,8 +1,8 @@
 {
-  "name": "continuum-contracts",
+  "name": "wronskian-contracts",
   "version": "1.0.0",
   "private": true,
-  "description": "ContinuumVault: time-locked savings for the Continuum token on Ethereum",
+  "description": "WronskianVault: time-locked savings for the Wronskian token on Ethereum",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",

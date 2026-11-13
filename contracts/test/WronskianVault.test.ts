@@ -8,7 +8,7 @@ const DAY = 24 * 60 * 60;
 async function setup() {
   const [deployer, alice, bob, carol] = await ethers.getSigners();
   const token = await ethers.deployContract("MockToken");
-  const vault = await ethers.deployContract("ContinuumVault", [await token.getAddress()]);
+  const vault = await ethers.deployContract("WronskianVault", [await token.getAddress()]);
   for (const s of [alice, bob, carol, deployer]) {
     await token.mint(s.address, E(1_000_000));
     await token.connect(s).approve(await vault.getAddress(), ethers.MaxUint256);
@@ -16,9 +16,9 @@ async function setup() {
   return { deployer, alice, bob, carol, token, vault };
 }
 
-describe("ContinuumVault", () => {
+describe("WronskianVault", () => {
   it("rejects a zero token address", async () => {
-    const F = await ethers.getContractFactory("ContinuumVault");
+    const F = await ethers.getContractFactory("WronskianVault");
     await expect(F.deploy(ethers.ZeroAddress)).to.be.revertedWithCustomError(F, "ZeroAddress");
   });
 

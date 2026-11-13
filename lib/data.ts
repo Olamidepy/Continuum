@@ -1,6 +1,6 @@
 import { isAddress, type Address } from "viem";
 
-// All Continuum copy and numbers in one place. Edit here, not in components.
+// All Wronskian copy and numbers in one place. Edit here, not in components.
 
 const env = (v: string | undefined) => (v && v.trim() ? v.trim() : undefined);
 const addr = (v: string | undefined) => {
@@ -9,66 +9,62 @@ const addr = (v: string | undefined) => {
 };
 
 export const SITE = {
-  name: "Continuum",
-  tagline: "Where leaving early has a price, and holding has a payout.",
+  name: "Wronskian",
+  ticker: "WRON",
+  /** The brand definition. */
+  definition: "W ≠ 0. Stay independent.",
+  tagline: "W ≠ 0. Stay independent.",
   description:
-    "Continuum is where leaving early has a price, and holding has a payout. Lock your tokens for up to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who kept their word.",
-  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.continuumxyz.live",
-  x: env(process.env.NEXT_PUBLIC_X_URL) ?? "https://x.com/continuum_xyz",
-  xHandle: env(process.env.NEXT_PUBLIC_X_HANDLE) ?? "@continuum_xyz",
+    "Wronskian (WRON): W ≠ 0. Stay independent. Lock WRON for 3 to 30 days. Every early exit forfeits 10%, and it flows straight to the holders who stayed.",
+  url: env(process.env.NEXT_PUBLIC_APP_URL) ?? "https://www.wronskian.xyz",
+  x: "https://x.com/wronskian_xyz",
+  xHandle: "@wronskian_xyz",
   chain: "Ethereum",
-  launchpad: "Programmable",
-  launchpadUrl: "https://programmable.market",
+  venue: "Uniswap v4",
 } as const;
 
 /**
- * The token comes from the Programmable launch. Nothing here is set until the launch is finalized,
+ * WRON launches with its own Uniswap v4 hook (launch/ in this repo). Nothing is set until the launch is final,
  * so the site never shows an address that could be copied by scammers before then.
- * The ticker stays off the site until NEXT_PUBLIC_TOKEN_TICKER is set.
  */
-/** Live on Ethereum Mainnet since 3 Nov 2026. Env vars still override these. */
-const tokenAddress = addr(process.env.NEXT_PUBLIC_CONTINUUM_TOKEN_ADDRESS || "0xE56CbF8bCDa7f4A6D69F4f4aad12C5F9eBE97cf4");
-const ticker = env(process.env.NEXT_PUBLIC_TOKEN_TICKER) ?? "CNTM";
+const tokenAddress = addr(process.env.NEXT_PUBLIC_WRON_TOKEN_ADDRESS);
+const ticker = "WRON";
 
 export const TOKEN = {
   address: tokenAddress,
-  hook: addr(process.env.NEXT_PUBLIC_CONTINUUM_HOOK_ADDRESS || "0x4B207E4302Ee7235f9eb71c25AD5065c8a8560cc"),
-  /** Display name until the ticker is public. */
-  symbol: ticker ? `$${ticker.replace(/^\$/, "")}` : "Continuum",
-  unit: ticker ? ticker.replace(/^\$/, "") : "tokens",
-  supply: Number(process.env.NEXT_PUBLIC_TOKEN_SUPPLY || 1_000_000_000),
+  hook: addr(process.env.NEXT_PUBLIC_WRON_HOOK_ADDRESS),
+  feeVault: addr(process.env.NEXT_PUBLIC_WRON_FEE_VAULT_ADDRESS),
+  symbol: `$${ticker.replace(/^\$/, "")}`,
+  unit: ticker.replace(/^\$/, ""),
+  supply: 1_000_000_000,
   decimals: 18,
-  /** Pool settings from the launch record. Defaults match Programmable's protected launch (ETH pair, hook pool). */
-  poolFee: Number(process.env.NEXT_PUBLIC_POOL_FEE || 0),
-  tickSpacing: Number(process.env.NEXT_PUBLIC_POOL_TICK_SPACING || 60),
+  /** Pool settings, fixed in WronskianHook: ETH pair, LP fee 0 (the hook charges the fee), tick spacing 60. */
+  poolFee: 0,
+  tickSpacing: 60,
   /*
-   * Programmable launch protection (fixed by Programmable, api.programmable.market/v1/launch-protection):
-   * for the first 300 s no wallet can buy or receive more than 2% of supply in total, and the buy fee
-   * starts at 99% and falls to the normal fee over 30 s. The extra fee goes to Programmable's treasury.
+   * Launch protection, fixed in WronskianHook: for the first 300 s no wallet can buy more than 2% of supply in
+   * total, and the buy fee starts at 99% and falls to the normal 5% over 30 s.
    */
   protectionSeconds: 300,
   walletCapPct: 2,
   openingFeePct: 99,
   openingFeeSeconds: 30,
-  minFdvUsd: 15_000,
+  startFdvUsd: 2_000,
   /** Dev's first buy at launch, in USD. */
-  initialBuyUsd: Number(process.env.NEXT_PUBLIC_INITIAL_BUY_USD || 4),
-  /** Creator fee on trades in the official pool, in percent. */
-  creatorFee: Number(process.env.NEXT_PUBLIC_CREATOR_FEE || 2.7),
-  platformFee: 0.3,
-  coinPage: env(process.env.NEXT_PUBLIC_PROGRAMMABLE_COIN_URL),
+  initialBuyUsd: 2,
+  /** Fee on every buy and sell in the official pool, in percent. All of it goes to the dev wallet. */
+  fee: 5,
   etherscan: tokenAddress ? `https://etherscan.io/token/${tokenAddress}` : undefined,
   dexscreener: tokenAddress ? `https://dexscreener.com/ethereum/${tokenAddress}` : undefined,
-  uniswap: tokenAddress ? `https://app.uniswap.org/swap?chain=mainnet&inputCurrency=NATIVE&outputCurrency=${tokenAddress}` : undefined,
 };
 
-/** ContinuumVault. Deployed after the token is live. */
+/** WronskianVault. Deployed after the token is live. */
 export const VAULT = {
-  address: addr(process.env.NEXT_PUBLIC_CONTINUUM_VAULT_ADDRESS),
+  address: addr(process.env.NEXT_PUBLIC_WRON_VAULT_ADDRESS),
 };
 
-/** The project's dev wallet: signs the launch, makes the first buy and receives the creator fee. Public on purpose. */
-export const DEV_WALLET = "0x64b646C9B4ec3C03f16A47e3F4e838615EeBddD7" as Address;
+/** The dev wallet: launches the token, makes the first buy and receives the 5% fee. Public on purpose. */
+export const DEV_WALLET = "0x311A12DaD28A6AaE0C3c8FC1F4cBF115f4Da9eC2" as Address;
 
 export const LIVE = Boolean(TOKEN.address && VAULT.address);
 
@@ -81,7 +77,7 @@ export const NAV = [
 
 export type Tier = { id: 0 | 1 | 2 | 3; days: number; weight: number; label: string };
 
-/** Must match ContinuumVault.duration() and multiplier(). */
+/** Must match WronskianVault.duration() and multiplier(). */
 export const TIERS: Tier[] = [
   { id: 0, days: 3, weight: 1.0, label: "3 days" },
   { id: 1, days: 7, weight: 1.2, label: "7 days" },
@@ -101,8 +97,8 @@ export const STEPS = [
 export const FAQ = [
   {
     group: "Basics",
-    q: "What is Continuum?",
-    a: "A vault for the Continuum token on Ethereum. You lock tokens for a set time. People who break their lock early forfeit 10%, and all of it is paid to everyone who is still locked.",
+    q: "What is Wronskian?",
+    a: "WRON is a token on Ethereum with a vault built in. You lock WRON for a set time. People who break their lock early forfeit 10%, and all of it is paid to everyone who is still locked. W ≠ 0: stay independent.",
   },
   {
     group: "Basics",
@@ -127,17 +123,17 @@ export const FAQ = [
   {
     group: "Rewards",
     q: "Can rewards come from anywhere else?",
-    a: "Yes. Anyone can add tokens to the reward pool with the fund function, for example part of the creator fee. They're shared the same way as exit fees.",
+    a: "Yes. Anyone can add WRON to the reward pool with the fund function. It's shared the same way as exit fees.",
   },
   {
     group: "Token",
     q: "Where do I buy the token?",
-    a: "Only through the official pool, launched on Programmable. The address is posted on the Trade page and on X once the launch is finalized. Treat any other address as fake.",
+    a: "On the Trade page of this site, which trades the official Uniswap v4 pool directly. The address is posted there and on X once the launch is final. Treat any other address as fake.",
   },
   {
     group: "Token",
     q: "What fees apply to trades?",
-    a: "A 0.3% Programmable platform fee and the creator fee shown on the Trade page apply to every buy and sell in the official pool. Locking, claiming and withdrawing only cost Ethereum gas.",
+    a: "5% of every buy and sell in the official pool, taken in ETH and paid to the dev wallet. For the first 30 seconds after launch the buy fee starts at 99% and falls to 5%, to stop sniping bots. Locking, claiming and withdrawing only cost Ethereum gas.",
   },
   {
     group: "Safety",
@@ -147,7 +143,7 @@ export const FAQ = [
   {
     group: "Safety",
     q: "Has the code been audited?",
-    a: "Not yet. The vault's code is verified on Etherscan when it's deployed. Don't lock more than you're prepared to lose, and never share your seed phrase. Continuum will never ask for it.",
+    a: "Not yet. The vault's code is verified on Etherscan when it's deployed. Don't lock more than you're prepared to lose, and never share your seed phrase. Wronskian will never ask for it.",
   },
 ] as const;
 
@@ -171,6 +167,6 @@ export const TICKER = [
   "Up to 2.0x weight",
   "No owner, no admin, no pause",
   "Finishing is free",
-  "Launching on Programmable",
+  "W ≠ 0. Stay independent.",
   "Uniswap v4 on Ethereum",
 ] as const;

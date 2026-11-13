@@ -14,7 +14,7 @@ export function Photo({ photo, className, sizes = "100vw", decorative = false, p
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : undefined}
       decoding="async"
-      className={cn("size-full object-cover", className)}
+      className={cn("size-full object-cover grayscale", className)}
     />
   );
 }

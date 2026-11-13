@@ -10,7 +10,7 @@ export function Footer() {
     <footer className="mt-24 border-t">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto]">
         <div className="max-w-sm">
-          <Link href="/" className="inline-flex" aria-label="Continuum home">
+          <Link href="/" className="inline-flex" aria-label="Wronskian home">
             <Wordmark className="h-6" />
           </Link>
           <p className="mt-3 text-sm text-muted-foreground">{SITE.tagline}</p>
@@ -21,8 +21,8 @@ export function Footer() {
               {n.label}
             </Link>
           ))}
-          <a href={SITE.launchpadUrl} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
-            {SITE.launchpad}
+          <a href={SITE.x} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">
+            {SITE.xHandle}
           </a>
         </div>
       </div>
@@ -46,7 +46,7 @@ export function Footer() {
         </div>
         <div className="flex items-center gap-3">
           {SITE.x ? (
-            <a href={SITE.x} target="_blank" rel="noopener noreferrer" aria-label="Continuum on X" className="hover:text-foreground">
+            <a href={SITE.x} target="_blank" rel="noopener noreferrer" aria-label="Wronskian on X" className="hover:text-foreground">
               <XIcon className="size-4" />
             </a>
           ) : null}

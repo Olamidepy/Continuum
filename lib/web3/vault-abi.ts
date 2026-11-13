@@ -1,4 +1,4 @@
-// Generated from contracts/src/ContinuumVault.sol. Regenerate after changing the contract:
+// Generated from contracts/src/WronskianVault.sol. Regenerate after changing the contract:
 // cd contracts && npx hardhat compile && npm run abi
 export const vaultAbi = [
   {
@@ -447,7 +447,7 @@ export const vaultAbi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct ContinuumVault.Vault",
+        "internalType": "struct WronskianVault.Vault",
         "name": "",
         "type": "tuple"
       }

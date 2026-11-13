@@ -1,25 +1,28 @@
-# Continuum
+# Wronskian (WRON)
 
-**Where leaving early has a price, and holding has a payout.**
+**W ≠ 0. Stay independent.**
 
-Continuum is a time-locked vault on Ethereum. Lock the Continuum token for 3, 7, 14 or 30 days. Anyone who breaks a lock early forfeits 10% of it, and all of it is shared with every vault still locked. Finishing is free.
+WRON is a token on Ethereum with its own Uniswap v4 hook: a fixed 5% fee on every buy and sell (paid to the dev wallet), liquidity locked forever, and launch protection (99% → 5% buy fee over 30 s, 2% wallet cap for 5 minutes). It opens at a $2,000 FDV.
 
-The token launches through [Programmable](https://programmable.market)'s Custom Launch (protected launch token + Uniswap v4 hook). The vault is a separate, ownerless contract. See [LAUNCH.md](LAUNCH.md) for the launch checklist.
+WronskianVault is a time-locked vault for WRON. Lock for 3, 7, 14 or 30 days. Anyone who breaks a lock early forfeits 10% of it, and all of it is shared with every vault still locked. Finishing is free.
+
+See [LAUNCH.md](LAUNCH.md) for the launch checklist and [launch/README.md](launch/README.md) for the token contracts.
 
 ## What's in here
 
 ```
 app/                 Next.js pages: home, vaults, trade, docs, faq
 components/ui/       stock shadcn/ui (new-york)
-components/site/     Continuum components (lock planner, vault list, swap, …)
+components/site/     Wronskian components (lock planner, vault list, on-site swap, …)
 lib/data.ts          all copy, numbers and addresses (driven by env vars)
-lib/web3/            wagmi config, pool price reader, vault hooks, generated ABI
-contracts/           ContinuumVault.sol, tests, deploy script (Hardhat)
+lib/web3/            wagmi config, pool price reader, Universal Router swap, vault hooks, generated ABI
+contracts/           WronskianVault.sol, tests, deploy script (Hardhat)
+launch/              WRON token, hook, fee vault, initializer, launch script (Foundry)
 ```
 
 ## The vault
 
-`contracts/src/ContinuumVault.sol`
+`contracts/src/WronskianVault.sol`
 
 | | |
 |---|---|

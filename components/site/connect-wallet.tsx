@@ -66,7 +66,7 @@ export function ConnectWallet({ size = "sm", className }: { size?: "sm" | "defau
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Connect a wallet</DialogTitle>
-            <DialogDescription>Use the wallet that holds your Continuum tokens and vaults.</DialogDescription>
+            <DialogDescription>Use the wallet that holds your WRON and vaults.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             {wallets.map((c) => {
@@ -104,7 +104,7 @@ export function ConnectWallet({ size = "sm", className }: { size?: "sm" | "defau
             </div>
           ) : null}
           {connect.error ? <p className="text-sm text-destructive">{friendlyError(connect.error)}</p> : null}
-          <p className="text-xs text-muted-foreground">Continuum will never ask for your seed phrase or private key.</p>
+          <p className="text-xs text-muted-foreground">Wronskian will never ask for your seed phrase or private key.</p>
         </DialogContent>
       </Dialog>
     );

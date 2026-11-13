@@ -48,15 +48,16 @@ function Code({ children }: { children: React.ReactNode }) {
 
 export default function DocsPage() {
   const contracts = [
-    { name: "Token (Programmable protected launch)", address: TOKEN.address },
-    { name: "Pool hook (Programmable protected launch)", address: TOKEN.hook },
-    { name: "ContinuumVault", address: VAULT.address },
+    { name: "WRON token", address: TOKEN.address },
+    { name: "Pool hook (5% fee, anti-sniper)", address: TOKEN.hook },
+    { name: "Fee vault (pays the dev wallet)", address: TOKEN.feeVault },
+    { name: "WronskianVault", address: VAULT.address },
     { name: "Dev wallet (receives the creator fee)", address: DEV_WALLET },
   ];
 
   return (
     <>
-      <PageHeader title="How Continuum works" body="Everything a saver needs: how locks and shares work, where exit fees go, how the token launches and what the contract can and can't do." />
+      <PageHeader title="How Wronskian works" body="Everything a saver needs: how locks and shares work, where exit fees go, how the token launches and what the contract can and can't do." />
       <div className="mx-auto grid max-w-6xl gap-12 px-4 sm:px-6 lg:grid-cols-[220px_1fr]">
         <nav aria-label="Docs" className="min-w-0 lg:sticky lg:top-36 lg:self-start">
           <ul className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
@@ -75,11 +76,11 @@ export default function DocsPage() {
           <section className="flex flex-col gap-4">
             <H2 id="overview">Overview</H2>
             <p>
-              Continuum is a savings vault for one token on {SITE.chain}. You lock tokens for a fixed time. If you stay to the end you get everything back, plus a share of the fees paid by people
+              Wronskian (WRON) is a token on {SITE.chain} with a savings vault built for it. {SITE.definition} You lock tokens for a fixed time. If you stay to the end you get everything back, plus a share of the fees paid by people
               who left early. If you leave early, you pay a <strong>{PENALTY.pct}% exit fee</strong> on what you locked.
             </p>
             <p>
-              Most token launches reward selling fast. Continuum flips that: every early exit pays the people who are still holding, so patience is the thing that earns.
+              Most token launches reward selling fast. Wronskian flips that: every early exit pays the people who are still holding, so patience is the thing that earns.
             </p>
           </section>
 
@@ -146,28 +147,29 @@ export default function DocsPage() {
           <section className="flex flex-col gap-4">
             <H2 id="fees">Trading fees</H2>
             <p>
-              The token trades in one official Uniswap v4 pool created by {SITE.launchpad}. Every buy and sell in that pool pays a <strong>{TOKEN.platformFee}% platform fee</strong> to{" "}
-              {SITE.launchpad} and a <strong>{TOKEN.creatorFee}% creator fee</strong>. Normal transfers between wallets are free, and locking, claiming and withdrawing only cost Ethereum gas.
+              WRON trades in one official Uniswap v4 pool. Every buy and sell in that pool pays a <strong>{TOKEN.fee}% fee</strong>, taken in ETH and paid to the dev wallet{" "}
+              <CopyAddress address={DEV_WALLET} full={false} />. The rate is fixed in the hook and can never change. Normal transfers between wallets are free, and locking, claiming and withdrawing only cost Ethereum gas.
             </p>
-            <p>Part of the creator fee can be sent into the vault with <Code>fund</Code> to boost rewards for savers. Every top-up shows on-chain as a Funded event.</p>
+            <p>Anyone can send WRON into the vault with <Code>fund</Code> to boost rewards for savers. Every top-up shows on-chain as a Funded event.</p>
           </section>
 
           <section className="flex flex-col gap-4">
             <H2 id="launch">The launch</H2>
             <p>
-              The token launches through {SITE.launchpad}&apos;s Custom Launch on Ethereum mainnet, using {SITE.launchpad}&apos;s protected launch token and Uniswap v4 hook. {SITE.launchpad}{" "}
-              reviews and approves the launch before it goes live, and the launch is stamped on-chain by its router so explorers and terminals can verify where the token came from.
+              WRON launches on Ethereum mainnet with its own Uniswap v4 hook, using the same Uniswap PoolManager and Universal Router as every other v4 pool. The dev wallet deploys the token,
+              the hook and a launch contract, and one transaction creates the pool, locks the liquidity and makes the first buy. All the contracts are verified on Etherscan.
             </p>
             <ul className="list-disc space-y-2 pl-5">
-              <li>Trading is open to everyone from the first block, on {SITE.launchpad} or straight through the pool.</li>
+              <li>Trading is open to everyone from the first block, on this site&apos;s Trade page or straight through the pool.</li>
               <li>
-                Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal {(TOKEN.platformFee + TOKEN.creatorFee).toFixed(1)}% over the first{" "}
-                {TOKEN.openingFeeSeconds} seconds, so bots that buy in the first block pay almost everything they put in. The extra fee goes to {SITE.launchpad}.
+                Anti-sniper fee: the buy fee starts at {TOKEN.openingFeePct}% and falls smoothly to the normal {TOKEN.fee}% over the first {TOKEN.openingFeeSeconds} seconds, so bots
+                that buy in the first block pay almost everything they put in. The dev wallet skips this extra fee but is still under the wallet cap.
               </li>
               <li>
-                Wallet cap: for the first {TOKEN.protectionSeconds / 60} minutes, no wallet can buy or receive more than {TOKEN.walletCapPct}% of supply in total.
+                Wallet cap: for the first {TOKEN.protectionSeconds / 60} minutes, no wallet can buy more than {TOKEN.walletCapPct}% of supply in total. Sells are never capped.
               </li>
-              <li>Starting value: the pool opens at a fully diluted value of at least ${TOKEN.minFdvUsd.toLocaleString("en-US")}.</li>
+              <li>Starting value: the pool opens at a fully diluted value of about ${TOKEN.startFdvUsd.toLocaleString("en-US")}, priced from Chainlink&apos;s ETH/USD at launch.</li>
+              <li>Liquidity: the whole supply goes into one position owned by the launch contract, which has no way to remove it. It is locked forever.</li>
               <li>Supply is {TOKEN.supply.toLocaleString("en-US")} tokens, fixed. The creator&apos;s first buy at launch is about ${TOKEN.initialBuyUsd}.</li>
               <li>The vault is deployed after the launch is final, pointing at the launched token. It never touches the pool or the hook.</li>
             </ul>
@@ -175,7 +177,7 @@ export default function DocsPage() {
 
           <section className="flex flex-col gap-4">
             <H2 id="contracts">Contracts</H2>
-            <p>Addresses are published here when they go live. Until then, treat any address claiming to be Continuum as fake.</p>
+            <p>Addresses are published here when they go live. Until then, treat any address claiming to be Wronskian as fake.</p>
             <Card className="py-0">
               <Table>
                 <TableBody>
@@ -188,7 +190,7 @@ export default function DocsPage() {
                 </TableBody>
               </Table>
             </Card>
-            <p>ContinuumVault functions:</p>
+            <p>WronskianVault functions:</p>
             <Card className="py-0">
               <Table>
                 <TableHeader>
@@ -217,7 +219,7 @@ export default function DocsPage() {
               <li>The token address, lock lengths, weights and the {PENALTY.pct}% forfeit are fixed in the contract. There is no treasury.</li>
               <li>Only the wallet that opened a vault can claim, add, extend, withdraw or exit it.</li>
               <li>Every write is protected against reentrancy and uses balance checks on transfers.</li>
-              <li>Continuum will never ask for your seed phrase or private key.</li>
+              <li>Wronskian will never ask for your seed phrase or private key.</li>
             </ul>
           </section>
 

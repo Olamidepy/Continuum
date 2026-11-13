@@ -5,16 +5,16 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-/// @title ContinuumVault
-/// @notice Time-locked vaults for the Continuum token on Ethereum.
+/// @title WronskianVault
+/// @notice Time-locked vaults for the Wronskian token on Ethereum.
 ///         Lock tokens for 3, 7, 14 or 30 days. Longer locks earn a bigger share.
 ///         Leaving early forfeits 10% of the principal, and all of it goes to everyone still locked.
 ///         Anyone can also add tokens to the reward pool.
 /// @dev    No owner, no admin, no pause, no proxy, no treasury. The token is fixed at deploy.
 ///         Rewards use the accumulated-reward-per-share pattern, so every action is O(1).
-///         The token is launched through Programmable's protected launch; this vault is a
+///         WRON launches with its own Uniswap v4 hook (launch/ in this repo); this vault is a
 ///         separate contract and never touches the pool or the hook.
-contract ContinuumVault is ReentrancyGuard {
+contract WronskianVault is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // ─── Errors ─────────────────────────────────────────────

@@ -4,17 +4,17 @@ import { CopyAddress } from "@/components/site/copy-address";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { SITE, TOKEN, VAULT } from "@/lib/data";
+import { TOKEN, VAULT } from "@/lib/data";
 
 /** Official addresses. Each one stays "At launch" until it is set, so nothing fake can be copied early. */
 export function TokenCard() {
   const rows = [
     { label: "Token", value: TOKEN.address },
     { label: "Pool hook", value: TOKEN.hook },
+    { label: "Fee vault", value: TOKEN.feeVault },
     { label: "Vault", value: VAULT.address },
   ];
   const links = [
-    { label: SITE.launchpad, href: TOKEN.coinPage },
     { label: "Etherscan", href: TOKEN.etherscan },
     { label: "DEX Screener", href: TOKEN.dexscreener },
   ].filter((l): l is { label: string; href: string } => Boolean(l.href));
@@ -23,7 +23,7 @@ export function TokenCard() {
     <Card>
       <CardHeader>
         <CardTitle className="font-heading">Official contracts</CardTitle>
-        <CardDescription>Check every address here before you trade or lock. Any other address is not Continuum.</CardDescription>
+        <CardDescription>Check every address here before you trade or lock. Any other address is not Wronskian.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <dl className="grid gap-3">

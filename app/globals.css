@@ -4,9 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Continuum is dark only. Stock shadcn tokens, recoloured:
-  true black base, graphite cards, one signal red. No glows or coloured shadows.
-  The ember → red ramp is used only for lock timelines.
+  Wronskian is dark only. Stock shadcn tokens, recoloured:
+  true black base, graphite cards, one signal yellow with black text on it. No glows or coloured shadows.
+  The ember → yellow ramp is used only for lock timelines.
 */
 :root {
   --radius: 0.75rem;
@@ -16,8 +16,8 @@
   --card-foreground: #f5f5f5;
   --popover: #111111;
   --popover-foreground: #f5f5f5;
-  --primary: #ff3b1f;
-  --primary-foreground: #ffffff;
+  --primary: #ffd400;
+  --primary-foreground: #0a0a0a;
   --secondary: #1a1a1a;
   --secondary-foreground: #f5f5f5;
   --muted: #171717;
@@ -27,8 +27,8 @@
   --destructive: #e5484d;
   --border: rgb(255 255 255 / 0.08);
   --input: rgb(255 255 255 / 0.12);
-  --ring: #ff3b1f;
-  --ember: #b3241a;
+  --ring: #ffd400;
+  --ember: #8a6d00;
 }
 
 @theme inline {

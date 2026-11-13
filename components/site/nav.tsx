@@ -38,7 +38,7 @@ export function Nav() {
           scrolled ? "max-w-4xl border-white/12 bg-background/85" : "max-w-6xl bg-background/45",
         )}
       >
-        <Link href="/" className="flex items-center py-1" aria-label="Continuum home">
+        <Link href="/" className="flex items-center py-1" aria-label="Wronskian home">
           <Wordmark className="h-[18px] sm:h-5" />
         </Link>
 
@@ -61,7 +61,7 @@ export function Nav() {
         <div className="flex items-center gap-1.5">
           {SITE.x ? (
             <Button asChild variant="ghost" size="icon" className="hidden rounded-full sm:inline-flex">
-              <a href={SITE.x} target="_blank" rel="noopener noreferrer" aria-label="Continuum on X">
+              <a href={SITE.x} target="_blank" rel="noopener noreferrer" aria-label="Wronskian on X">
                 <XIcon />
               </a>
             </Button>

@@ -6,7 +6,7 @@ import { useReadContract } from "wagmi";
 import { TOKEN } from "@/lib/data";
 import { CHAIN } from "@/lib/web3/config";
 
-/** The official Uniswap v4 pool from the Programmable launch: ETH / token, hook pool. */
+/** The official Uniswap v4 pool: ETH / WRON with WronskianHook. */
 export const POOL_KEY = TOKEN.address && TOKEN.hook
   ? ({
       currency0: zeroAddress as Address,
@@ -61,10 +61,10 @@ const feedAbi = [
   },
 ] as const;
 
-const tokenAbi = [{ type: "function", name: "startedAt", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] }] as const;
+const hookAbi = [{ type: "function", name: "launchTimestamp", stateMutability: "view", inputs: [], outputs: [{ type: "uint256" }] }] as const;
 
 export type LiveToken = {
-  /** Unix seconds when trading started (from the token itself). */
+  /** Unix seconds when trading started (from the hook). */
   startedAt?: number;
   /** True once the pool exists on-chain, i.e. the launch has been signed. */
   live: boolean;
@@ -94,11 +94,11 @@ export function useLiveToken(): LiveToken {
   });
 
   const started = useReadContract({
-    address: TOKEN.address,
-    abi: tokenAbi,
-    functionName: "startedAt",
+    address: TOKEN.hook,
+    abi: hookAbi,
+    functionName: "launchTimestamp",
     chainId: CHAIN.id,
-    query: { enabled: Boolean(TOKEN.address), retry: false, refetchInterval: (q) => (q.state.data && q.state.data > BigInt(0) ? false : 15_000) },
+    query: { enabled: Boolean(TOKEN.hook), retry: false, refetchInterval: (q) => (q.state.data && q.state.data > BigInt(0) ? false : 15_000) },
   });
   const startedAt = started.data && started.data > BigInt(0) ? Number(started.data) : undefined;
   const sqrt = slot.data?.[0] ?? BigInt(0);

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: { unoptimized: true },
-  // Programmable's launch review and wallets fetch the token image from the browser, so it must allow any origin.
+  // Wallets and token lists fetch the token image from the browser, so it must allow any origin.
   async headers() {
     return [
       {

@@ -12,7 +12,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Continuum: hold longer, get paid", template: "%s · Continuum" },
+  title: { default: "Wronskian (WRON): W ≠ 0. Stay independent.", template: "%s · Wronskian" },
   description: SITE.description,
   openGraph: { images: ["/avatar.png"] },
   twitter: { card: "summary", site: SITE.xHandle, images: ["/avatar.png"] },
