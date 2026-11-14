@@ -27,12 +27,15 @@ export const SITE = {
  * WRON launches with its own Uniswap v4 hook (launch/ in this repo). Nothing is set until the launch is final,
  * so the site never shows an address that could be copied by scammers before then.
  */
-const tokenAddress = addr(process.env.NEXT_PUBLIC_WRON_TOKEN_ADDRESS);
+// Official launch addresses (Programmable protected launch). Env vars can still override them.
+const LAUNCH_TOKEN = "0x81949fe9909658CdB0cB71d877366D6e9B10493f";
+const LAUNCH_HOOK = "0xdcf426d00a648c441577a728bfedac1866c320cc";
+const tokenAddress = addr(process.env.NEXT_PUBLIC_WRON_TOKEN_ADDRESS || LAUNCH_TOKEN);
 const ticker = "WRON";
 
 export const TOKEN = {
   address: tokenAddress,
-  hook: addr(process.env.NEXT_PUBLIC_WRON_HOOK_ADDRESS),
+  hook: addr(process.env.NEXT_PUBLIC_WRON_HOOK_ADDRESS || LAUNCH_HOOK),
   feeVault: addr(process.env.NEXT_PUBLIC_WRON_FEE_VAULT_ADDRESS),
   symbol: `$${ticker.replace(/^\$/, "")}`,
   unit: ticker.replace(/^\$/, ""),
