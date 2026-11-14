@@ -49,7 +49,7 @@ export const TOKEN = {
   walletCapPct: 2,
   openingFeePct: 99,
   openingFeeSeconds: 30,
-  startFdvUsd: 15_500,
+  startFdvUsd: 16_000,
   /** Dev's first buy at launch, in USD. */
   initialBuyUsd: 2,
   /** Fee on every buy and sell in the official pool, in percent. All of it goes to the dev wallet. */

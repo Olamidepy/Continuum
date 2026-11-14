@@ -8,7 +8,7 @@
   "x": "https://x.com/wronskian_xyz",
   "controller": "0x4044bEBa840B1820B7d3858b65Aa5Fa8729b2db5",
   "creatorFeeBps": 470,
-  "targetFdvUsd": 15500,
+  "targetFdvUsd": 16000,
   "additionalTaxExemptWallets": [],
   "initialBuyUsd": 2,
   "initialBuyBufferPercent": 10,
