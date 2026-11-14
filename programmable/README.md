@@ -9,7 +9,7 @@ signs on programmable.market.
 | --- | --- |
 | Token | Wronskian (WRON), 1,000,000,000 supply, no mint, owner or upgrade |
 | Fees | 5% on every buy and sell: 4.7% creator fee to the dev wallet, 0.3% to Programmable |
-| Starting value | $16,000 FDV target, so an ETH price drop before signing cannot push it under Programmable's $15,000 floor |
+| Starting value | $15,500 FDV target, about 3% headroom so an ETH dip before signing stays above Programmable's $15,000 floor |
 | Liquidity | Whole supply locked in the pool for good |
 | First buy | $2 of ETH to the dev wallet, in the launch transaction |
 | Protection (fixed by Programmable) | 2% wallet cap for 300 s; buy fee starts at 99% and falls to normal over 30 s |
